@@ -141,7 +141,7 @@ const Review = () => {
                                 title={`Step 1: ${getLabel("lbl25")}`}
                                 icon={<PersonIcon />}
                                 color={CommonColors.blue.dark}
-                                rightAction={<PButton label="Edit" variant="outlined" size="small" startIcon={<EditIcon />}
+                                rightAction={<PButton label={getLabel("lbl160")} variant="outlined" size="small" startIcon={<EditIcon />}
                                     onClick={(e) => handleEdit(1)}
                                     sx={{ color: "#fff", borderColor: "#fff", "&:hover": { borderColor: "#fff", backgroundColor: "rgba(255,255,255,0.1)" } }}
                                 />
@@ -175,7 +175,7 @@ const Review = () => {
                                 title={`Step 2: ${getLabel("lbl21")}`}
                                 icon={<AssignmentIcon />}
                                 color={CommonColors.blue.main}
-                                rightAction={<PButton label="Edit" variant="outlined" size="small" startIcon={<EditIcon />}
+                                rightAction={<PButton label={getLabel("lbl160")} variant="outlined" size="small" startIcon={<EditIcon />}
                                     onClick={(e) => handleEdit(2)}
                                     sx={{ color: "#fff", borderColor: "#fff", "&:hover": { borderColor: "#fff", backgroundColor: "rgba(255,255,255,0.1)" } }}
                                 />
@@ -216,7 +216,7 @@ const Review = () => {
                                         isOpen={open === index} onToggle={() => setOpen(index)}
                                         rightAction={
                                             <PButton
-                                                label="Edit"
+                                                label={getLabel("lbl160")}
                                                 variant="outlined"
                                                 size="small"
                                                 startIcon={<EditIcon />}
@@ -259,7 +259,7 @@ const Review = () => {
                                 title={`Step 4: ${getLabel("lbl23")}`}
                                 icon={<LocalShippingIcon />}
                                 color={CommonColors.yellow.main}
-                                rightAction={<PButton label="Edit" variant="outlined" size="small" startIcon={<EditIcon />}
+                                rightAction={<PButton label={getLabel("lbl160")} variant="outlined" size="small" startIcon={<EditIcon />}
                                     onClick={(e) => handleEdit(4)}
                                     sx={{ color: "#fff", borderColor: "#fff", "&:hover": { borderColor: "#fff", backgroundColor: "rgba(255,255,255,0.1)" } }}
                                 />

@@ -17,7 +17,7 @@ import { isSuccess, toast } from "../../utils/commonFunction/common";
 import { LineItems_API } from "../../utils/api/apiUrl";
 import { PostApi } from "../../utils/api/networking";
 
-export const PSummary = ({ sections = [], currentStep = 1, refreshSummary, duplicate = false, showFlag = true , lineItems = [] }) => {
+export const PSummary = ({ sections = [], currentStep = 1, refreshSummary, duplicate = false, showFlag = true, lineItems = [] }) => {
     const { state } = useLocation();
     const navigate = useNavigate();
     const [activeStep, setActiveStep] = useState(currentStep);
@@ -189,7 +189,7 @@ export const PSummary = ({ sections = [], currentStep = 1, refreshSummary, dupli
                                                                 <PGrid container>
                                                                     <PGrid item xs={12} className="d-flex justify-content-end gap-2">
                                                                         <PButton
-                                                                            label="Edit"
+                                                                            label={getLabel("lbl160")}
                                                                             variant="contained"
                                                                             color={CommonColors.grey.main}
                                                                             startIcon={<EditIcon />}
@@ -229,7 +229,7 @@ export const PSummary = ({ sections = [], currentStep = 1, refreshSummary, dupli
                                                 <PGrid container>
                                                     <PGrid item xs={12} className="d-flex justify-content-end">
                                                         <PButton
-                                                            label="Edit"
+                                                            label={getLabel("lbl160")}
                                                             variant="contained"
                                                             color={CommonColors.grey.main}
                                                             startIcon={<EditIcon />}

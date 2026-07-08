@@ -151,7 +151,9 @@ export const Labels = {
   },
   symbols: {
     required: "*",
-    optional: "?"
+    optional: "?",
+    important: "!",
+    percent : "%"
   },
 
   buttonLabel: {

@@ -60,11 +60,11 @@ const EnquirySuccess = () => {
         }
     };
     const data = [
-        { label: "Enquiry Id", value: formDataList.clientInfo?.enqUId || "-", icon: <DescriptionIcon /> },
+        { label: getLabel("lbl162"), value: formDataList.clientInfo?.enqUId || "-", icon: <DescriptionIcon /> },
         { label: getLabel("lbl42"), value: formDataList.enquiryDetails?.projectNo || "-", icon: <FolderIcon /> },
         { label: getLabel("lbl28"), value: formDataList.clientInfo?.client || "-", icon: <PersonIcon /> },
         { label: getLabel("lbl09"), value: formDataList.clientInfo?.country || "-", icon: <PublicIcon /> },
-        { label: "Estimated Delivery Date", value: formDataList.enquiryDetails?.estdate || "-", icon: <EventIcon /> }
+        { label: getLabel("lbl183"), value: formDataList.enquiryDetails?.estdate || "-", icon: <EventIcon /> }
     ];
 
     const handleSubmit = async (e) => {
@@ -84,13 +84,13 @@ const EnquirySuccess = () => {
         <PCard>
             <PGrid container className={Labels.margin.mb3}>
                 <PTypography
-                    labelText={"Enquiry Created Successfully!"}
+                    labelText={`${getLabel("lbl184")} ${Labels.symbols.important}`}
                     flag={Labels.fontFlags.subHeader}
                     color={CommonColors.blue.main}
                     weight={FontWeight.bold}
                 />
                 <PTypography
-                    labelText={"Your enquiry has been successfully setup and your nominated suppliers have been notified."}
+                    labelText={getLabel("lbl185")}
                     flag={Labels.fontFlags.smallText}
                     color={CommonColors.grey.main}
                     weight={FontWeight.bold}
@@ -104,7 +104,7 @@ const EnquirySuccess = () => {
             <PGrid container className={Labels.margin.mb3}>
                 <PGrid item xs={12} sm={12} md={12} className="d-flex justify-content-center">
                     <PTypography
-                        labelText={"Job Summary"}
+                        labelText={getLabel("lbl167")}
                         flag={Labels.fontFlags.header}
                         color={CommonColors.black.main}
                         weight={FontWeight.bold}

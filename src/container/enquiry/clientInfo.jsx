@@ -177,12 +177,12 @@ const ClientInfo = () => {
                         ...prev,
                         clientInfo: data.enqClientinfo
                     }))
-        
+
                     const aboveAtMarket = getOptionValue(formDataList.aboveAtMarket, data.enqClientinfo.aboveorAtmarket)
                     // Update state
                     setFormData(prev => ({
                         ...prev,
-                        division: getOptionValue(response.division,data.enqClientinfo.divisionname),
+                        division: getOptionValue(response.division, data.enqClientinfo.divisionname),
                         clientContact: data.enqClientinfo.clientContactId,
                         pmgEntity: data.enqClientinfo.pmgEntity,
                         deliveryCountry: data.enqClientinfo.deliveryCountryId,
@@ -203,7 +203,7 @@ const ClientInfo = () => {
 
     useEffect(() => {
         if (formDataList.brand?.length && formDataList.clientInfo.brand) {
-            const brandId = getOptionValue( formDataList.brand, formDataList.clientInfo.brand);
+            const brandId = getOptionValue(formDataList.brand, formDataList.clientInfo.brand);
             setFormData(prev => ({
                 ...prev,
                 brand: brandId,
@@ -452,7 +452,6 @@ const ClientInfo = () => {
                         setCcOpenFilter(false);
                         toast(Labels.status.success, response.data);
                         ClientInfoMaster(formData.globalBUMapping);
-                        //ClientInfoMaster(formData.globalBUMapping);
                     } else {
                         setErrors((prev) => ({
                             ...prev,
@@ -480,8 +479,6 @@ const ClientInfo = () => {
                     if (isSuccess(response)) {
                         setBrandOpenFilter(false);
                         toast(Labels.status.success, response.data);
-
-                        //GlobalBuMappingMaster(formData.division);
                         ClientInfoMaster(formData.globalBUMapping);
                     } else {
                         setErrors((prev) => ({
@@ -607,9 +604,21 @@ const ClientInfo = () => {
                                         weight={FontWeight.bold}
                                     />
                                 </PGrid>
-                                {/* <PGrid item xs={12} sm={6} md={4}>
+                                <PGrid item xs={12} sm={6} md={4}>
                                     <PTypography
-                                        labelText={getLabel("lbl91")}
+                                        labelText={getLabel("lbl31")}
+                                        weight={FontWeight.bold}
+
+                                    />
+                                    <PTypography
+                                        labelText={fields.channel}
+                                        color={CommonColors.grey.main}
+                                        weight={FontWeight.bold}
+                                    />
+                                </PGrid>
+                                 <PGrid item xs={12} sm={6} md={4}>
+                                    <PTypography
+                                        labelText={"Brief Id"}
                                         weight={FontWeight.bold}
                                     />
                                     <PTypography
@@ -617,7 +626,7 @@ const ClientInfo = () => {
                                         color={CommonColors.grey.main}
                                         weight={FontWeight.bold}
                                     />
-                                </PGrid> */}
+                                </PGrid> 
 
                             </PGrid>
                             {/* <PGrid container className={Labels.margin.mb3}>
@@ -648,7 +657,7 @@ const ClientInfo = () => {
                             </PGrid> */}
 
                             {/* Row 3 */}
-                            <PGrid container className={Labels.margin.mb4}>
+                            {/* <PGrid container className={Labels.margin.mb4}>
                                 <PGrid item xs={12} sm={6} md={6}>
                                     <PDropdown
                                         name={Labels.clientInfo.globalBUMapping}
@@ -673,7 +682,7 @@ const ClientInfo = () => {
                                         disabled={true}
                                     />
                                 </PGrid>
-                            </PGrid >
+                            </PGrid > */}
                             <PGrid container className={Labels.margin.mb4}>
                                 <PGrid item xs={12} sm={6} md={6} style={{ display: "flex", alignItems: "flex-start", gap: "8px" }} >
                                     <PDropdown

@@ -246,11 +246,11 @@ const ProjectEnquiry = () => {
                 suppliers: response.supplierinfo,
                 supplierMaster: supplierResponse,
                 savingsType: enqResponse.savingsType,
-                statusInfo: [{ label: "Enquiry ID", value: response.enqClientinfo?.enqUId || "-" }, { label: "Project Number", value: response.enqProjectinfo?.projectNo || "-" }],
+                statusInfo: [{ label: getLabel("lbl162"), value: response.enqClientinfo?.enqUId || "-" }, { label: getLabel("lbl163"), value: response.enqProjectinfo?.projectNo || "-" }],
                 extraInfo: [
-                    { label: "Created Date", value: response.enqProjectinfo?.estdate || "-" },
+                    { label: getLabel("lbl164"), value: response.enqProjectinfo?.estdate || "-" },
                     { label: getLabel("lbl10"), value: userName || "-" },
-                    { label: "Enquiry Id", value: response.enqClientinfo?.enqUId || "-" }
+                    { label: getLabel("lbl162"), value: response.enqClientinfo?.enqUId || "-" }
                 ],
                 savingsReasons: projectResponse.savingReasons,
                 historyLogs: projectResponse.historyLogs,
@@ -591,21 +591,21 @@ const ProjectEnquiry = () => {
 
     const summary = formDataList.savingsSummary || [];
     const totals = summary.flatMap(x => x.items).reduce(
-            (acc, item) => {
-                acc.totalSellPrice += Number(item.totalSellPrice || 0);
-                acc.taxamount += Number(item.taxamount || 0);
-                acc.totalsellpricewithtax += Number(item.totalsellpricewithtax || 0);
-                // If tax percentage is the same for all items
-                acc.taxpercentage = item.taxpercentage;
-                return acc;
-            },
-            {
-                totalSellPrice: 0,
-                taxpercentage: 0,
-                taxamount: 0,
-                totalsellpricewithtax: 0
-            }
-        );
+        (acc, item) => {
+            acc.totalSellPrice += Number(item.totalSellPrice || 0);
+            acc.taxamount += Number(item.taxamount || 0);
+            acc.totalsellpricewithtax += Number(item.totalsellpricewithtax || 0);
+            // If tax percentage is the same for all items
+            acc.taxpercentage = item.taxpercentage;
+            return acc;
+        },
+        {
+            totalSellPrice: 0,
+            taxpercentage: 0,
+            taxamount: 0,
+            totalsellpricewithtax: 0
+        }
+    );
     const calculateProject = [
         {
             details: [
@@ -762,7 +762,7 @@ const ProjectEnquiry = () => {
 
         ) : (
             <PButton
-                label={flag == "inputPS" ? "Input Project Savings" : "Edit"}
+                label={flag == "inputPS" ? getLabel("lbl165") : getLabel("lbl160")}
                 variant="contained"
                 color={CommonColors.grey.main}
                 onClick={() => handleEdit(null, flag)}
@@ -944,7 +944,7 @@ const ProjectEnquiry = () => {
                             <PDropdown
                                 name={"status"}
                                 value={formData.status}
-                                label={"Project status"}
+                                label={getLabel("lbl166")}
                                 onChange={handleChange}
                                 options={formDataList.status}
                                 width={27}
@@ -990,7 +990,7 @@ const ProjectEnquiry = () => {
                         <PGrid container className="d-flex align-items-center justify-content-between mb-3">
                             <PGrid item xs={12} sm={6} md={6}>
                                 <PTypography
-                                    labelText={"Job summary"}
+                                    labelText={getLabel("lbl167")}
                                     flag={Labels.fontFlags.subHeader}
                                     color={CommonColors.blue.main}
                                     weight={FontWeight.bold}
@@ -1101,7 +1101,7 @@ const ProjectEnquiry = () => {
                         <PGrid container className={Labels.margin.mb3}>
                             <PGrid item xs={12} sm={6} md={6}>
                                 <PTypography
-                                    labelText={"Line Items"}
+                                    labelText={getlabel("lbl22")}
                                     flag={Labels.fontFlags.subHeader}
                                     color={CommonColors.blue.main}
                                     weight={FontWeight.bold}
@@ -1118,7 +1118,7 @@ const ProjectEnquiry = () => {
                         <PGrid container className={Labels.margin.mb3}>
                             <PGrid item xs={12} sm={6} md={6}>
                                 <PTypography
-                                    labelText={"Management Fee"}
+                                    labelText={getLabel("lbl168")}
                                     flag={Labels.fontFlags.subHeader}
                                     color={CommonColors.blue.main}
                                     weight={FontWeight.bold}
@@ -1133,7 +1133,7 @@ const ProjectEnquiry = () => {
                             <PGrid item xs={12} sm={6} md={2} >
                                 <PGrid className={`ps-2 mb-4`}>
                                     <PTypography
-                                        labelText={"Management Fee (%)"}
+                                        labelText={`${getLabel("lbl168")} ${(Labels.symbols.percent)}`}
                                         weight={FontWeight.bold}
                                     />
                                     {formData.line ? (
@@ -1165,7 +1165,7 @@ const ProjectEnquiry = () => {
                         <PGrid container className={Labels.margin.mb1}>
                             <PGrid item xs={12} sm={6} md={6}>
                                 <PTypography
-                                    labelText={"Request For Quote (RFQ)"}
+                                    labelText={getLabel("lbl169")}
                                     flag={Labels.fontFlags.subHeader}
                                     color={CommonColors.blue.main}
                                     weight={FontWeight.bold}
@@ -1175,13 +1175,13 @@ const ProjectEnquiry = () => {
                         <PGrid container className="d-flex align-items-center justify-content-between mb-3">
                             <PGrid item xs={12} sm={6} md={6}>
                                 <PTypography
-                                    labelText={"Step 1. Request Quote From Suppliers"}
+                                    labelText={getLabel("lbl170")}
                                     flag={Labels.fontFlags.subHeader}
                                     color={CommonColors.black.main}
                                     weight={FontWeight.bold}
                                 />
                                 <PTypography
-                                    labelText={"Indicate your preferred supplier for each item."}
+                                    labelText={getLabel("lbl171")}
                                     flag={Labels.fontFlags.smallText}
                                     color={CommonColors.grey.main}
                                     weight={FontWeight.bold}
@@ -1201,7 +1201,7 @@ const ProjectEnquiry = () => {
                             {formData.marginFlag ? <></> :
                                 <PGrid item xs={12} sm={6} md={6}>
                                     <PButton
-                                        label={"Add Supplier"}
+                                        label={getLabel("lbl172")}
                                         variant="contained"
                                         color={CommonColors.grey.main}
                                         onClick={() => setFormData((prev) => ({
@@ -1215,7 +1215,7 @@ const ProjectEnquiry = () => {
                             {formData.calculateFlag ? (
                                 <PGrid item xs={12} sm={12} md={formData.marginFlag ? 12 : 6} className="d-flex justify-content-end gap-2">
                                     <PButton
-                                        label={"Calculate Project Savings"}
+                                        label={getLabel("lbl173")}
                                         variant="contained"
                                         color={CommonColors.grey.main}
                                         onClick={(e) => handleCalculate(e, "calculate")}
@@ -1223,7 +1223,7 @@ const ProjectEnquiry = () => {
                                         disabled={formData.isCalculate}
                                     />
                                     <PButton
-                                        label={"Re-calculate Project Savings"}
+                                        label={getLabel("lbl174")}
                                         variant="contained"
                                         color={CommonColors.red.main}
                                         onClick={(e) => handleCalculate(e, "reCalculate")}
@@ -1255,7 +1255,7 @@ const ProjectEnquiry = () => {
                             <PGrid container className={Labels.margin.mb3}>
                                 <PGrid item xs={12} sm={6} md={6}>
                                     <PTypography
-                                        labelText={"Project Saving"}
+                                        labelText={getLabel("lbl175")}
                                         flag={Labels.fontFlags.subHeader}
                                         color={CommonColors.blue.main}
                                         weight={FontWeight.bold}
@@ -1300,13 +1300,13 @@ const ProjectEnquiry = () => {
                                 <PGrid container className="d-flex align-items-center justify-content-between mb-3">
                                     <PGrid item xs={12} sm={6} md={6}>
                                         <PTypography
-                                            labelText={"Step 2. Calculate Project Sell Price"}
+                                            labelText={getLabel("lbl176")}
                                             flag={Labels.fontFlags.subHeader}
                                             color={CommonColors.black.main}
                                             weight={FontWeight.bold}
                                         />
                                         <PTypography
-                                            labelText={"Choose the fee structure and calculate final sell price."}
+                                            labelText={getLabel("lbl117")}
                                             flag={Labels.fontFlags.smallText}
                                             color={CommonColors.grey.main}
                                             weight={FontWeight.bold}
@@ -1379,7 +1379,7 @@ const ProjectEnquiry = () => {
                         <PGrid container className={Labels.margin.mb3}>
                             <PGrid item xs={12} sm={6} md={6}>
                                 <PTypography
-                                    labelText={"Service Level Agreement"}
+                                    labelText={getLabel("lbl178")}
                                     flag={Labels.fontFlags.subHeader}
                                     color={CommonColors.blue.main}
                                     weight={FontWeight.bold}
@@ -1400,7 +1400,7 @@ const ProjectEnquiry = () => {
                     <PCard className={Labels.margin.mb3}>
                         <PGrid container className={Labels.margin.mb4}>
                             <PTypography
-                                labelText={"Revised Quotes"}
+                                labelText={getLabel("lbl179")}
                                 flag={Labels.fontFlags.subHeader}
                                 color={CommonColors.blue.main}
                                 weight={FontWeight.bold}
@@ -1419,7 +1419,7 @@ const ProjectEnquiry = () => {
                     <PCard className={Labels.margin.mb3}>
                         <PGrid container className={Labels.margin.mb4}>
                             <PTypography
-                                labelText={"Line Items Logs"}
+                                labelText={getLabel("lbl180")}
                                 flag={Labels.fontFlags.subHeader}
                                 color={CommonColors.blue.main}
                                 weight={FontWeight.bold}
@@ -1434,7 +1434,7 @@ const ProjectEnquiry = () => {
 
                         <PGrid container className={Labels.margin.mb4}>
                             <PTypography
-                                labelText={"History Logs"}
+                                labelText={getLabel("lbl181")}
                                 flag={Labels.fontFlags.subHeader}
                                 color={CommonColors.blue.main}
                                 weight={FontWeight.bold}
@@ -1453,7 +1453,7 @@ const ProjectEnquiry = () => {
                     <PCard className={Labels.margin.mb3}>
                         <PGrid container className={Labels.margin.mb4}>
                             <PTypography
-                                labelText={"Attachment"}
+                                labelText={getLabel("lbl182")}
                                 flag={Labels.fontFlags.subHeader}
                                 color={CommonColors.blue.main}
                                 weight={FontWeight.bold}

@@ -302,7 +302,7 @@ const EnquiryDetails = () => {
                                 <PGrid item xs={12} sm={6} md={8}>
                                     <PTextField
                                         name={Labels.enquiryDetails.projectDescription}
-                                        label={`${getLabel("lbl45")} ${Labels.symbols.required}`}
+                                        label={`${getLabel("lbl155")} ${Labels.symbols.required}`}
                                         value={formData.projectDescription}
                                         onChange={handleChange}
                                         helperText={errors?.projectDescription}
@@ -362,7 +362,7 @@ const EnquiryDetails = () => {
                                         flag={Labels.flag.auto}
                                     />
                                 </PGrid>
-                                <PGrid item xs={12} sm={6} md={4}>
+                                {/* <PGrid item xs={12} sm={6} md={4}>
                                     <PDropdown
                                         name={Labels.enquiryDetails.hybrid}
                                         label={`${getLabel("lbl94")} ${Labels.symbols.required}`}
@@ -373,7 +373,7 @@ const EnquiryDetails = () => {
                                         width={100}
                                         disabled={true}
                                     />
-                                </PGrid>
+                                </PGrid> */}
                                 {/* <PGrid item xs={12} sm={6} md={4}>
                                     <PDropdown
                                         name={Labels.enquiryDetails.projectAttribute}
