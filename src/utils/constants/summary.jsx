@@ -25,10 +25,14 @@ export const getSummarySections = ({ clientInfo = [], enquiryDetails = [], lineI
   ].filter(Boolean);
 };
 
-export const getClientInfo = (fields = {}, formData = {}, formDataList = {}, getLabel, getOptionLabel, response = null, extraInfo = []) => {
+export const getClientInfo = (fields = {}, formData = {}, formDataList = {}, getLabel, getOptionLabel, response = null, flag = false) => {
   const source = response || formData;
   return [
-    ...extraInfo,
+    ...(flag ? [
+      { label: getLabel("lbl164"), value: "" },
+      { label: getLabel("lbl10"), value: ""},
+      { label: getLabel("lbl162"), value: source.enqUId }
+    ] : []),
     { label: getLabel("lbl27"), value: response ? source.divisionname : getOptionLabel(formDataList.division, source.division) },
     { label: getLabel("lbl28"), value: response ? source.client : fields.clientName },
     { label: getLabel("lbl09"), value: response ? source.country : fields.country },

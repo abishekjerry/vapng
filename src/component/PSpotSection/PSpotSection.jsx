@@ -17,8 +17,10 @@ import { CommonColors } from "../../utils/constants/colors";
 import { FontWeight } from "../../utils/constants/fonts";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import PButton from "../PButton/PButton";
+import { useLanguage } from "../../utils/constants/language";
 
 const PSpotSection = () => {
+    const { getLabel } = useLanguage();
     const [formDataList, setFormDataList] = useState({
         data: [],
         packagingMaterial: [{ field: "materialUsed", header: "Material Used" }, { field: "packageMaterial", header: "Package Material" },
@@ -51,7 +53,7 @@ const PSpotSection = () => {
                 <PGrid container className={Labels.margin.mb1}>
                     <PGrid item xs={12} sm={6} md={6}>
                         <PTypography
-                            labelText={"Environmental Details (SPOT)"}
+                            labelText={`${getLabel("lbl191")} ( ${getLabel("lbl190")} )`}
                             flag={Labels.fontFlags.subHeader}
                             color={CommonColors.blue.main}
                             weight={FontWeight.bold}
@@ -62,7 +64,7 @@ const PSpotSection = () => {
                 <PGrid container className={Labels.margin.mb4}>
                     <PGrid item xs={12} sm={6} md={8}>
                         <PTypography
-                            labelText={"Environmental Packaging Details (SPOT)"}
+                            labelText={`${getLabel("lbl192")} ( ${getLabel("lbl190")} )`}
                             weight={FontWeight.bold}
                             flag={Labels.fontFlags.subHeader}
                         />
@@ -85,7 +87,7 @@ const PSpotSection = () => {
                 <PGrid container className={Labels.margin.mb4}>
                     <PGrid item xs={12} sm={6} md={8}>
                         <PTypography
-                            labelText={"Environmental Main Material Details (SPOT)"}
+                            labelText={`${getLabel("lbl193")} ( ${getLabel("lbl190")} )`}
                             weight={FontWeight.bold}
                             flag={Labels.fontFlags.subHeader}
                         />
@@ -108,14 +110,14 @@ const PSpotSection = () => {
                 <PGrid container className={Labels.margin.mb4}>
                     <PGrid item xs={12} sm={6} md={6}>
                         <PTypography
-                            labelText={"Environmental Impacts (Main Material)"}
+                            labelText={`${getLabel("lbl194")} ( ${getLabel("lbl197")} )`}
                             weight={FontWeight.bold}
                             flag={Labels.fontFlags.subHeader}
                         />
                     </PGrid>
                     <PGrid item xs={12} sm={6} md={6} className="d-flex justify-content-end gap-2">
                         <PButton
-                            label={"Emission Factor"}
+                            label={getLabel("lbl189")}
                             variant="contained"
                             color={CommonColors.grey.main}
                             //onClick={() => handleEdit(null, flag)}
@@ -133,7 +135,7 @@ const PSpotSection = () => {
                 <PGrid container className={Labels.margin.mb4}>
                     <PGrid item xs={12} sm={6} md={8}>
                         <PTypography
-                            labelText={"Comparative Impact Calculater (Main Material)"}
+                            labelText={`${getLabel("lbl195")} ( ${getLabel("lbl197")} )`}
                             weight={FontWeight.bold}
                             flag={Labels.fontFlags.subHeader}
                         />
@@ -151,7 +153,7 @@ const PSpotSection = () => {
                 <PGrid container className={Labels.margin.mb4}>
                     <PGrid item xs={12} sm={6} md={8}>
                         <PTypography
-                            labelText={"Total Environmental Impacts (Main Material)"}
+                            labelText={`${getLabel("lbl196")} ( ${getLabel("lbl197")} )`}
                             weight={FontWeight.bold}
                             flag={Labels.fontFlags.subHeader}
                         />
@@ -167,7 +169,7 @@ const PSpotSection = () => {
                 <PGrid container className={Labels.margin.mb4}>
                     <PGrid item xs={12} sm={6} md={8}>
                         <PTypography
-                            labelText={"Environmental Impacts (Packaging Material)"}
+                            labelText={`${getLabel("lbl194")} ( ${getLabel("lbl198")} )`}
                             weight={FontWeight.bold}
                             flag={Labels.fontFlags.subHeader}
                         />

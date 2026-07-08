@@ -165,7 +165,7 @@ const EnquirySuccess = () => {
             <PGrid container className={Labels.margin.mb3}>
                 <PGrid item xs={12} sm={12} md={12} className="d-flex justify-content-center gap-2" >
                     <PButton
-                        label={"View Project Page"}
+                        label={getLabel("lbl187")}
                         variant="contained"
                         color={CommonColors.blue.main}
                         onClick={(e) => handleSubmit(e)}
@@ -175,7 +175,7 @@ const EnquirySuccess = () => {
                     />
 
                     <PButton
-                        label={"View All Jobs"}
+                        label={getLabel("lbl188")}
                         variant="outlined"
                         onClick={(e) => handleBack()}
                         width={200}

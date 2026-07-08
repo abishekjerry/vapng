@@ -118,7 +118,7 @@ const ProjectEnquiry = () => {
         statusInfo: [],
         selectedSupplierRows: [],
         selectedHistroyRows: [],
-        extraInfo: [],
+        //extraInfo: [],
 
         //calculations
         calculateRows: [{ field: "cost", header: "Cost ($)" }, { field: "sell", header: "Sell ($)" }, { field: "margin", header: "Margin ($)" }, { field: "markupPercent", header: "Markup (%)" }, { field: "marginPercent", header: "Margin (%)" }],
@@ -223,7 +223,7 @@ const ProjectEnquiry = () => {
             const savingsSummary = [...new Map(projectResponse.savingsResponseDto.itemWiseSummary.map(x => [x.itemNumber, x])).values()]
                 .map(x => ({
                     isSubTitle: true,
-                    subTitle: "Item - itemName",
+                    subTitle: x.itemName,
                     items: projectResponse.savingsResponseDto.itemWiseSummary.filter(y => y.itemNumber === x.itemNumber)
                 }));
 
@@ -237,7 +237,7 @@ const ProjectEnquiry = () => {
             total.markupPercent = +(total.margin / total.cost * 100).toFixed(2);
             total.marginPercent = +(total.margin / total.sell * 100).toFixed(2);
             const calculationDetails = [total];
-
+            
             setFormDataList(prev => ({
                 ...prev,
                 lineItems: response.enqlineItems,
@@ -246,12 +246,7 @@ const ProjectEnquiry = () => {
                 suppliers: response.supplierinfo,
                 supplierMaster: supplierResponse,
                 savingsType: enqResponse.savingsType,
-                statusInfo: [{ label: getLabel("lbl162"), value: response.enqClientinfo?.enqUId || "-" }, { label: getLabel("lbl163"), value: response.enqProjectinfo?.projectNo || "-" }],
-                extraInfo: [
-                    { label: getLabel("lbl164"), value: response.enqProjectinfo?.estdate || "-" },
-                    { label: getLabel("lbl10"), value: userName || "-" },
-                    { label: getLabel("lbl162"), value: response.enqClientinfo?.enqUId || "-" }
-                ],
+                statusInfo: [{ label: "Enquriy ID", value: response.enqClientinfo?.enqUId || "-" }, { label: "Project Number", value: response.enqProjectinfo?.projectNo || "-" }],
                 savingsReasons: projectResponse.savingReasons,
                 historyLogs: projectResponse.historyLogs,
                 lineItemLogs: projectResponse.lineItemLogs,
@@ -280,6 +275,7 @@ const ProjectEnquiry = () => {
         }
     };
 
+  
     //Change Function
     const handleChange = (e, row) => {
         const { name, value, label } = e.target;
@@ -332,7 +328,7 @@ const ProjectEnquiry = () => {
         { field: "enquiryId", header: "Status" }
     ]
 
-    const clientInfo = getClientInfo({}, {}, {}, getLabel, getOptionLabel, formDataList.clientInfo, formDataList.extraInfo);
+    const clientInfo = getClientInfo({}, {}, {}, getLabel, getOptionLabel, formDataList.clientInfo, true);
     const enquiryDetails = getEnquiryDetails({}, {}, {}, getLabel, getOptionLabel, formDataList.enquiryDetails, false);
     const rawLineItems = getLineneItems({}, formDataList, getLabel, getOptionLabel, formDataList.lineItems);
     const lineItems = rawLineItems.map((item, index) => ({
@@ -1101,7 +1097,7 @@ const ProjectEnquiry = () => {
                         <PGrid container className={Labels.margin.mb3}>
                             <PGrid item xs={12} sm={6} md={6}>
                                 <PTypography
-                                    labelText={getlabel("lbl22")}
+                                    labelText={getLabel("lbl22")}
                                     flag={Labels.fontFlags.subHeader}
                                     color={CommonColors.blue.main}
                                     weight={FontWeight.bold}
@@ -1133,7 +1129,7 @@ const ProjectEnquiry = () => {
                             <PGrid item xs={12} sm={6} md={2} >
                                 <PGrid className={`ps-2 mb-4`}>
                                     <PTypography
-                                        labelText={`${getLabel("lbl168")} ${(Labels.symbols.percent)}`}
+                                        labelText={`${getLabel("lbl168")} ( ${(Labels.symbols.percent)} )`}
                                         weight={FontWeight.bold}
                                     />
                                     {formData.line ? (

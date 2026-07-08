@@ -16,9 +16,11 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { isSuccess, toast } from "../../utils/commonFunction/common";
 import { LineItems_API } from "../../utils/api/apiUrl";
 import { PostApi } from "../../utils/api/networking";
+import { useLanguage } from "../../utils/constants/language";
 
 export const PSummary = ({ sections = [], currentStep = 1, refreshSummary, duplicate = false, showFlag = true, lineItems = [] }) => {
     const { state } = useLocation();
+    const { getLabel } = useLanguage();
     const navigate = useNavigate();
     const [activeStep, setActiveStep] = useState(currentStep);
     const [activeItemIndex, setActiveItemIndex] = useState({ 3: 0 });
@@ -198,7 +200,7 @@ export const PSummary = ({ sections = [], currentStep = 1, refreshSummary, dupli
                                                                         />
                                                                         {duplicate &&
                                                                             <PButton
-                                                                                label="Duplicate"
+                                                                                label={getLabel("lbl186")}
                                                                                 variant="contained"
                                                                                 color={CommonColors.green.main}
                                                                                 startIcon={<ContentCopyIcon />}
