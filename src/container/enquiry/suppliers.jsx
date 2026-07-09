@@ -201,7 +201,7 @@ const Suppliers = () => {
                 <PGrid container className={Labels.margin.mb3} >
                     <PGrid item xs={12} sm={12} md={9}>
                         <PCard>
-                            {/* Line Items */}
+                            {/* Suplliers */}
                             <PGrid container className={Labels.margin.mb3}>
                                 <PTypography
                                     labelText={getLabel("lbl23")}

@@ -505,7 +505,7 @@ const LineItems = () => {
                     SNote: formData.notesComments,
                     // Quantity
                     QuoteType: getOptionLabel(formDataList.quoteType, formData.quantityType),
-                    QuoteTypeindex: formData.quantityType,
+                    QuoteTypeindex :  formData.quantityType,
                     QuoteQtyOrSize: formData.quantity,
                     FlatSizeLength: formData.length,
                     FlatSizeWidth: formData.width,

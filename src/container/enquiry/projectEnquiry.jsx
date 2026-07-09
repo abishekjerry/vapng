@@ -1302,7 +1302,7 @@ const ProjectEnquiry = () => {
                                             weight={FontWeight.bold}
                                         />
                                         <PTypography
-                                            labelText={getLabel("lbl117")}
+                                            labelText={getLabel("lbl177")}
                                             flag={Labels.fontFlags.smallText}
                                             color={CommonColors.grey.main}
                                             weight={FontWeight.bold}
@@ -1495,7 +1495,7 @@ const ProjectEnquiry = () => {
                     suppliers: false,
                     search: ""
                 }))}
-                title={"Suppliers"}
+                title={getLabel("lbl23")}
                 showCloseIcon={true}
                 maxWidth="md"
                 actions={
@@ -1505,7 +1505,7 @@ const ProjectEnquiry = () => {
                             label={getLabel("lbl125")}
                             variant="outlined"
                             onClick={() => setFormData((prev) => ({
-                                ...prev,
+                                ...prev, 
                                 suppliers: false
                             }))}
                             color={CommonColors.grey.main}
@@ -1513,7 +1513,7 @@ const ProjectEnquiry = () => {
                         />
                         <PButton
                             fullWidth
-                            label={"Send invite to supplier"}
+                            label={getLabel("lbl199")}
                             variant={Labels.contained}
                             onClick={handleSendChoose}
                             color={CommonColors.green.main}
@@ -1562,7 +1562,7 @@ const ProjectEnquiry = () => {
                         />
                         <PButton
                             fullWidth
-                            label={"Save Reference Price"}
+                            label={getLabel("lbl200")}
                             variant={Labels.contained}
                             onClick={handleSendChoose}
                             color={CommonColors.green.main}
