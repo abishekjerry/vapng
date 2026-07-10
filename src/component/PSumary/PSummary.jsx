@@ -187,7 +187,7 @@ export const PSummary = ({ sections = [], currentStep = 1, refreshSummary, dupli
                                                                 ))}
                                                             </PGrid>
 
-                                                            {section.step && (
+                                                            {section.step != 3 && (
                                                                 <PGrid container>
                                                                     <PGrid item xs={12} className="d-flex justify-content-end gap-2">
                                                                         <PButton

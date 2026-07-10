@@ -30,7 +30,7 @@ export const getClientInfo = (fields = {}, formData = {}, formDataList = {}, get
   return [
     ...(flag ? [
       { label: getLabel("lbl164"), value: "" },
-      { label: getLabel("lbl10"), value: ""},
+      { label: getLabel("lbl10"), value: "" },
       { label: getLabel("lbl162"), value: source.enqUId }
     ] : []),
     { label: getLabel("lbl27"), value: response ? source.divisionname : getOptionLabel(formDataList.division, source.division) },
@@ -38,6 +38,7 @@ export const getClientInfo = (fields = {}, formData = {}, formDataList = {}, get
     { label: getLabel("lbl09"), value: response ? source.country : fields.country },
     { label: getLabel("lbl29"), value: response ? source.entityname : fields.entityName },
     { label: getLabel("lbl30"), value: response ? source.bussinessUnit : fields.businessUnit },
+    { label: getLabel("lbl31"), value: response ? source.chennal : fields.chennal },
     // { label: getLabel("lbl91"), value: response ? source.globalBussinessUnit : getOptionLabel(formDataList.globalBUMapping, source.globalBUMapping) },
     // { label: getLabel("lbl92"), value: response ? source.aboveorAtmarket : getOptionLabel(formDataList.aboveAtMarket, source.aboveAtMarket) },
     { label: getLabel("lbl33"), value: response ? source.brand : getOptionLabel(formDataList.brand, source.brand) },
@@ -70,25 +71,27 @@ export const getEnquiryDetails = (formData = {}, dynamicData = {}, formDataList 
 
 export const getLineneItems = (formData = {}, formDataList = {}, getLabel, getOptionLabel, response = null) => {
   const lineItemMapping = [
-    { key: "printornonprint", label: "lbl62" },
-    { key: "tojabc", label: "lbl60" },
+    { key: "printornonprint", label: "lbl154" },
+    { key: "productcategory", label: "lbl61" },
+    { key: "", label: "lbl156" },
+    { key: "dictatedJob", label: "lbl63" },
+    { key: "itemtype", label: "lbl64" },
+    { key: "", label: "lbl157" },
     { key: "localRateCard", label: "lbl65" },
+    { key: "incoterm", label: "lbl152" },
+    { key: "itemName", label: "lbl66" },
+    { key: "itemDescription", label: "lbl67" },
+
+    //{ key: "tojabc", label: "lbl60" },
     // { key: "competbidmandate", label: "lbl96" },
     // { key: "competbidcomplaint", label: "lbl97" },
     // { key: "competbidexception", label: "lbl98" },
     // { key: "exceptionreason", label: "lbl99" },
-
-    { key: "productcategory", label: "lbl61" },
     // { key: "subCategory", label: "lbl100" },
     // //    { key: "simplex", label: "lbl101" },
     // { key: "tcOapproval", label: "lbl102" },
     // { key: "tcOapproved", label: "lbl103" },
 
-    { key: "dictatedJob", label: "lbl63" },
-    { key: "itemtype", label: "lbl64" },
-    { key: "incoterm", label: "lbl152" },
-    { key: "itemName", label: "lbl66" },
-    { key: "itemDescription", label: "lbl67" },
 
     { key: "usingFSCMaterial", label: "lbl70" },
     { key: "oekotexCertification", label: "lbl151" },
@@ -100,12 +103,14 @@ export const getLineneItems = (formData = {}, formDataList = {}, getLabel, getOp
     { key: "weightageofrecycledmaterial", label: "lbl79" },
     { key: "isthisitemdesignedtobereused", label: "lbl74" },
 
+
+    { key: "printingMethod", label: "lbl111" },
+    { key: "catalogueUsage", label: "lbl81" },
+    { key: "", label: "lbl158" },
     // { key: "rateCard", label: "lbl106" },
     // { key: "eauction", label: "lbl110" },
     // { key: "promoOSSOrderWindows", label: "lbl107" },
     // { key: "regionalname", label: "lbl108" },
-    // { key: "catalogueUsage", label: "lbl109" },
-    { key: "printingMethod", label: "lbl111" },
     // { key: "typeofitem", label: "lbl112" },
     // { key: "noofmaterials", label: "lbl113" },
     // { key: "digitalInnovation", label: "lbl114" },

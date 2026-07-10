@@ -31,7 +31,7 @@ import { FontFamily, FontWeight } from '../../utils/constants/fonts'
 import { useLanguage } from "../../utils/constants/language";
 import { Dashboard_API } from "../../utils/api/apiUrl";
 import { PostApi } from "../../utils/api/networking";
-import { exportToExcel, isNotEmpty, isSuccess } from "../../utils/commonFunction/common";
+import { exportToExcel, formatDate, isNotEmpty, isSuccess } from "../../utils/commonFunction/common";
 import { useNavigate } from "react-router-dom";
 import { labelRoutes } from "../../navigations/labelRoutes";
 import PDialog from "../../component/PDialog/PDialog";
@@ -63,11 +63,21 @@ const EqDashboard = () => {
     endDate: "",
   })
   const role = localStorage.getItem("role");
-  const countryID = parseInt(localStorage.getItem("countryID"))
+  const countryID = parseInt(localStorage.getItem("countryID"));
+  const today = formatDate(new Date());
+  const startDate = formatDate(new Date(new Date().setMonth(new Date().getMonth() - 3)));
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
+
+         setFormData((prev) => ({
+            ...prev,
+            startDate : startDate,
+            endDate : today
+            
+        }));
+        setFilter(true);
 
         const response = await PostApi(Dashboard_API.Master, {
           userCountryId: countryID,
@@ -80,8 +90,8 @@ const EqDashboard = () => {
           createdName: 0,
           enqUId: "",
           projectNo: "",
-          startDate: "",
-          endDate: "",
+          startDate: formData.startDate,
+          endDate: formData.endDate,
           statusId: "",
           jobposition: "",
           client: "",

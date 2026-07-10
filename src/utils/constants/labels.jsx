@@ -62,6 +62,7 @@ export const Labels = {
   lineItems: {
     category: "category",
     typeOfJob: "typeOfJob",
+    urgentJob :"urgentJob",
     rateCard: "rateCard",
     competitiveBiddingMandatory: "competitiveBiddingMandatory",
     competitiveBiddingCompliant: "competitiveBiddingCompliant",
@@ -70,6 +71,7 @@ export const Labels = {
     itemCategory: "itemCategory",
     subCategory: "subCategory",
     simplex: "simplex",
+    reEngineering : "reEngineering",
     tcoApprovalRequired: "tcoApprovalRequired",
     tcoApproved: "tcoApproved",
     dictatedJob: "dictatedJob",
@@ -87,6 +89,8 @@ export const Labels = {
     designedToBeReused: "designedToBeReused",
     containsPlastic: "containsPlastic",
     containsRecycledPlastic: "containsRecycledPlastic",
+    plasticWeightKg : "plasticWeightKg",
+    recycledPlasticWeightKg : "recycledPlasticWeightKg",
     recycledMaterialWeightKg: "recycledMaterialWeightKg",
 
     // Catalogue Section
@@ -106,6 +110,7 @@ export const Labels = {
     savingsType: "savingsType",
     savingsReason: "savingsReason",
     owWithLink: "owWithLink",
+    materialUsed :"materialUsed",
 
     // Specifications
     noOfVersion: "noOfVersion",

@@ -43,12 +43,14 @@ const LineItems = () => {
 
     const [formDataList, setFormDataList] = useState({
         typeOfJob: [{ label: "Strategic", value: 1 }, { label: "Tactical", value: 2 }, { label: "Operational", value: 3 }, { label: "Non-Addressable", value: 4 }],
+        urgentJob: [{ label: "Urgent", value: 1 }, { label: "Non-Urgent", value: 2 }],
         category: [],
         itemCategory: [],
         subCategory: [],
         exceptionsReasonCode: [],
-        itemType: [{ label: "New Item", value: 1 }, { label: "Repeat/Existing Item", value: 2 }, { label: "Non-Addressable", value: 3 }],
+        itemType: [{ label: "New Item", value: 1 }, { label: "Repeat/Existing Item", value: 2 }], //{ label: "Non-Addressable", value: 3 }],
         incoterm: [{ label: "FCA/FOB", value: 1 }, { label: "Others", value: 2, selected: true }],
+        materialUsed: [],
         typeOfItem: [],
         localCatalog: [],
         globalOrder: [],
@@ -75,16 +77,18 @@ const LineItems = () => {
     const [formData, setFormData] = useState({
         category: "",
         typeOfJob: "",
+        urgentJob: "",
         rateCard: "",
-        competitiveBiddingMandatory: "",
-        competitiveBiddingCompliant: "",
-        competitiveBiddingExceptionFormSigned: "",
-        exceptionsReasonCode: "",
+        // competitiveBiddingMandatory: "",
+        // competitiveBiddingCompliant: "",
+        // competitiveBiddingExceptionFormSigned: "",
+        // exceptionsReasonCode: "",
         itemCategory: "",
-        subCategory: "",
-        simplex: "",
-        tcoApprovalRequired: "",
-        tcoApproved: "",
+        // subCategory: "",
+        // simplex: "",
+        // tcoApprovalRequired: "",
+        // tcoApproved: "",
+        reEngineering: "",
         dictatedJob: "",
         itemType: "",
         incoterm: "",
@@ -100,6 +104,8 @@ const LineItems = () => {
         designedToBeReused: "",
         containsPlastic: "",
         containsRecycledPlastic: "",
+        plasticWeightKg: "",
+        recycledPlasticWeightKg: "",
         recycledMaterialWeightKg: "",
 
         // Catalogue Section
@@ -119,6 +125,7 @@ const LineItems = () => {
         savingsType: "",
         savingsReason: "",
         owWithLink: "",
+        materialUsed: "",
 
         // Specifications
         noOfVersion: 1,
@@ -137,6 +144,7 @@ const LineItems = () => {
     const [errors, setErrors] = useState({
         category: "",
         typeOfJob: "",
+        urgentJob: "",
         rateCard: "",
         competitiveBiddingMandatory: "",
         competitiveBiddingCompliant: "",
@@ -147,6 +155,7 @@ const LineItems = () => {
         //simplex: "",
         tcoApprovalRequired: "",
         tcoApproved: "",
+        reEngineering: "",
         dictatedJob: "",
         itemType: "",
         incoterm: "",
@@ -162,6 +171,8 @@ const LineItems = () => {
         designedToBeReused: "",
         containsPlastic: "",
         containsRecycledPlastic: "",
+        plasticWeightKg: "",
+        recycledPlasticWeightKg: "",
         recycledMaterialWeightKg: "",
 
         // Catalogue Section
@@ -181,6 +192,7 @@ const LineItems = () => {
         savingsType: "",
         savingsReason: "",
         owWithLink: "",
+        materialUsed: "",
 
         // Specifications
         noOfVersion: "",
@@ -314,17 +326,17 @@ const LineItems = () => {
                     sustainabilityOption: soYesNoNa,
                     recycledMaterial: yesNoNa,
                     designedToBeReused: yesNoNa,
-                    containsPlastic: yesNoNa,
-                    containsRecycledPlastic: yesNoNa,
                     digitalInnovation: yesNoNa,
-                    innovation: yesNoNa,
                     taxCertification: yesNoNa,
                 }),
                 ...(yesOrNo && {
                     eAuction: yesOrNo,
                     owWithLink: yesOrNo,
-                    dictatedJob: yesOrNo,
-                    rateCard: yesOrNo,
+                    //dictatedJob: yesOrNo,
+                    //rateCard: yesOrNo,
+                    containsPlastic: yesOrNo,
+                    containsRecycledPlastic: yesOrNo,
+                    innovation: yesOrNo,
                     harmonizedOrder: yesOrNo
                 }),
                 ...(incoterm && { incoterm: incoterm }),
@@ -505,7 +517,7 @@ const LineItems = () => {
                     SNote: formData.notesComments,
                     // Quantity
                     QuoteType: getOptionLabel(formDataList.quoteType, formData.quantityType),
-                    QuoteTypeindex :  formData.quantityType,
+                    QuoteTypeindex: formData.quantityType,
                     QuoteQtyOrSize: formData.quantity,
                     FlatSizeLength: formData.length,
                     FlatSizeWidth: formData.width,
@@ -773,11 +785,11 @@ const LineItems = () => {
                                 <PGrid item xs={12} sm={6} md={4}>
                                     <PDropdown
                                         label={`${getLabel("lbl156")} ${Labels.symbols.required}`}
-                                        value={formData.typeOfJob}
+                                        value={formData.urgentJob}
                                         onChange={handleChange}
-                                        helperText={errors?.typeOfJob}
-                                        name={Labels.lineItems.typeOfJob}
-                                        options={formDataList.typeOfJob}
+                                        helperText={errors?.urgentJob}
+                                        name={Labels.lineItems.urgentJob}
+                                        options={formDataList.urgentJob}
                                         flag={Labels.flag.auto}
                                     />
                                 </PGrid>
@@ -885,7 +897,7 @@ const LineItems = () => {
                                         onChange={handleChange}
                                         helperText={errors?.dictatedJob}
                                         name={Labels.lineItems.dictatedJob}
-                                        options={formDataList.yesOrNo}
+                                        options={formDataList.tcoYesOrNo}
                                     />
                                 </PGrid>
                                 <PGrid item xs={12} sm={6} md={4}>
@@ -902,11 +914,11 @@ const LineItems = () => {
                                 <PGrid item xs={12} sm={6} md={4}>
                                     <PDropdown
                                         label={`${getLabel("lbl157")} ${Labels.symbols.required}`}
-                                        value={formData.itemType}
+                                        value={formData.reEngineering}
                                         onChange={handleChange}
-                                        helperText={errors?.itemType}
-                                        name={Labels.lineItems.itemType}
-                                        options={formDataList.itemType}
+                                        helperText={errors?.reEngineering}
+                                        name={Labels.lineItems.reEngineering}
+                                        options={formDataList.yesOrNo}
                                         flag={Labels.flag.auto}
                                     />
                                 </PGrid>
@@ -920,7 +932,7 @@ const LineItems = () => {
                                         onChange={handleChange}
                                         helperText={errors?.rateCard}
                                         name={Labels.lineItems.rateCard}
-                                        options={formDataList.yesOrNo}
+                                        options={formDataList.tcoYesOrNo}
                                         disabled={true}
                                     />
                                 </PGrid>
@@ -994,7 +1006,7 @@ const LineItems = () => {
                                         disabled={true}
                                     />
                                 </PGrid>
-                                <PGrid item xs={12} sm={6} md={4}>
+                                {/* <PGrid item xs={12} sm={6} md={4}>
                                     <PDropdown
                                         label={`${getLabel("lbl151")} ${Labels.symbols.required} ${Labels.symbols.optional}`}
                                         value={formData.taxCertification}
@@ -1005,10 +1017,10 @@ const LineItems = () => {
                                         readOnly={formData.category == 3 ? false : true}
                                         disabled={true}
                                     />
-                                </PGrid>
+                                </PGrid> */}
                                 <PGrid item xs={12} sm={6} md={4}>
                                     <PDropdown
-                                        label={`${getLabel("lbl71")} ${Labels.symbols.required} ${Labels.symbols.optional}`}
+                                        label={`${getLabel("lbl202")} ${Labels.symbols.required} ${Labels.symbols.optional}`}
                                         value={formData.recyclable}
                                         onChange={handleChange}
                                         helperText={errors?.recyclable}
@@ -1017,21 +1029,6 @@ const LineItems = () => {
                                         disabled={true}
                                     />
                                 </PGrid>
-
-                            </PGrid>
-                            <PGrid container className={Labels.margin.mb4}>
-                                <PGrid item xs={12} sm={6} md={4}>
-                                    <PDropdown
-                                        label={`${getLabel("lbl75")} ${Labels.symbols.required} ${Labels.symbols.optional}`}
-                                        value={formData.containsPlastic}
-                                        onChange={handleChange}
-                                        helperText={errors?.containsPlastic}
-                                        name={Labels.lineItems.containsPlastic}
-                                        options={formDataList.yesNoNa}
-                                        disabled={true}
-                                    />
-                                </PGrid>
-
                                 <PGrid item xs={12} sm={6} md={4}>
                                     <PDropdown
                                         label={`${getLabel("lbl72")} ${Labels.symbols.required} ${Labels.symbols.optional}`}
@@ -1043,6 +1040,9 @@ const LineItems = () => {
                                         disabled={true}
                                     />
                                 </PGrid>
+
+                            </PGrid>
+                            <PGrid container className={Labels.margin.mb4}>
                                 <PGrid item xs={12} sm={6} md={4}>
                                     <PDropdown
                                         label={`${getLabel("lbl73")} ${Labels.symbols.required} ${Labels.symbols.optional}`}
@@ -1052,34 +1052,6 @@ const LineItems = () => {
                                         name={Labels.lineItems.recycledMaterial}
                                         options={formDataList.yesNoNa}
                                         disabled={true}
-                                    />
-                                </PGrid>
-
-
-
-                            </PGrid>
-                            <PGrid container className={Labels.margin.mb4}>
-                                <PGrid item xs={12} sm={6} md={4}>
-                                    <PDropdown
-                                        label={`${getLabel("lbl76")} ${Labels.symbols.required} ${Labels.symbols.optional}`}
-                                        value={formData.containsRecycledPlastic}
-                                        onChange={handleChange}
-                                        helperText={errors?.containsRecycledPlastic}
-                                        name={Labels.lineItems.containsRecycledPlastic}
-                                        options={formDataList.yesNoNa}
-                                        readOnly={formData.recycledMaterial == 1 ? false : true}
-                                        disabled={true}
-                                    />
-                                </PGrid>
-                                <PGrid item xs={12} sm={6} md={4}>
-                                    <PTextField
-                                        label={`${getLabel("lbl79")} ${Labels.symbols.required} ${Labels.symbols.optional}`}
-                                        value={formData.recycledMaterial == 1 ? formData.recycledMaterialWeightKg : ""}
-                                        onChange={handleChange}
-                                        helperText={formData.recycledMaterial == 1 ? errors?.recycledMaterialWeightKg : ""}
-                                        name={Labels.lineItems.recycledMaterialWeightKg}
-                                        disabled={formData.recycledMaterial == 1 ? false : true}
-
                                     />
                                 </PGrid>
                                 <PGrid item xs={12} sm={6} md={4}>
@@ -1093,6 +1065,69 @@ const LineItems = () => {
                                         disabled={true}
                                     />
                                 </PGrid>
+                                <PGrid item xs={12} sm={6} md={4}>
+                                    <PDropdown
+                                        label={`${getLabel("lbl75")} ${Labels.symbols.required} ${Labels.symbols.optional}`}
+                                        value={formData.containsPlastic}
+                                        onChange={handleChange}
+                                        helperText={errors?.containsPlastic}
+                                        name={Labels.lineItems.containsPlastic}
+                                        options={formDataList.yesOrNo}
+                                        disabled={true}
+                                    />
+                                </PGrid>
+                            </PGrid>
+                            <PGrid container className={Labels.margin.mb4}>
+                                <PGrid item xs={12} sm={6} md={4}>
+                                    <PDropdown
+                                        label={`${getLabel("lbl76")} ${Labels.symbols.required} ${Labels.symbols.optional}`}
+                                        value={formData.containsRecycledPlastic}
+                                        onChange={handleChange}
+                                        helperText={errors?.containsRecycledPlastic}
+                                        name={Labels.lineItems.containsRecycledPlastic}
+                                        options={formDataList.yesOrNo}
+                                        //readOnly={formData.recycledMaterial == 1 ? false : true}
+                                        disabled={true}
+                                    />
+                                </PGrid>
+                                {[1].includes(formData.containsPlastic) && (
+                                    <PGrid item xs={12} sm={6} md={4}>
+                                        <PTextField
+                                            label={`${getLabel("lbl77")} ${Labels.symbols.required} ${Labels.symbols.optional}`}
+                                            value={formData.containsPlastic == 1 ? formData.plasticWeightKg : ""}
+                                            onChange={handleChange}
+                                            helperText={formData.containsPlastic == 1 ? errors?.plasticWeightKg : ""}
+                                            name={Labels.lineItems.plasticWeightKg}
+                                        //disabled={formData.recycledMaterial == 1 ? false : true}
+
+                                        />
+                                    </PGrid>
+                                )}
+                                {[1].includes(formData.containsRecycledPlastic) && (
+                                    <PGrid item xs={12} sm={6} md={4}>
+                                        <PTextField
+                                            label={`${getLabel("lbl78")} ${Labels.symbols.required} ${Labels.symbols.optional}`}
+                                            value={formData.containsRecycledPlastic == 1 ? formData.recycledPlasticWeightKg : ""}
+                                            onChange={handleChange}
+                                            helperText={formData.containsRecycledPlastic == 1 ? errors?.recycledPlasticWeightKg : ""}
+                                            name={Labels.lineItems.recycledPlasticWeightKg}
+                                        //disabled={formData.recycledMaterial == 1 ? false : true}
+
+                                        />
+                                    </PGrid>
+                                )}
+                                <PGrid item xs={12} sm={6} md={4}>
+                                    <PTextField
+                                        label={`${getLabel("lbl79")} ${Labels.symbols.required} ${Labels.symbols.optional}`}
+                                        value={formData.recycledMaterial == 1 ? formData.recycledMaterialWeightKg : ""}
+                                        onChange={handleChange}
+                                        helperText={formData.recycledMaterial == 1 ? errors?.recycledMaterialWeightKg : ""}
+                                        name={Labels.lineItems.recycledMaterialWeightKg}
+                                    //disabled={formData.recycledMaterial == 1 ? false : true}
+
+                                    />
+                                </PGrid>
+
                             </PGrid>
 
                             {/* Catalogue & Sourcing Information */}
@@ -1127,6 +1162,18 @@ const LineItems = () => {
                                 </PGrid>
                                 <PGrid item xs={12} sm={6} md={4}>
                                     <PDropdown
+                                        label={`${getLabel("lbl201")} ${Labels.symbols.required}`}
+                                        value={formData.materialUsed}
+                                        onChange={handleChange}
+                                        helperText={errors?.materialUsed}
+                                        name={Labels.lineItems.materialUsed}
+                                        options={formDataList.materialUsed}
+                                        flag={Labels.flag.auto}
+                                        disabled={true}
+                                    />
+                                </PGrid>
+                                <PGrid item xs={12} sm={6} md={4}>
+                                    <PDropdown
                                         label={`${getLabel("lbl81")} ${Labels.symbols.required}`}
                                         value={formData.localCatalogueName}
                                         onChange={handleChange}
@@ -1137,6 +1184,8 @@ const LineItems = () => {
                                         disabled={true}
                                     />
                                 </PGrid>
+                            </PGrid>
+                            <PGrid container className={Labels.margin.mb3}>
                                 <PGrid item xs={12} sm={6} md={4}>
                                     <PDropdown
                                         label={`${getLabel("lbl158")} ${Labels.symbols.required} ${Labels.symbols.optional}`}
@@ -1144,11 +1193,12 @@ const LineItems = () => {
                                         onChange={handleChange}
                                         helperText={errors?.innovation}
                                         name={Labels.lineItems.innovation}
-                                        options={formDataList.yesNoNa}
+                                        options={formDataList.yesOrNo}
                                         disabled={true}
                                     />
                                 </PGrid>
-                                {/* <PGrid item xs={12} sm={6} md={4}>
+                            </PGrid>
+                            {/* <PGrid item xs={12} sm={6} md={4}>
                                     <PDropdown
                                         label={`${getLabel("lbl106")} ${Labels.symbols.required}`}
                                         value={formData.ratecardCatalogueItemDeclined}
@@ -1182,7 +1232,6 @@ const LineItems = () => {
                                         disabled={true}
                                     />
                                 </PGrid> */}
-                            </PGrid>
                             {/* <PGrid container className={Labels.margin.mb3}>
                                 <PGrid item xs={12} sm={6} md={4}>
                                     <PDropdown
