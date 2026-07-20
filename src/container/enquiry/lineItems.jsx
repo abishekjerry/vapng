@@ -585,6 +585,7 @@ const LineItems = () => {
             Labels.lineItems.itemType,
             Labels.lineItems.itemName,
             Labels.lineItems.itemNameDescription,
+            Labels.lineItems.urgentJob,
 
             // Sustainability Information
             Labels.lineItems.fscOrPefcMaterial,
@@ -613,6 +614,7 @@ const LineItems = () => {
             Labels.lineItems.savingsType,
             Labels.lineItems.savingsReason,
             Labels.lineItems.owWithLink,
+            Labels.lineItems.materialUsed,
 
             // Specifications
             Labels.lineItems.noOfVersion,
@@ -1569,7 +1571,7 @@ const LineItems = () => {
 
                                         <PGrid item xs={12} sm={12} md={6} className="d-flex justify-content-end gap-2 mb-1">
                                             <PButton
-                                                label={getLabel("lbl128")}
+                                                label={"Update Line items"}
                                                 variant="outlined"
                                                 onClick={(e) => handleSubmit(e, false)}
                                                 width={180}
