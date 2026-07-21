@@ -7,7 +7,7 @@ import { useSelector } from "react-redux";
 
 const UserRoute = () => {
   const verifiedUser = useSelector((state) => state.userDetails.user);
-  return verifiedUser?.UserName ? <Outlet /> : <Navigate to={labelRoutes.home} replace />;
+  return verifiedUser?.userName ? <Outlet /> : <Navigate to={labelRoutes.home} replace />;
   //return <Navigate to={labelRoutes.home} replace />;
 };
 

@@ -16,7 +16,7 @@ export const Labels = {
     password: "password",
     newPassword: "newPassword",
     confirmPassword: "confirmPassword",
-    resetUsername : "resetUsername"
+    resetUsername: "resetUsername"
   },
 
   dashboard: {
@@ -43,7 +43,7 @@ export const Labels = {
     jobRole: "jobRole",
     brandName: "brandName",
 
-    summary:"Summary"
+    summary: "Summary"
   },
 
   enquiryDetails: {
@@ -62,7 +62,6 @@ export const Labels = {
   lineItems: {
     category: "category",
     typeOfJob: "typeOfJob",
-    urgentJob :"urgentJob",
     rateCard: "rateCard",
     competitiveBiddingMandatory: "competitiveBiddingMandatory",
     competitiveBiddingCompliant: "competitiveBiddingCompliant",
@@ -71,7 +70,6 @@ export const Labels = {
     itemCategory: "itemCategory",
     subCategory: "subCategory",
     simplex: "simplex",
-    reEngineering : "reEngineering",
     tcoApprovalRequired: "tcoApprovalRequired",
     tcoApproved: "tcoApproved",
     dictatedJob: "dictatedJob",
@@ -89,8 +87,6 @@ export const Labels = {
     designedToBeReused: "designedToBeReused",
     containsPlastic: "containsPlastic",
     containsRecycledPlastic: "containsRecycledPlastic",
-    plasticWeightKg : "plasticWeightKg",
-    recycledPlasticWeightKg : "recycledPlasticWeightKg",
     recycledMaterialWeightKg: "recycledMaterialWeightKg",
 
     // Catalogue Section
@@ -99,18 +95,17 @@ export const Labels = {
     regionalOrderWindowCatalogue: "regionalOrderWindowCatalogue",
     localCatalogueName: "localCatalogueName",
     eAuction: "eAuction",
-    competitiveBiddingWinningSupplierCost : "competitiveBiddingWinningSupplierCost",
+    competitiveBiddingWinningSupplierCost: "competitiveBiddingWinningSupplierCost",
     printingMethod: "printingMethod",
     typeOfItem: "typeOfItem",
     noOfMaterials: "noOfMaterials",
-    harmonizedOrder : "harmonizedOrder",
+    harmonizedOrder: "harmonizedOrder",
     digitalInnovation: "digitalInnovation",
     innovation: "innovation",
     sourcingLocation: "sourcingLocation",
     savingsType: "savingsType",
     savingsReason: "savingsReason",
     owWithLink: "owWithLink",
-    materialUsed :"materialUsed",
 
     // Specifications
     noOfVersion: "noOfVersion",
@@ -128,6 +123,16 @@ export const Labels = {
 
   suppliers: {
     required: "Please select at least one supplier to proceed."
+  },
+
+  deliveryOrder: {
+    companyName: "companyName",
+    addressLineOne: "addressLineOne",
+    addressLineTwo: "addressLineTwo",
+    addressLineThree: "addressLineThree",
+    nameorDept: "nameorDept",
+    contactNo: "contactNo",
+    remarks: "remarks"
   },
 
   commonLabel: {
@@ -158,7 +163,7 @@ export const Labels = {
     required: "*",
     optional: "?",
     important: "!",
-    percent : "%"
+    percent: "%"
   },
 
   buttonLabel: {

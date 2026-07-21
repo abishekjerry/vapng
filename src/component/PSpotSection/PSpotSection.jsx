@@ -16,11 +16,19 @@ import { Labels } from "../../utils/constants/labels";
 import { CommonColors } from "../../utils/constants/colors";
 import { FontWeight } from "../../utils/constants/fonts";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import PButton from "../PButton/PButton";
 import { useLanguage } from "../../utils/constants/language";
+import Collapse from "@mui/material/Collapse";
+import IconButton from "@mui/material/IconButton";
 
 const PSpotSection = () => {
     const { getLabel } = useLanguage();
+    //const [isOpen, setIsOpen] = useState(true);
+    const [formData, setFormData] = useState({
+        epdSpot: true,
+        emmdSpot: true
+    });
     const [formDataList, setFormDataList] = useState({
         data: [],
         packagingMaterial: [{ field: "materialUsed", header: "Material Used" }, { field: "packageMaterial", header: "Package Material" },
@@ -70,20 +78,27 @@ const PSpotSection = () => {
                         />
                     </PGrid>
 
-                    <PGrid item xs={12} sm={6} md={4} className="d-flex justify-content-end align-items-center">
-                        {/* {isItemOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />} */}
-                        <ExpandMoreIcon />
+                    <PGrid item xs={12} sm={6} md={4} className="d-flex justify-content-end align-items-center" >
+                        <IconButton onClick={() =>
+                            setFormData((prev) => ({
+                                ...prev,
+                                epdSpot: !prev.epdSpot,
+                            }))}
+                        >
+                            {formData.epdSpot ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                        </IconButton>
                     </PGrid>
                 </PGrid>
                 <Divider sx={{ mb: 2 }} />
-                <PGrid container className={Labels.margin.mb4}>
-                    <PGrid item xs={12} sm={6} md={12}>
-                        <PTable columns={formDataList.packagingMaterial} rows={formDataList.data} showPagination={false} />
+                <Collapse in={formData.epdSpot} timeout="auto" unmountOnExit>
+                    <PGrid container className={Labels.margin.mb4}>
+                        <PGrid item xs={12} sm={6} md={12}>
+                            <PTable columns={formDataList.packagingMaterial} rows={formDataList.data} showPagination={false} />
+                        </PGrid>
                     </PGrid>
-                </PGrid>
+                </Collapse>
 
                 <Divider sx={{ mb: 2 }} />
-
                 <PGrid container className={Labels.margin.mb4}>
                     <PGrid item xs={12} sm={6} md={8}>
                         <PTypography
@@ -94,16 +109,24 @@ const PSpotSection = () => {
                     </PGrid>
 
                     <PGrid item xs={12} sm={6} md={4} className="d-flex justify-content-end align-items-center">
-                        {/* {isItemOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />} */}
-                        <ExpandMoreIcon />
+                        <IconButton onClick={() =>
+                            setFormData((prev) => ({
+                                ...prev,
+                                emmdSpot: !prev.emmdSpot,
+                            }))}
+                        >
+                            {formData.emmdSpot ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                        </IconButton>
                     </PGrid>
                 </PGrid>
                 <Divider sx={{ mb: 2 }} />
-                <PGrid container className={Labels.margin.mb4}>
-                    <PGrid item xs={12} sm={6} md={12}>
-                        <PTable columns={formDataList.mainMaterial} rows={formDataList.data} showPagination={false} />
+                <Collapse in={formData.emmdSpot} timeout="auto" unmountOnExit>
+                    <PGrid container className={Labels.margin.mb4}>
+                        <PGrid item xs={12} sm={6} md={12}>
+                            <PTable columns={formDataList.mainMaterial} rows={formDataList.data} showPagination={false} />
+                        </PGrid>
                     </PGrid>
-                </PGrid>
+                </Collapse>
             </PCard>
 
             <PCard className={Labels.margin.mb3}>
@@ -140,8 +163,6 @@ const PSpotSection = () => {
                             flag={Labels.fontFlags.subHeader}
                         />
                     </PGrid>
-
-
                 </PGrid>
                 <Divider sx={{ mb: 2 }} />
                 <PGrid container className={Labels.margin.mb4}>

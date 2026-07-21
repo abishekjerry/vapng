@@ -1,83 +1,90 @@
 import { labelRoutes } from "../../navigations/labelRoutes";
 import { API_HEADERS } from "../commonFunction/common";
+import { Labels } from "../constants/labels";
+
+const handleUnauthorized = (isDashboard) => {
+  localStorage.setItem("unAuthorized", "true");
+  if (isDashboard) return;
+  window.location.href = labelRoutes.dashboard;
+};
 
 export const PostApi = (url, data = "", isDashboard = false) => {
   const isFormData = data instanceof FormData;
-  const token = localStorage.getItem("token");
+  const headers = { ...API_HEADERS };
 
-  return fetch(url.toString(), {
+  if (isFormData) {
+    delete headers["Content-Type"];
+    delete headers["content-type"];
+  } else {
+    headers["Content-Type"] = "application/json";
+  }
+
+  const targetUrl = url instanceof URL ? url.href : url.toString();
+
+  return fetch(targetUrl, {
     method: "POST",
-    withCredentials: true,
-    headers: {
-      ...(isFormData ? {} : { "Content-Type": "application/json" }),
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...API_HEADERS
-    },
-    body: isFormData ? data : JSON.stringify(data),
+    credentials: "include",
+    headers: headers,
+    body: isFormData ? data : JSON.stringify(data || {}),
   })
     .then(async (response) => {
       if (response.status === 401) {
-        localStorage.removeItem("token");
-        localStorage.setItem("unAuthorized", true);
-
-        if (isDashboard) return;
-        window.location.href = labelRoutes.dashboard;
+        handleUnauthorized(isDashboard);
         return;
       }
 
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
+
       const contentType = response.headers.get("content-type");
       if (contentType && contentType.includes("application/json")) {
         return response.json();
       } else {
-        return { status: "F", message: "Unexpected response format" };
+        return { status: Labels.status.failure, message: "Unexpected response format" };
       }
     })
     .catch((error) => {
       return {
-        status: "F",
+        status: Labels.status.failure,
         message: error.message || "No response from server",
       };
     });
 };
 
 
-export const GetApi = (url, headers = {}, isDashboard = false) => {
-  const token = localStorage.getItem("token");
+export const GetApi = (url, customHeaders = {}, isDashboard = false) => {
+  const headers = { "Content-Type": "application/json", ...API_HEADERS, ...customHeaders, };
 
-  return fetch(url.toString(), {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      ...headers,
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...API_HEADERS
-    },
-  })
+  const targetUrl = url instanceof URL ? url.href : url.toString();
+
+  return fetch(targetUrl, { method: "GET", credentials: "include", headers: headers })
     .then(async (response) => {
       if (response.status === 401) {
-        localStorage.removeItem("token");
-        localStorage.setItem("unAuthorized", true)
-        if (isDashboard) return
-        window.location.href = labelRoutes.userDashboard;
+        handleUnauthorized(isDashboard);
         return;
       }
-      const raw = await response.text();
-      if (!raw) return { status: "S", data: null };
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (!data || data.trim() === "") {
+        return { status: "S", data: null };
+      }
+
       try {
-        return { status: "S", data: JSON.parse(raw) };
-      } catch (err) {
-        return { status: "F", message: "Invalid JSON from server" };
+        return { status: Labels.status.success, data: data };
+      } catch(error) {
+        return { status: Labels.status.failure, message: "Invalid JSON from server" };
       }
     })
     .catch((error) => {
       return {
-        status: "F",
+        status: Labels.status.failure,
         message: error.message || "Network request failed",
       };
     });
 };
-
-

@@ -61,7 +61,10 @@ export const ProjectEnquiry_API = {
   PostSupplierQuotes : Base_Url + "/VA/PostSupplierQuotes",
   UpdateJobStatus : Base_Url + "/VA/UpdateJobStatus",
   CalculateSavings: Base_Url + "/VA/CalculateSavings",
-  PostRefPrice : Base_Url + "/VA/PostRefprice"
+  PostRefPrice : Base_Url + "/VA/PostRefprice",
+  CheckDeliveryAddress : Base_Url + "/VA/CheckDeliveryAddress",
+  AddUpdateDeliveryAddress : Base_Url + "/VA/AddUpdateDeliveryAddress",
+  UpdateSavingsReasons : Base_Url + "/VA/UpdateSavingsReasons"
 }
 
 

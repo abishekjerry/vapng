@@ -15,8 +15,8 @@ import { LanguageProvider } from "./utils/constants/language";
 const container = document.getElementById("root");
 const root = createRoot(container);
 root.render(
-  //<BrowserRouter basename="/iweb/virtualagency/vatest">
-   <BrowserRouter>    
+  // <BrowserRouter basename="/iweb/virtualagency/vatest">
+  <BrowserRouter>
     <Provider store={store}>
       <LanguageProvider>
         <PToast />

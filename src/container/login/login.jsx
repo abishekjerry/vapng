@@ -23,9 +23,10 @@ import Logo from "../../utils/assets/Navbar/Logo.svg";
 import { PostApi } from "../../utils/api/networking";
 import { Account_API, Dashboard_API } from "../../utils/api/apiUrl";
 import PGrid from "../../component/PGrid/PGrid";
+import { useNavigate } from "react-router-dom";
 
 function Login(props) {
-  const { navigate } = props;
+  const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(false);
   const [openRecover, setOpenRecover] = useState(false);
   const [isForgetPassword, setIsForgetPassword] = useState(false);
@@ -134,8 +135,8 @@ function Login(props) {
         if (isSuccess(res)) {
           const user = res?.data;
           props.saveUserDetails({
-            UserName: user?.username,
-            Email: user?.email,
+            userName: user?.username,
+            email: user?.email,
             fkID: user?.fkID,
             userID: user?.userID,
             role: user?.role,
@@ -143,14 +144,6 @@ function Login(props) {
             country: user?.country,
             countryID: user?.countryId,
           });
-          localStorage.setItem("user", res?.data?.username);
-          localStorage.setItem("email", res?.data?.email);
-          localStorage.setItem("agancyUserID", res?.data?.fkID);
-          localStorage.setItem("userID", res?.data?.userID);
-          localStorage.setItem("countryID", res?.data?.countryId);
-          localStorage.setItem("role", res?.data?.role);
-          localStorage.setItem("currency", res?.data?.currency);
-          localStorage.setItem("country", res?.data?.country);
           navigate(labelRoutes.dashboard);
         } else {
           setErrors((prev) => ({

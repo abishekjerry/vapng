@@ -1,6 +1,6 @@
 import {
   FaHome,
-  FaBuilding,FaFileInvoice 
+  FaBuilding, FaFileInvoice
 } from "react-icons/fa";
 import React, { useState } from "react";
 import { useNavigate, Outlet } from "react-router-dom";
@@ -16,13 +16,14 @@ import { labelRoutes } from "../../navigations/labelRoutes";
 import { FontWeight } from "../../utils/constants/fonts";
 import { useLocation } from "react-router-dom";
 import { useLanguage } from "../../utils/constants/language";
+import { useSelector } from "react-redux";
 function PageLayout() {
   const navigate = useNavigate();
   const { getLabel } = useLanguage();
   const [openMenu, setOpenMenu] = useState(null);
   const [isDashborad, setIsDashborad] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
+  const { userName } = useSelector((state) => state.userDetails.user);
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
@@ -39,7 +40,7 @@ function PageLayout() {
       route: labelRoutes.eqDashboard,
     },
     {
-      icon: <FaFileInvoice  size={20} />,
+      icon: <FaFileInvoice size={20} />,
       name: getLabel("lbl150"),
       route: labelRoutes.report,
     }
@@ -62,7 +63,7 @@ function PageLayout() {
 
   const title = findTitle(menuItems, location.pathname);
   const user = {
-    name: localStorage.getItem("user"),
+    name: userName,
     avatar: "",
     email: "", //localStorage.getItem("email"),
   };
@@ -96,7 +97,7 @@ function PageLayout() {
             <Outlet />
           </div>
 
-          <div className="footer">
+          {/* <div className="footer">
             <img
               src={FooterLogo}
               alt={Labels.footerLogo}
@@ -108,7 +109,7 @@ function PageLayout() {
               flag={Labels.fontFlags.smallText}
               font={FontWeight.bold}
             />
-          </div>
+          </div> */}
         </div>
 
       </div>

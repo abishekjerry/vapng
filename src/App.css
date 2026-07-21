@@ -32,7 +32,7 @@
 /* SIDEBAR */
 .sidebar{
   width:220px;
-  background:#f4f2ff;
+  background:#D6E9FD;
   display:flex;
   flex-direction:column;
   padding:24px 12px;
@@ -78,14 +78,14 @@
 
 .nav-item:hover{
   background:#ede9fe;
-  color:#8b5cf6;
+  color:#F5B233;
 }
 
 
 /* ACTIVE MENU */
 .nav-item.active{
-  background:#8b5cf6;
-  color:#fff;
+  background: #fff;
+  color:#F5B233;
   box-shadow:0 10px 15px -3px rgba(139,92,246,0.3);
 }
 

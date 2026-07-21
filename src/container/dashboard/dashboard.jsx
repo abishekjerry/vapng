@@ -27,26 +27,26 @@ const Dashboard = () => {
     {
       title: getLabel("lbl03"),
       icon: <DescriptionIcon />,
-      iconBg: "#6366f1",
+      iconBg: "#7CA6F6",
       route: labelRoutes.eqDashboard,
       showNavIcon: true // override default
     },
     {
       title: getLabel("lbl04"),
       icon: <AccessTimeIcon />,
-      iconBg: "#8b5cf6",
+      iconBg: "#60CEBF",
       route: null
     },
     {
       title: getLabel("lbl05"),
       icon: <MenuBookIcon />,
-      iconBg: "#6366f1",
+      iconBg: "#7CA6F6",
       route: null
     },
     {
       title: getLabel("lbl06"),
       icon: <BarChartIcon />,
-      iconBg: "#4f46e5",
+      iconBg: "#3B4A8F",
       route: labelRoutes.report,
       showNavIcon: true
     }

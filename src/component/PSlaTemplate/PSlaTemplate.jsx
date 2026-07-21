@@ -109,7 +109,8 @@ function PSlaTemplate({ sla, enquiryId, quoteStartDate, disabled = false, onChan
         }
     };
     useEffect(() => {
-        slaTemplate(sla ?? 24);
+        if (!sla) return;
+        slaTemplate(sla);
     }, [sla]);
 
     return (

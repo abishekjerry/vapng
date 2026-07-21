@@ -14,7 +14,8 @@ export default function PCard({
   color,
   collapsible = false,   // 👈 new
   isOpen = true,         // 👈 new
-  onToggle
+  onToggle,
+  readOnly = false,
 }) {
   return (
     <div className={`pcard-container ${className}`}>
@@ -42,7 +43,8 @@ export default function PCard({
                 </div>
               ) : onBackClick ? (
                 <IconButton
-                  onClick={(e) => { e.stopPropagation();
+                  onClick={(e) => {
+                    e.stopPropagation();
                     onBackClick();
                   }}
                   className={icon || rightAction ? "text-white" : "pcard-back-button"}
@@ -56,7 +58,7 @@ export default function PCard({
           )}
         </div>
       )}
-      <div className="pcard-content">
+      <div className="pcard-content" style={{ pointerEvents: readOnly ? "none" : "auto", opacity: readOnly ? 0.7 : 1}}>
         {collapsible ? isOpen && children : children}
       </div>
     </div>

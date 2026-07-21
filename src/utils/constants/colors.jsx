@@ -3,13 +3,12 @@ export const CommonColors = {
   // secondary: "#a78bfa", // light violet
   // ternary: "#c4b5fd",  // very light violet  
   primary: "#23A9F2",
-
   white: "#ffffff",
 
   grey: {
     light: "#d3d3d3",
-    main: "#6B7280",
-    dark: "#1F2937",
+    main: "#bebebe",
+    dark: "#090909",
   },
 
   red: {
@@ -20,7 +19,7 @@ export const CommonColors = {
 
   green: {
     light: "#a7f3a3",
-    main: "#28A745",
+    main: "#60CEBF",
     dark: "#2e7d32",
   },
 

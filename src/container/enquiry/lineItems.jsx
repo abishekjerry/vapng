@@ -30,6 +30,7 @@ import { PSummary } from "../../component/PSumary/PSummary";
 import PDialog from "../../component/PDialog/PDialog";
 import PFileUpload from "../../component/PFileUpload/PFileUpload";
 import PAttachment from "../../component/PAttachment/PAttachment";
+import { useSelector } from "react-redux";
 const LineItems = () => {
     const { state } = useLocation();
     const { getLabel } = useLanguage();
@@ -40,7 +41,7 @@ const LineItems = () => {
     const [open, setOpen] = useState(false);
     const [previewOpen, setPreviewOpen] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
-
+    const { fkID } = useSelector((state) => state.userDetails.user);
     const [formDataList, setFormDataList] = useState({
         typeOfJob: [{ label: "Strategic", value: 1 }, { label: "Tactical", value: 2 }, { label: "Operational", value: 3 }, { label: "Non-Addressable", value: 4 }],
         urgentJob: [{ label: "Urgent", value: 1 }, { label: "Non-Urgent", value: 2 }],
@@ -522,7 +523,7 @@ const LineItems = () => {
                     FlatSizeLength: formData.length,
                     FlatSizeWidth: formData.width,
                     FlatSizeDandH: formData.depth,
-                    ModifiedBy: parseInt(localStorage.getItem("agancyUserID")),
+                    ModifiedBy: fkID,
                 };
                 const response = await PostApi(LineItems_API.AddUpdateLineItems, payload);
                 if (isSuccess(response)) {

@@ -95,9 +95,9 @@ const PNavbar = ({
             <FaBars size={20} />
           </IconButton>
 
-          <Box className="mt-1">
-            <img src={Logo} alt="Logo" style={{ height: 55,width: 60 }} />
-          </Box>
+          {/* <Box className="mt-1">
+            <img src={Logo} alt="Logo" style={{ height: 55, width: 60 }} />
+          </Box> */}
         </Box>
 
         {/* CENTER SECTION */}
@@ -186,9 +186,10 @@ const PNavbar = ({
             <Avatar
               alt={name}
               src={avatar || ""}
-              sx={{ width: 32, height: 32 }}
+              sx={{ width: 40, height: 40 }}
             >
-              {!avatar && name ? name.charAt(0).toUpperCase() : ""}
+               <img src={Logo} alt="Logo" style={{ height: 55, width: 60 }} />
+              {/* {!avatar && name ? name.charAt(0).toUpperCase() : ""} */}
             </Avatar>
 
             <Box sx={{ display: "flex", flexDirection: "column" }}>

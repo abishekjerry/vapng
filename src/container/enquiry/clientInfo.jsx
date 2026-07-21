@@ -21,6 +21,7 @@ import PTextField from "../../component/PTextField/PTextField";
 import { PDraftDialog } from "../../component/PDialog/PDraftDialog";
 import { PSummary } from "../../component/PSumary/PSummary";
 import { getClientInfo, getSummarySections } from "../../utils/constants/summary";
+import { useSelector } from "react-redux";
 
 const ClientInfo = () => {
     const { state } = useLocation();
@@ -35,6 +36,7 @@ const ClientInfo = () => {
     const [disible, setDisible] = useState(true);
     const [type, setType] = useState("");
     const [openSummary, setOpenSummary] = useState(true);
+    const { countryID, userID, fkID, role } = useSelector((state) => state.userDetails.user);
     const [formData, setFormData] = useState({
         division: "",
         brand: "",
@@ -107,8 +109,7 @@ const ClientInfo = () => {
         clientInfo: []
     });
 
-    const role = localStorage.getItem("role");
-    const countryID = parseInt(localStorage.getItem("countryID"))
+    
     const flag = isNotEmpty(state?.id) && state?.id !== 0 ? Labels.flag.Update : Labels.flag.Insert;
     const id = state?.id > 0 ? state.id : 0;
 
@@ -313,8 +314,8 @@ const ClientInfo = () => {
                 const response = await PostApi(ClientInfo_API.AddUpdateClientInfo, {
                     divisionid: formData.globalBUMapping, //formData.division,
                     clientContactId: formData.clientContact,
-                    createdBy: parseInt(localStorage.getItem("userID")),
-                    modifiedBy: parseInt(localStorage.getItem("agancyUserID")),
+                    createdBy: userID,
+                    modifiedBy: fkID,
                     brand: getOptionLabel(formDataList.brand, formData.brand),
                     deliveryCountryId: formData.deliveryCountry,
                     pMGEntity: formData.pmgEntity,

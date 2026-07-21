@@ -1,6 +1,7 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
 import Tooltip from "@mui/material/Tooltip";
+import FooterLogo from "../../utils/assets/images/FooterLogo.png";
 function PSidebar({
   sidebarOpen,
   menuItems,
@@ -14,6 +15,28 @@ function PSidebar({
 
   return (
     <div className={`sidebar ${sidebarOpen ? "" : "collapsed"}`}>
+      {/* Logo */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          width: "100%",
+          padding: "16px 0",
+        }}
+      >
+        <img
+          src={FooterLogo}
+          alt="Footer Logo"
+          style={{
+            width: 60,
+            height: 71,
+            objectFit: "contain",
+          }}
+        />
+      </div>
+
+
       {/* Menu */}
       <nav className="sidebar-nav">
         <div className="menu-section">
@@ -27,8 +50,7 @@ function PSidebar({
                 arrow
               >
                 <div
-                  className={`nav-item ${location.pathname === item.route ? "active" : ""
-                    }`}
+                  className={`nav-item ${location.pathname === item.route ? "active" : ""}`}
                   onClick={() => {
                     //   if (item.children) {
                     //     setOpenMenu(openMenu === item.name ? null : item.name);

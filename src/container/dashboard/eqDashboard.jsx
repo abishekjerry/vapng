@@ -31,10 +31,11 @@ import { FontFamily, FontWeight } from '../../utils/constants/fonts'
 import { useLanguage } from "../../utils/constants/language";
 import { Dashboard_API } from "../../utils/api/apiUrl";
 import { PostApi } from "../../utils/api/networking";
-import { exportToExcel, formatDate, isNotEmpty, isSuccess } from "../../utils/commonFunction/common";
+import { exportToExcel, isNotEmpty, isSuccess, toast } from "../../utils/commonFunction/common";
 import { useNavigate } from "react-router-dom";
 import { labelRoutes } from "../../navigations/labelRoutes";
 import PDialog from "../../component/PDialog/PDialog";
+import { useSelector } from "react-redux";
 
 const EqDashboard = () => {
   const navigate = useNavigate();
@@ -48,6 +49,7 @@ const EqDashboard = () => {
   const [summary, setSummary] = useState({});
   const [loading, setLoading] = useState(true);
   const [chartOrginalData, setChartOrginalData] = useState([]);
+  const { countryID, role, userName } = useSelector((state) => state.userDetails.user);
   const [formData, setFormData] = useState({
     country: "",
     user: "",
@@ -62,80 +64,70 @@ const EqDashboard = () => {
     startDate: "",
     endDate: "",
   })
-  const role = localStorage.getItem("role");
-  const countryID = parseInt(localStorage.getItem("countryID"));
-  const today = formatDate(new Date());
-  const startDate = formatDate(new Date(new Date().setMonth(new Date().getMonth() - 3)));
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
 
-         setFormData((prev) => ({
-            ...prev,
-            startDate : startDate,
-            endDate : today
-            
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+
+      const response = await PostApi(Dashboard_API.Master, {
+        userCountryId: countryID,
+        role: role
+      });
+      setCountry(role === "Admin" ? response.country : response.country.filter((c) => c.value === countryID));
+      const res = await PostApi(Dashboard_API.Dashboard, {
+        userCountryId: countryID,
+        role: role,
+        createdName: 0,
+        enqUId: "",
+        projectNo: "",
+        startDate: "",
+        endDate: "",
+        statusId: "",
+        jobposition: "",
+        client: "",
+        username: userName, //localStorage.getItem("user"),
+      });
+
+      if (isSuccess(res)) {
+        const data = res?.data;
+
+        setSummary(data.summary || {});
+        const formattedRows = (data.detailed || []).map(item => ({
+          enquiryId: item.enquiryId,
+          projectNumber: item.projectNo,
+          projectName: item.projectDesc,
+          requestedDate: item.serverTime,
+          status: item.statusName,
+          surveyStatus: item.surveyStatusName,
+          countryID: item.pmgEntity,
+          userID: item.clientId,
+          jobStatusID: item.status,
+          date: item.serverTime,
+          id: item.id,
+          stepID: item.stepId,
         }));
-        setFilter(true);
-
-        const response = await PostApi(Dashboard_API.Master, {
-          userCountryId: countryID,
-          role: role
-        });
-        setCountry(role === "Admin" ? response.country : response.country.filter((c) => c.value === countryID));
-        const res = await PostApi(Dashboard_API.Dashboard, {
-          userCountryId: countryID,
-          role: role,
-          createdName: 0,
-          enqUId: "",
-          projectNo: "",
-          startDate: formData.startDate,
-          endDate: formData.endDate,
-          statusId: "",
-          jobposition: "",
-          client: "",
-          username: localStorage.getItem("user"),
-        });
-
-        if (isSuccess(res)) {
-          const data = res?.data;
-
-          setSummary(data.summary || {});
-          const formattedRows = (data.detailed || []).map(item => ({
-            enquiryId: item.enquiryId,
-            projectNumber: item.projectNo,
-            projectName: item.projectDesc,
-            requestedDate: item.serverTime,
-            status: item.statusName,
-            surveyStatus: item.surveyStatusName,
-            countryID: item.pmgEntity,
-            userID: item.clientId,
-            jobStatusID: item.status,
-            date: item.serverTime,
-            id: item.id,
-            stepID: item.stepId,
-          }));
-          setRows(formattedRows);
-          const formattedChartData = (data.summary?.jobStatus || []).map(
-            ({ statusName, enquiryCount, statusId }) => ({
-              name: statusName,
-              value: enquiryCount,
-              id: statusId
-            })
-          );
-          setChartData(formattedChartData);
-          setChartOrginalData(formattedChartData);
-        }
-      } catch (error) {
-        toast(Labels.status.failure, response.data.message);
-      } finally {
-        setLoading(false);
+        setRows(formattedRows);
+        const formattedChartData = (data.summary?.jobStatus || []).map(
+          ({ statusName, enquiryCount, statusId }) => ({
+            name: statusName,
+            value: enquiryCount,
+            id: statusId
+          })
+        );
+        setChartData(formattedChartData);
+        setChartOrginalData(formattedChartData);
       }
-    };
-    handleReset();
+    } catch (error) {
+      toast(Labels.status.failure, Labels.message.somethingWentWrong);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchData();
-  }, []); // empty dependency: run only once on mount
+  }, []);
 
   useEffect(() => {
     if (country.length === 1) {
@@ -144,7 +136,7 @@ const EqDashboard = () => {
         country: country[0].value
       }));
     }
-  }, [country]); // separate effect, only does auto-select
+  }, [country]);
 
   const columns = [
     { field: "enquiryId", header: "Enquiry ID" },
@@ -231,6 +223,7 @@ const EqDashboard = () => {
       status: prev.status === statusId ? "" : Number(statusId),
     }));
   };
+
   const data = useMemo(() => {
     let result = [...rows]; // copy original rows
 
@@ -342,6 +335,7 @@ const EqDashboard = () => {
       setOpenFilter(false);
     }
   };
+
   const FliterValidation = () => {
     const requiredFields = [
       Labels.dashboard.startDate,
@@ -404,7 +398,7 @@ const EqDashboard = () => {
         <PGrid container className={Labels.margin.mb3}>
           <PGrid item xs={12} sm={6} md={7}>
             <PTypography
-              labelText={`${getLabel("lbl08")}, ${localStorage.getItem("user")}`}
+              labelText={`${getLabel("lbl08")}, ${userName}`}
               weight={FontWeight.bold}
               flag={Labels.fontFlags.subHeader}
               color={CommonColors.red}
@@ -442,6 +436,10 @@ const EqDashboard = () => {
                     value={formData.createEnquiry}
                     onclick={icons[0].action}
                     disabled={loading}
+                    sx={{
+                      backgroundColor: "#4CAF50",
+                      color: "#fff",
+                    }}
                   />
                 )}
               </Box>
@@ -452,6 +450,7 @@ const EqDashboard = () => {
                       sx={iconStyle}
                       onClick={item.action}
                       disabled={loading}
+                      color={CommonColors.green.main}
                     >
                       {item.icon}
                     </IconButton>

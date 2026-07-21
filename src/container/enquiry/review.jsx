@@ -29,6 +29,7 @@ import { getClientInfo, getEnquiryDetails, getLineneItems } from "../../utils/co
 import { labelRoutes } from "../../navigations/labelRoutes";
 import UpdateLineItems from "./updateLineItems";
 import { PDraftDialog } from "../../component/PDialog/PDraftDialog";
+import { useSelector } from "react-redux";
 
 const Review = () => {
     const { getLabel } = useLanguage();
@@ -39,8 +40,8 @@ const Review = () => {
     const [loading, setLoading] = useState(true);
     const [open, setOpen] = useState(0); // first item open by default
     const [openDraft, setOpenDraft] = useState();
+    const { userID } = useSelector((state) => state.userDetails.user);
 
-    const userID = parseInt(localStorage.getItem("userID"));
     const [formDataList, setFormDataList] = useState({
         clientInfo: [],
         enquiryDetails: [],
@@ -141,7 +142,7 @@ const Review = () => {
                                 title={`Step 1: ${getLabel("lbl25")}`}
                                 icon={<PersonIcon />}
                                 color={CommonColors.blue.dark}
-                                rightAction={<PButton label={getLabel("lbl160")} variant="outlined" size="small" startIcon={<EditIcon />}
+                                rightAction={<PButton label="Edit" variant="outlined" size="small" startIcon={<EditIcon />}
                                     onClick={(e) => handleEdit(1)}
                                     sx={{ color: "#fff", borderColor: "#fff", "&:hover": { borderColor: "#fff", backgroundColor: "rgba(255,255,255,0.1)" } }}
                                 />
@@ -175,7 +176,7 @@ const Review = () => {
                                 title={`Step 2: ${getLabel("lbl21")}`}
                                 icon={<AssignmentIcon />}
                                 color={CommonColors.blue.main}
-                                rightAction={<PButton label={getLabel("lbl160")} variant="outlined" size="small" startIcon={<EditIcon />}
+                                rightAction={<PButton label="Edit" variant="outlined" size="small" startIcon={<EditIcon />}
                                     onClick={(e) => handleEdit(2)}
                                     sx={{ color: "#fff", borderColor: "#fff", "&:hover": { borderColor: "#fff", backgroundColor: "rgba(255,255,255,0.1)" } }}
                                 />
@@ -216,7 +217,7 @@ const Review = () => {
                                         isOpen={open === index} onToggle={() => setOpen(index)}
                                         rightAction={
                                             <PButton
-                                                label={getLabel("lbl160")}
+                                                label="Edit"
                                                 variant="outlined"
                                                 size="small"
                                                 startIcon={<EditIcon />}
@@ -259,7 +260,7 @@ const Review = () => {
                                 title={`Step 4: ${getLabel("lbl23")}`}
                                 icon={<LocalShippingIcon />}
                                 color={CommonColors.yellow.main}
-                                rightAction={<PButton label={getLabel("lbl160")} variant="outlined" size="small" startIcon={<EditIcon />}
+                                rightAction={<PButton label="Edit" variant="outlined" size="small" startIcon={<EditIcon />}
                                     onClick={(e) => handleEdit(4)}
                                     sx={{ color: "#fff", borderColor: "#fff", "&:hover": { borderColor: "#fff", backgroundColor: "rgba(255,255,255,0.1)" } }}
                                 />
