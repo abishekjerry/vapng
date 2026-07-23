@@ -36,7 +36,7 @@ const ClientInfo = () => {
     const [disible, setDisible] = useState(true);
     const [type, setType] = useState("");
     const [openSummary, setOpenSummary] = useState(true);
-    const { countryID, userID, fkID, role } = useSelector((state) => state.userDetails.user);
+    const { countryID, userID, fkID, role, country } = useSelector((state) => state.userDetails.user);
     const [formData, setFormData] = useState({
         division: "",
         brand: "",
@@ -65,10 +65,10 @@ const ClientInfo = () => {
         country: "",
         entityName: "",
         businessUnit: "",
-        globalBUMapping: "",
-        countryCode: "",
-        clientCode: "",
         channel: "",
+        globalBUMapping: "",
+        // countryCode: "",
+        // clientCode: "",  
     });
 
 
@@ -109,7 +109,7 @@ const ClientInfo = () => {
         clientInfo: []
     });
 
-    
+
     const flag = isNotEmpty(state?.id) && state?.id !== 0 ? Labels.flag.Update : Labels.flag.Insert;
     const id = state?.id > 0 ? state.id : 0;
 
@@ -120,13 +120,14 @@ const ClientInfo = () => {
         try {
             setLoading(true);
             const response = await PostApi(ClientInfo_API.ClientInfoMaster, {
-                Divisionid: division
+                Divisionid: division,
+                country: country
             });
             setFormDataList(prev => ({
                 ...prev,
                 brand: response.brands,
                 clientContact: response.client,
-                globalBUMapping: response.division,
+                //globalBUMapping: response.division,
             }));
 
         } catch (error) {
@@ -140,7 +141,8 @@ const ClientInfo = () => {
         try {
             setLoading(true);
             const response = await PostApi(ClientInfo_API.ClientInfoMaster, {
-                Divisionid: globalBUMapping
+                Divisionid: globalBUMapping,
+                country: country
             });
             setFormDataList(prev => ({
                 ...prev,
@@ -156,51 +158,52 @@ const ClientInfo = () => {
     };
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setLoading(true);
-                const response = await PostApi(Dashboard_API.Master, {
-                    userCountryId: countryID,
-                    role: role
+      fetchData();
+    }, []);
+
+    const fetchData = async () => {
+        try {
+            setLoading(true);
+            const response = await PostApi(Dashboard_API.Master, {
+                userCountryId: countryID,
+                role: role
+            });
+            setFormDataList(prev => ({
+                ...prev,
+                division: response.division,
+                pmgEntity: (role === "Admin" ? response.country : response.country.filter((c) => c.value === countryID)),
+                deliveryCountry: response.country,
+            }));
+
+            if (id !== 0) {
+                const data = await PostApi(Dashboard_API.GetDetails, {
+                    Enquiryid: id,
                 });
                 setFormDataList(prev => ({
                     ...prev,
-                    division: response.division,
-                    pmgEntity: (role === "Admin" ? response.country : response.country.filter((c) => c.value === countryID)),
-                    deliveryCountry: response.country,
+                    clientInfo: data.enqClientinfo
+                }))
+
+                const aboveAtMarket = getOptionValue(formDataList.aboveAtMarket, data.enqClientinfo.aboveorAtmarket)
+                // Update state
+                setFormData(prev => ({
+                    ...prev,
+                    division: data.enqClientinfo.divisionid, //getOptionValue(response.division, data.enqClientinfo.divisionname),
+                    clientContact: data.enqClientinfo.clientContactId,
+                    pmgEntity: data.enqClientinfo.pmgEntity,
+                    deliveryCountry: data.enqClientinfo.deliveryCountryId,
+                    //globalBUMapping: data.enqClientinfo.divisionid,
+                    aboveAtMarket: aboveAtMarket,
                 }));
-
-                if (id !== 0) {
-                    const data = await PostApi(Dashboard_API.GetDetails, {
-                        Enquiryid: id,
-                    });
-                    setFormDataList(prev => ({
-                        ...prev,
-                        clientInfo: data.enqClientinfo
-                    }))
-
-                    const aboveAtMarket = getOptionValue(formDataList.aboveAtMarket, data.enqClientinfo.aboveorAtmarket)
-                    // Update state
-                    setFormData(prev => ({
-                        ...prev,
-                        division: getOptionValue(response.division, data.enqClientinfo.divisionname),
-                        clientContact: data.enqClientinfo.clientContactId,
-                        pmgEntity: data.enqClientinfo.pmgEntity,
-                        deliveryCountry: data.enqClientinfo.deliveryCountryId,
-                        globalBUMapping: data.enqClientinfo.divisionid,
-                        aboveAtMarket: aboveAtMarket,
-                    }));
-                }
-
-            } catch (error) {
-                toast(Labels.status.failure, Labels.message.somethingWentWrong);
-            } finally {
-                setLoading(false);
             }
-        };
 
-        fetchData();
-    }, []);
+        } catch (error) {
+            toast(Labels.status.failure, Labels.message.somethingWentWrong);
+        } finally {
+            setLoading(false);
+        }
+    };
+
 
     useEffect(() => {
         if (formDataList.brand?.length && formDataList.clientInfo.brand) {
@@ -245,52 +248,55 @@ const ClientInfo = () => {
         // Division logic
         if (name === Labels.clientInfo.division) {
             handleDivisionSelection(value, label);
-
-        }
-
-        if (name == Labels.clientInfo.globalBUMapping) {
-            ClientInfoMaster(value);
             setDisible(false);
         }
 
-        let timeoutId;
+        // if (name == Labels.clientInfo.globalBUMapping) {
+        //     ClientInfoMaster(value);
+        // }
+
         if (name === Labels.clientInfo.logonID) {
-            clearTimeout(timeoutId);
-            if (!value || value.trim() === "") {
-                setErrors((prev) => ({
-                    ...prev,
-                    logonID: ""
-                }));
-                return;
-            }
-            timeoutId = setTimeout(async () => {
-                try {
-                    setLoading(true);
-
-                    const response = await PostApi(ClientInfo_API.CheckforUsername, {
-                        Username: value,
-                    });
-
-                    if (isSuccess(response)) {
-                        setErrors((prev) => ({
-                            ...prev,
-                            logonID: "",
-                        }));
-                    } else {
-                        setErrors((prev) => ({
-                            ...prev,
-                            logonID: response?.data,
-                        }));
-                    }
-
-                } catch (error) {
-                    toast(Labels.status.failure, Labels.message.somethingWentWrong);
-                } finally {
-                    setLoading(false);
-                }
-            }, 300); // waits 500ms after typing stops
+            await GetCheckUserName(value);
         }
     };
+
+    const GetCheckUserName = async (value) => {
+        let timeoutId;
+        clearTimeout(timeoutId);
+        if (!value || value.trim() === "") {
+            setErrors((prev) => ({
+                ...prev,
+                logonID: ""
+            }));
+            return;
+        }
+        timeoutId = setTimeout(async () => {
+            try {
+                setLoading(true);
+
+                const response = await PostApi(ClientInfo_API.CheckforUsername, {
+                    Username: value,
+                });
+
+                if (isSuccess(response)) {
+                    setErrors((prev) => ({
+                        ...prev,
+                        logonID: "",
+                    }));
+                } else {
+                    setErrors((prev) => ({
+                        ...prev,
+                        logonID: response?.data,
+                    }));
+                }
+
+            } catch (error) {
+                toast(Labels.status.failure, Labels.message.somethingWentWrong);
+            } finally {
+                setLoading(false);
+            }
+        }, 300); // waits 500ms after typing stops
+    }
 
     const handleDivisionSelection = (divisionId, division) => {
         if (!divisionId) return;
@@ -312,14 +318,14 @@ const ClientInfo = () => {
             try {
                 setLoading(true);
                 const response = await PostApi(ClientInfo_API.AddUpdateClientInfo, {
-                    divisionid: formData.globalBUMapping, //formData.division,
+                    divisionid: formData.division, //formData.globalBUMapping
                     clientContactId: formData.clientContact,
                     createdBy: userID,
                     modifiedBy: fkID,
                     brand: getOptionLabel(formDataList.brand, formData.brand),
                     deliveryCountryId: formData.deliveryCountry,
                     pMGEntity: formData.pmgEntity,
-                    aboveorAtmarket: getOptionLabel(formDataList.aboveAtMarket, formData.aboveAtMarket),
+                    aboveorAtmarket: "Above",//getOptionLabel(formDataList.aboveAtMarket, formData.aboveAtMarket),
                     Action: flag,
                     Enqid: id
                 });
@@ -356,8 +362,8 @@ const ClientInfo = () => {
             Labels.clientInfo.deliveryCountry,
             Labels.clientInfo.clientContact,
             Labels.clientInfo.pmgEntity,
-            Labels.clientInfo.aboveAtMarket,
-            Labels.clientInfo.globalBUMapping,
+            //Labels.clientInfo.aboveAtMarket,
+            //Labels.clientInfo.globalBUMapping,
         ];
 
         let newErrors = {};
@@ -408,7 +414,7 @@ const ClientInfo = () => {
         setCcOpenFilter(false);
         setBrandOpenFilter(false);
         // setSaveDraft(false);
-        setDeleteDraft(false);
+        //setDeleteDraft(false);
         setFormData((prev) => ({
             ...prev,
             firstName: "",
@@ -447,12 +453,12 @@ const ClientInfo = () => {
                         phone: formData.phone,
                         jobposition: getOptionLabel(formDataList.jobRole, formData.jobRole),
                         receivenotification: formData.receiveNotification == 1 ? true : false,
-                        divisionid: formData.globalBUMapping //formData.division
+                        divisionid: formData.division  //formData.globalBUMapping
                     });
                     if (isSuccess(response)) {
                         setCcOpenFilter(false);
                         toast(Labels.status.success, response.data);
-                        ClientInfoMaster(formData.globalBUMapping);
+                        ClientInfoMaster(formData.division);
                     } else {
                         setErrors((prev) => ({
                             ...prev,
@@ -475,12 +481,12 @@ const ClientInfo = () => {
                     setLoading(true);
                     const response = await PostApi(ClientInfo_API.AddUpdateBrand, {
                         brand: formData.brandName,
-                        Divisionid: formData.globalBUMapping //formData.division
+                        Divisionid: formData.division  //formData.globalBUMapping
                     });
                     if (isSuccess(response)) {
                         setBrandOpenFilter(false);
                         toast(Labels.status.success, response.data);
-                        ClientInfoMaster(formData.globalBUMapping);
+                        ClientInfoMaster(formData.division);
                     } else {
                         setErrors((prev) => ({
                             ...prev,
@@ -617,7 +623,7 @@ const ClientInfo = () => {
                                         weight={FontWeight.bold}
                                     />
                                 </PGrid>
-                                 <PGrid item xs={12} sm={6} md={4}>
+                                <PGrid item xs={12} sm={6} md={4}>
                                     <PTypography
                                         labelText={"Brief Id"}
                                         weight={FontWeight.bold}
@@ -627,7 +633,7 @@ const ClientInfo = () => {
                                         color={CommonColors.grey.main}
                                         weight={FontWeight.bold}
                                     />
-                                </PGrid> 
+                                </PGrid>
 
                             </PGrid>
                             {/* <PGrid container className={Labels.margin.mb3}>
@@ -699,7 +705,7 @@ const ClientInfo = () => {
                                     <div style={{ marginTop: "15px" }}>
                                         <Tooltip title="Add New Brand" arrow>
                                             <IconButton sx={{ backgroundColor: "#d5d5d5", color: "#fff", width: 30, height: 30, "&:hover": { backgroundColor: "#1976d2" }, }}
-                                                onClick={!disible ? (e) => handleOpenChoose(e, "Brand") : undefined}
+                                            //onClick={!disible ? (e) => handleOpenChoose(e, "Brand") : undefined}
                                             >
                                                 <AddIcon />
                                             </IconButton>

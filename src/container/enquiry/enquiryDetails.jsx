@@ -97,17 +97,19 @@ const EnquiryDetails = () => {
         };
         fetchData();
     }, []);
-    
+
     useEffect(() => {
         if (formDataList?.slaTemplate?.length && !formData.slaTemplate) {
-            const hybrid = formDataList?.enquiryDetails?.hybridModel ? getOptionValue(formDataList.hybird, data.enqProjectinfo.hybridModel) : 2;
-            const managementfeetypeId = formDataList?.enquiryDetails?.managementfeetypeId ? data.enqProjectinfo.managementfeetypeId : 8;
-            const slaId = formDataList?.enquiryDetails?.slaId ?? 24;
+            //const hybrid = formDataList?.enquiryDetails?.hybridModel ? getOptionValue(formDataList.hybird, data.enqProjectinfo.hybridModel) : 2;
+            //const managementfeetypeId = formDataList?.enquiryDetails?.managementfeetypeId ? data.enqProjectinfo.managementfeetypeId : 8;
+            const slaId = formDataList?.enquiryDetails?.slaId ?? 1;
+            const year = 1;
             setFormData(prev => ({
                 ...prev,
                 slaTemplate: slaId,
-                hybrid: hybrid,
-                managementFeeType: managementfeetypeId
+                year: year
+                // hybrid: hybrid,
+                // managementFeeType: managementfeetypeId
             }));
             //slaRef.current?.slaTemplate(slaId);
         }
@@ -213,7 +215,7 @@ const EnquiryDetails = () => {
             Labels.enquiryDetails.estdeliveryDate,
             Labels.enquiryDetails.year,
             Labels.enquiryDetails.managementFeeType,
-            Labels.enquiryDetails.hybrid,
+            //Labels.enquiryDetails.hybrid,
             //Labels.enquiryDetails.projectAttribute,
             Labels.enquiryDetails.slaTemplate,
             Labels.enquiryDetails.projectQuoteType

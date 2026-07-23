@@ -43,22 +43,25 @@ const LineItems = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const { fkID } = useSelector((state) => state.userDetails.user);
     const [formDataList, setFormDataList] = useState({
-        typeOfJob: [{ label: "Strategic", value: 1 }, { label: "Tactical", value: 2 }, { label: "Operational", value: 3 }, { label: "Non-Addressable", value: 4 }],
-        urgentJob: [{ label: "Urgent", value: 1 }, { label: "Non-Urgent", value: 2 }],
+        //typeOfJob: [{ label: "Strategic", value: 1 }, { label: "Tactical", value: 2 }, { label: "Operational", value: 3 }, { label: "Non-Addressable", value: 4 }],
+        urgentJob: [],
+        dictatedJob: [],
         category: [],
+        rateCard: [],
         itemCategory: [],
-        subCategory: [],
-        exceptionsReasonCode: [],
+        //subCategory: [],
+        //exceptionsReasonCode: [],
         itemType: [{ label: "New Item", value: 1 }, { label: "Repeat/Existing Item", value: 2 }], //{ label: "Non-Addressable", value: 3 }],
         incoterm: [{ label: "FCA/FOB", value: 1 }, { label: "Others", value: 2, selected: true }],
         materialUsed: [],
         typeOfItem: [],
         localCatalog: [],
-        globalOrder: [],
-        regionalOrder: [],
-        sourcingLocation: [],
-        savingsType: [],
-        savingsReason: [],
+        reEngineering :[],
+        // globalOrder: [],
+        // regionalOrder: [],
+        // sourcingLocation: [],
+        // savingsType: [],
+        // savingsReason: [],
         printingMethod: [],
         yesNoNa: [{ label: "Yes", value: 1 }, { label: "No", value: 2 }, { label: "N/A", value: 3, selected: true }],
         soYesNoNa: [{ label: "Yes, Accepted", value: 1 }, { label: "Yes, Rejected", value: 2 }, { label: "No", value: 3 }, { label: "N/A", value: 4, selected: true }],
@@ -66,7 +69,7 @@ const LineItems = () => {
         tcoYesOrNo: [{ label: "Yes", value: 1 }, { label: "No", value: 2 }],
         yesOrNoNot: [{ label: "Yes", value: 1 }, { label: "No", value: 2 }, { label: "Not Applicable", value: 3 }],
         competitiveBiddingExceptionFormSigned: [],
-        simplex: [{ label: "Non-Simplex", value: 1 }, { label: "Simplex", value: 2 }, { label: "Not Applicable", value: 3 }],
+        //simplex: [{ label: "Non-Simplex", value: 1 }, { label: "Simplex", value: 2 }, { label: "Not Applicable", value: 3 }],
         quoteType: [{ label: "Quote by Quantity", value: 1 }, { label: "Quote by Quantity & Size 2D", value: 2 }, { label: "Quote by Quantity & Size 3D", value: 3 }],
 
         //editable states
@@ -230,6 +233,10 @@ const LineItems = () => {
             setFormDataList(prev => ({
                 ...prev,
                 category: response.typeofJob,
+                urgentJob: response.urgent,
+                reEngineering: response.reengineering,
+                rateCard: response.ratecard,
+                dictatedJob: response.dictated,
             }));
 
             if (id !== 0) {
@@ -307,11 +314,12 @@ const LineItems = () => {
         regionalOrder: getSelectedValue(formDataList.regionalOrder),
         typeOfItem: getSelectedValue(formDataList.typeOfItem),
         printingMethod: getSelectedValue(formDataList.printingMethod),
+        reEngineering  : getSelectedValue(formDataList.reEngineering),
     }), [formDataList.yesOrNo, formDataList.soYesNoNa, formDataList.yesNoNa, formDataList.incoterm, formDataList.globalOrder,
-    formDataList.localCatalog, formDataList.regionalOrder, formDataList.typeOfItem, formDataList.printingMethod]);
+    formDataList.localCatalog, formDataList.regionalOrder, formDataList.typeOfItem, formDataList.printingMethod, formDataList.reEngineering]);
 
     useEffect(() => {
-        const { yesOrNo, soYesNoNa, yesNoNa, incoterm, globalOrder, localCatalog, regionalOrder, typeOfItem, printingMethod } = selectedValues;
+        const { yesOrNo, soYesNoNa, yesNoNa, incoterm, globalOrder, localCatalog, regionalOrder, typeOfItem, printingMethod , reEngineering } = selectedValues;
         setFormData(prev => {
             if (prev.incoterm === incoterm && prev.globalOrderWindowCatalogueName === globalOrder && prev.localCatalogueName === localCatalog &&
                 prev.regionalOrderWindowCatalogue === regionalOrder && prev.typeOfItem === typeOfItem //, prev.printingMethod === printingMethod
@@ -345,7 +353,8 @@ const LineItems = () => {
                 ...(regionalOrder && { regionalOrderWindowCatalogue: regionalOrder }),
                 ...(localCatalog && { localCatalogueName: localCatalog }),
                 ...(typeOfItem && { typeOfItem: typeOfItem }),
-                ...(printingMethod && { printingMethod: printingMethod })
+                ...(printingMethod && { printingMethod: printingMethod }),
+                ...(reEngineering && { reEngineering : reEngineering })
             };
         });
 
@@ -360,15 +369,17 @@ const LineItems = () => {
             setFormDataList(prev => ({
                 ...prev,
                 itemCategory: response.itemCategory,
-                subCategory: response.subCategory,
-                exceptionsReasonCode: response.exceptionReason,
-                typeOfItem: response.typeOfItem,
                 localCatalog: response.localCatalog,
-                globalOrder: response.globalOrder,
-                regionalOrder: response.regionalOrder,
-                sourcingLocation: response.sourcingLocation,
-                savingsType: response.savingsType,
                 printingMethod: response.printingMethod,
+                materialUsed: response.materialused
+                // subCategory: response.subCategory,
+                // exceptionsReasonCode: response.exceptionReason,
+                // typeOfItem: response.typeOfItem,
+                // globalOrder: response.globalOrder,
+                // regionalOrder: response.regionalOrder,
+                // sourcingLocation: response.sourcingLocation,
+                // savingsType: response.savingsType,
+
             }));
 
         } catch (error) {
@@ -466,56 +477,66 @@ const LineItems = () => {
                     //lineItems
                     EnqId: id,
                     Printornonprint: getOptionLabel(formDataList.category, formData.category),
-                    TOJABC: getOptionLabel(formDataList.typeOfJob, formData.typeOfJob),
-                    localRateCard: getOptionLabel(formDataList.yesOrNo, formData.rateCard),
-                    Competbidmandate: getOptionLabel(formDataList.yesOrNoNot, formData.competitiveBiddingMandatory),
-                    Competbidcomplaint: getOptionLabel(formDataList.yesOrNoNot, formData.competitiveBiddingCompliant),
-                    Competbidexception: getOptionLabel(formDataList.competitiveBiddingExceptionFormSigned, formData.competitiveBiddingExceptionFormSigned),
-                    Exceptionreason: getOptionLabel(formDataList.exceptionsReasonCode, formData.exceptionsReasonCode),
                     ProductCategoryId: formData.itemCategory,
-                    SubcatID: formData.subCategory,
-                    Simplex: getOptionLabel(formDataList.simplex, formData.simplex),
-                    TCOapproval: getOptionLabel(formDataList.tcoYesOrNo, formData.tcoApprovalRequired),
-                    TCOapproved: getOptionLabel(formDataList.tcoYesOrNo, formData.tcoApproved),
-                    Dictated: getOptionLabel(formDataList.yesOrNo, formData.dictatedJob),
-                    Itemtype: getOptionLabel(formDataList.itemType, formData.itemType),
+                    localRateCard: getOptionLabel(formDataList.rateCard, formData.rateCard),
+                    reengineering: getOptionLabel(formDataList.reEngineering, formData.reEngineering),
+                    Dictated: getOptionLabel(formDataList.dictatedJob, formData.dictatedJob),
+                    urgent : getOptionLabel(formDataList.urgentJob, formData.urgentJob),
+                    ProductType: getOptionLabel(formDataList.itemType, formData.itemType),
                     Incoterm: getOptionLabel(formDataList.incoterm, formData.incoterm),
                     ItemName: formData.itemName,
                     ItemDescription: formData.itemNameDescription,
+                    //TOJABC: getOptionLabel(formDataList.typeOfJob, formData.typeOfJob),
+                    // Competbidmandate: getOptionLabel(formDataList.yesOrNoNot, formData.competitiveBiddingMandatory),
+                    // Competbidcomplaint: getOptionLabel(formDataList.yesOrNoNot, formData.competitiveBiddingCompliant),
+                    // Competbidexception: getOptionLabel(formDataList.competitiveBiddingExceptionFormSigned, formData.competitiveBiddingExceptionFormSigned),
+                    // Exceptionreason: getOptionLabel(formDataList.exceptionsReasonCode, formData.exceptionsReasonCode),
+                    //SubcatID: formData.subCategory,
+                    // Simplex: getOptionLabel(formDataList.simplex, formData.simplex),
+                    // TCOapproval: getOptionLabel(formDataList.tcoYesOrNo, formData.tcoApprovalRequired),
+                    // TCOapproved: getOptionLabel(formDataList.tcoYesOrNo, formData.tcoApproved),
+
 
 
                     // ✅ Sustainability
-                    usingFSCMaterial: getOptionLabel(formDataList.yesNoNa, formData.fscOrPefcMaterial),
-                    OEKOTEXCertification: getOptionLabel(formDataList.yesNoNa, formData.taxCertification),
-                    designedforrecycling: getOptionLabel(formDataList.yesNoNa, formData.recyclable),
-                    proposedwithsustainabilityoption: getOptionLabel(formDataList.soYesNoNa, formData.sustainabilityOption),
-                    WasthisitemdesignedtoreducedPlastic: getOptionLabel(formDataList.yesNoNa, formData.containsPlastic),
-                    Isthisitemdesignedtobereused: getOptionLabel(formDataList.yesNoNa, formData.designedToBeReused),
-                    containrecycledmaterial: getOptionLabel(formDataList.yesNoNa, formData.recycledMaterial),
-                    containrecycledplastic: getOptionLabel(formDataList.yesNoNa, formData.containsRecycledPlastic),
-                    Weightageofrecycledmaterial: formData.recycledMaterialWeightKg,
+                    fscpefcmaterial: getOptionLabel(formDataList.yesNoNa, formData.fscOrPefcMaterial),
+                    //OEKOTEXCertification: getOptionLabel(formDataList.yesNoNa, formData.taxCertification),
+                    designforrecycle: getOptionLabel(formDataList.yesNoNa, formData.recyclable),
+                    Proposedsustain: getOptionLabel(formDataList.soYesNoNa, formData.sustainabilityOption),
+                    containplasticNew: getOptionLabel(formDataList.yesNoNa, formData.containsPlastic),
+                    designreused: getOptionLabel(formDataList.yesNoNa, formData.designedToBeReused),
+                    recycledmaterial: getOptionLabel(formDataList.yesNoNa, formData.recycledMaterial),
+                    recycledplasticNew: getOptionLabel(formDataList.yesNoNa, formData.containsRecycledPlastic),
+                    plasticweightage: formData.plasticWeightKg,
+                    recycledplasticweightage: formData.recycledPlasticWeightKg,
+                    recycledmaterialweightage: formData.recycledMaterialWeightKg,
+                    
+                    
                     //CompetetiveWinningSupplier
 
                     // Catalogue Section
-                    RateCard: getOptionLabel(formDataList.tcoYesOrNo, formData.ratecardCatalogueItemDeclined),
-                    PromoOSSOrderWindows: getOptionLabel(formDataList.globalOrder, formData.globalOrderWindowCatalogueName),
-                    Regionalname: getOptionLabel(formDataList.regionalOrder, formData.regionalOrderWindowCatalogue),
-                    CatalogueUsage: getOptionLabel(formDataList.localCatalog, formData.localCatalogueName),
-                    Eauction: getOptionLabel(formDataList.yesOrNo, formData.eAuction),
-                    printingmethod: getOptionLabel(formDataList.printingMethod, formData.printingMethod),
-                    typeofitem: formData.typeOfItem == "" ? "N/A" : getOptionLabel(formDataList.typeOfItem, formData.typeOfItem),
-                    Noofmaterials: formData.noOfMaterials,
-                    DigitalInnovation: getOptionLabel(formDataList.yesNoNa, formData.digitalInnovation),
                     Innovation: getOptionLabel(formDataList.yesNoNa, formData.innovation),
-                    Sourcinglocation: getOptionLabel(formDataList.sourcingLocation, formData.sourcingLocation),
-                    savingstype: getOptionLabel(formDataList.savingsType, formData.savingsType),
-                    savingsreason: getOptionLabel(formDataList.savingsReason, formData.savingsReason),
-                    OWlink: getOptionLabel(formDataList.yesNoNa, formData.owWithLink),
+                    CatalogueUsage: getOptionLabel(formDataList.localCatalog, formData.localCatalogueName),
+                    printingmethod: getOptionLabel(formDataList.printingMethod, formData.printingMethod),
+                    materialused : getOptionLabel(formDataList.materialUsed, formData.materialUsed),
+                    //RateCard: getOptionLabel(formDataList.tcoYesOrNo, formData.ratecardCatalogueItemDeclined),
+                    //PromoOSSOrderWindows: getOptionLabel(formDataList.globalOrder, formData.globalOrderWindowCatalogueName),
+                    //Regionalname: getOptionLabel(formDataList.regionalOrder, formData.regionalOrderWindowCatalogue),
+                    // Eauction: getOptionLabel(formDataList.yesOrNo, formData.eAuction),
+                    // typeofitem: formData.typeOfItem == "" ? "N/A" : getOptionLabel(formDataList.typeOfItem, formData.typeOfItem),
+                    // Noofmaterials: formData.noOfMaterials,
+                    // DigitalInnovation: getOptionLabel(formDataList.yesNoNa, formData.digitalInnovation),
+                    // Sourcinglocation: getOptionLabel(formDataList.sourcingLocation, formData.sourcingLocation),
+                    // savingstype: getOptionLabel(formDataList.savingsType, formData.savingsType),
+                    // savingsreason: getOptionLabel(formDataList.savingsReason, formData.savingsReason),
+                    // OWlink: getOptionLabel(formDataList.yesNoNa, formData.owWithLink),
                     CompetetiveWinningSupplier: formData.competitiveBiddingWinningSupplierCost,
+
                     // Specifications
                     Version: formData.noOfVersion,
                     SpecNote: formData.specifications,
                     SNote: formData.notesComments,
+
                     // Quantity
                     QuoteType: getOptionLabel(formDataList.quoteType, formData.quantityType),
                     QuoteTypeindex: formData.quantityType,
@@ -559,10 +580,9 @@ const LineItems = () => {
 
     const handleBack = () => {
         if (window.history.length > 1) {
-            navigate(-1);
-            // navigate(labelRoutes.enquiryDetails, {
-            //     state: { id: id }
-            // });
+            navigate(labelRoutes.enquiryDetails, {
+                state: { id: id }
+            });
         } else {
             navigate(labelRoutes.home); // fallback route
         }
@@ -571,22 +591,24 @@ const LineItems = () => {
     const LineItemsValidation = () => {
         const requiredFields = [
             Labels.lineItems.category,
-            Labels.lineItems.typeOfJob,
             Labels.lineItems.rateCard,
-            Labels.lineItems.competitiveBiddingMandatory,
-            Labels.lineItems.competitiveBiddingCompliant,
-            Labels.lineItems.competitiveBiddingExceptionFormSigned,
-            Labels.lineItems.exceptionsReasonCode,
             Labels.lineItems.itemCategory,
-            Labels.lineItems.subCategory,
-            //Labels.lineItems.simplex,
-            Labels.lineItems.tcoApprovalRequired,
-            Labels.lineItems.tcoApproved,
             Labels.lineItems.dictatedJob,
             Labels.lineItems.itemType,
             Labels.lineItems.itemName,
             Labels.lineItems.itemNameDescription,
             Labels.lineItems.urgentJob,
+            Labels.lineItems.reEngineering,
+
+            //Labels.lineItems.typeOfJob,
+            // Labels.lineItems.competitiveBiddingMandatory,
+            // Labels.lineItems.competitiveBiddingCompliant,
+            // Labels.lineItems.competitiveBiddingExceptionFormSigned,
+            // Labels.lineItems.exceptionsReasonCode,
+            // Labels.lineItems.subCategory,
+            //Labels.lineItems.simplex,
+            // Labels.lineItems.tcoApprovalRequired,
+            // Labels.lineItems.tcoApproved,
 
             // Sustainability Information
             Labels.lineItems.fscOrPefcMaterial,
@@ -597,25 +619,27 @@ const LineItems = () => {
             Labels.lineItems.designedToBeReused,
             Labels.lineItems.containsPlastic,
             Labels.lineItems.containsRecycledPlastic,
-            ...(formData.recycledMaterial == 1 ? [Labels.lineItems.recycledMaterialWeightKg] : []),
+            Labels.lineItems.recycledMaterialWeightKg,
+            ...(formData.containsRecycledPlastic == 1 ? [Labels.lineItems.recycledPlasticWeightKg] : []),
+            ...(formData.containsPlastic == 1 ? [Labels.lineItems.plasticWeightKg] : []),
 
             // Catalogue Section
-            Labels.lineItems.ratecardCatalogueItemDeclined,
-            Labels.lineItems.globalOrderWindowCatalogueName,
-            Labels.lineItems.regionalOrderWindowCatalogue,
             Labels.lineItems.localCatalogueName,
-            Labels.lineItems.eAuction,
             Labels.lineItems.printingMethod,
-            Labels.lineItems.typeOfItem,
-            Labels.lineItems.noOfMaterials,
-            Labels.lineItems.harmonizedOrder,
-            Labels.lineItems.digitalInnovation,
-            Labels.lineItems.innovation,
-            Labels.lineItems.sourcingLocation,
-            Labels.lineItems.savingsType,
-            Labels.lineItems.savingsReason,
-            Labels.lineItems.owWithLink,
             Labels.lineItems.materialUsed,
+            Labels.lineItems.innovation,
+            // Labels.lineItems.ratecardCatalogueItemDeclined,
+            // Labels.lineItems.globalOrderWindowCatalogueName,
+            // Labels.lineItems.regionalOrderWindowCatalogue,
+            //Labels.lineItems.eAuction,
+            //Labels.lineItems.typeOfItem,
+            // Labels.lineItems.noOfMaterials,
+            // Labels.lineItems.harmonizedOrder,
+            // Labels.lineItems.digitalInnovation,
+            // Labels.lineItems.sourcingLocation,
+            // Labels.lineItems.savingsType,
+            // Labels.lineItems.savingsReason,
+            // Labels.lineItems.owWithLink,
 
             // Specifications
             Labels.lineItems.noOfVersion,
@@ -900,7 +924,7 @@ const LineItems = () => {
                                         onChange={handleChange}
                                         helperText={errors?.dictatedJob}
                                         name={Labels.lineItems.dictatedJob}
-                                        options={formDataList.tcoYesOrNo}
+                                        options={formDataList.dictatedJob}
                                     />
                                 </PGrid>
                                 <PGrid item xs={12} sm={6} md={4}>
@@ -921,7 +945,7 @@ const LineItems = () => {
                                         onChange={handleChange}
                                         helperText={errors?.reEngineering}
                                         name={Labels.lineItems.reEngineering}
-                                        options={formDataList.yesOrNo}
+                                        options={formDataList.reEngineering}
                                         flag={Labels.flag.auto}
                                     />
                                 </PGrid>
@@ -935,7 +959,7 @@ const LineItems = () => {
                                         onChange={handleChange}
                                         helperText={errors?.rateCard}
                                         name={Labels.lineItems.rateCard}
-                                        options={formDataList.tcoYesOrNo}
+                                        options={formDataList.rateCard}
                                         disabled={true}
                                     />
                                 </PGrid>
@@ -1005,7 +1029,7 @@ const LineItems = () => {
                                         helperText={errors?.fscOrPefcMaterial}
                                         name={Labels.lineItems.fscOrPefcMaterial}
                                         options={formDataList.yesNoNa}
-                                        readOnly={formData.category == 3 ? true : false}
+                                        //readOnly={formData.category == 3 ? true : false}
                                         disabled={true}
                                     />
                                 </PGrid>
@@ -1122,9 +1146,9 @@ const LineItems = () => {
                                 <PGrid item xs={12} sm={6} md={4}>
                                     <PTextField
                                         label={`${getLabel("lbl79")} ${Labels.symbols.required} ${Labels.symbols.optional}`}
-                                        value={formData.recycledMaterial == 1 ? formData.recycledMaterialWeightKg : ""}
+                                        value={formData.recycledMaterialWeightKg}
                                         onChange={handleChange}
-                                        helperText={formData.recycledMaterial == 1 ? errors?.recycledMaterialWeightKg : ""}
+                                        helperText={errors?.recycledMaterialWeightKg}
                                         name={Labels.lineItems.recycledMaterialWeightKg}
                                     //disabled={formData.recycledMaterial == 1 ? false : true}
 

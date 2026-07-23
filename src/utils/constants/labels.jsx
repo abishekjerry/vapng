@@ -61,22 +61,24 @@ export const Labels = {
 
   lineItems: {
     category: "category",
-    typeOfJob: "typeOfJob",
     rateCard: "rateCard",
+    itemCategory: "itemCategory",
+    dictatedJob: "dictatedJob",
+    urgentJob: "urgentJob",
+    itemType: "itemType",
+    incoterm: "incoterm",
+    itemName: "itemName",
+    typeOfJob: "typeOfJob",
+    reEngineering : "reEngineering",
+    itemNameDescription: "itemNameDescription",
     competitiveBiddingMandatory: "competitiveBiddingMandatory",
     competitiveBiddingCompliant: "competitiveBiddingCompliant",
     competitiveBiddingExceptionFormSigned: "competitiveBiddingExceptionFormSigned",
     exceptionsReasonCode: "exceptionsReasonCode",
-    itemCategory: "itemCategory",
     subCategory: "subCategory",
     simplex: "simplex",
     tcoApprovalRequired: "tcoApprovalRequired",
     tcoApproved: "tcoApproved",
-    dictatedJob: "dictatedJob",
-    itemType: "itemType",
-    incoterm: "incoterm",
-    itemName: "itemName",
-    itemNameDescription: "itemNameDescription",
 
     // Sustainability Information
     fscOrPefcMaterial: "fscOrPefcMaterial",
@@ -88,6 +90,8 @@ export const Labels = {
     containsPlastic: "containsPlastic",
     containsRecycledPlastic: "containsRecycledPlastic",
     recycledMaterialWeightKg: "recycledMaterialWeightKg",
+    plasticWeightKg: "plasticWeightKg",
+    recycledPlasticWeightKg : "recycledPlasticWeightKg",
 
     // Catalogue Section
     ratecardCatalogueItemDeclined: "ratecardCatalogueItemDeclined",
@@ -106,6 +110,7 @@ export const Labels = {
     savingsType: "savingsType",
     savingsReason: "savingsReason",
     owWithLink: "owWithLink",
+    materialUsed : "materialUsed",
 
     // Specifications
     noOfVersion: "noOfVersion",

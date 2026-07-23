@@ -5,13 +5,13 @@ const getBaseUrl = () => {
       return "/api"; // Vite proxy
 
     case "ebiz.pmgasia.com":
-      return "https://ebiz.pmgasia.com/iWeb/virtualagency/vagit/api"; // UAT
+      return "https://ebiz.pmgasia.com/iWeb/virtualagency/vaapipng/api"; // UAT
 
     case "web.pmgasia.com":
-      return "https://web.pmgasia.com/iWeb/virtualagency/vagit/api"; // Production
+      return "https://web.pmgasia.com/iWeb/virtualagency/vaapipng/api"; // Production
 
     default:
-      return "https://ebiz.pmgasia.com/iWeb/virtualagency/vagit/api";
+      return "https://ebiz.pmgasia.com/iWeb/virtualagency/vaapipng/api";
   }
 };
 

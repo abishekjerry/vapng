@@ -19,7 +19,7 @@ import { userDetails, clearUserDetails } from "../../redux/actionType/actionType
 import { connect } from "react-redux";
 import { AppNavigation } from "../../navigations/appNavigation";
 import { labelRoutes } from "../../navigations/labelRoutes";
-import Logo from "../../utils/assets/Navbar/Logo.svg";
+import Logo from "../../utils/assets/images/Valogo.png"
 import { PostApi } from "../../utils/api/networking";
 import { Account_API, Dashboard_API } from "../../utils/api/apiUrl";
 import PGrid from "../../component/PGrid/PGrid";
@@ -211,7 +211,15 @@ function Login(props) {
           {isForgetPassword ? (
             <div className="login-left">
               <div className="login-box">
-                <img src={Logo} alt="Logo" style={{ height: 80, margin: 10 }} />
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                  <img src={Logo} alt="Logo"
+                    style={{
+                      height: 80,
+                      width: 100,
+                      margin: 10,
+                    }}
+                  />
+                </div>
 
                 <PTextField
                   name={Labels.login.newPassword}
@@ -245,7 +253,15 @@ function Login(props) {
 
             <div className="login-left">
               <div className="login-box">
-                <img src={Logo} alt="Logo" style={{ height: 80, margin: 10 }} />
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                  <img src={Logo} alt="Logo"
+                    style={{
+                      height: 80,
+                      width: 100,
+                      margin: 10,
+                    }}
+                  />
+                </div>
 
                 <PTextField
                   name={Labels.login.userName}

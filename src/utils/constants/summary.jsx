@@ -93,20 +93,25 @@ export const getLineneItems = (formData = {}, formDataList = {}, getLabel, getOp
     // { key: "tcOapproved", label: "lbl103" },
 
 
-    { key: "usingFSCMaterial", label: "lbl70" },
-    { key: "oekotexCertification", label: "lbl151" },
-    { key: "designedforrecycling", label: "lbl71" },
-    { key: "wasthisitemdesignedtoreducedPlastic", label: "lbl75" },
-    { key: "proposedwithsustainabilityoption", label: "lbl72" },
-    { key: "containrecycledmaterial", label: "lbl73" },
-    { key: "containrecycledplastic", label: "lbl76" },
-    { key: "weightageofrecycledmaterial", label: "lbl79" },
-    { key: "isthisitemdesignedtobereused", label: "lbl74" },
+    { key: "fscpefcmaterial", label: "lbl70" },
+    //{ key: "oekotexCertification", label: "" },
+    { key: "designforrecycle", label: "lbl202" },
+    { key: "proposedsustain", label: "lbl72" },
+    { key: "containplasticNew", label: "lbl75" },
+    { key: "designreused", label: "lbl74" },
+    { key: "recycledmaterial", label: "lbl73" },
+    { key: "recycledplasticNew", label: "lbl76" },
+    { key: "plasticweightage", label: "lbl77" },
+    { key: "recycledplasticweightage", label: "lbl78" },
+    { key: "recycledmaterialweightage", label: "lbl79" },
+
 
 
     { key: "printingMethod", label: "lbl111" },
+    { key: "materialused", label: "lbl201" },
+    { key: "innovation", label: "lbl158" },
     { key: "catalogueUsage", label: "lbl81" },
-    { key: "", label: "lbl158" },
+    
     // { key: "rateCard", label: "lbl106" },
     // { key: "eauction", label: "lbl110" },
     // { key: "promoOSSOrderWindows", label: "lbl107" },
