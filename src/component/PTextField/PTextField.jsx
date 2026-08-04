@@ -11,6 +11,7 @@ import {
 
 import { Labels } from "../../utils/constants/labels";
 import { FontFamily, FontSize } from "../../utils/constants/fonts";
+import { CommonColors } from "../../utils/constants/colors";
 
 export default function PTextField({
     inputRef,
@@ -50,6 +51,7 @@ export default function PTextField({
 
             "& fieldset": {
                 borderColor: helperText ? "#d32f2f" : "#ccc",
+                borderWidth: "1.5px"
             },
 
             "&:hover fieldset": {
@@ -63,12 +65,24 @@ export default function PTextField({
         "& .MuiInputLabel-root": {
             fontFamily: FontFamily.bold,
             fontSize: FontSize.textField.label,
+            color: "#9e9e9e",
+            top: "0px",
+            "&.Mui-focused": { color: "#62BCD8" },
+            "&.Mui-error": { color: "#d32f2f" },
+            "&.Mui-disabled": { color: "#bdbdbd" },
         },
         "& .MuiInputLabel-shrink": {
             color: "#62BCD8",
             fontWeight: 600,
             fontSize: "12px",
             transform: "translate(14px, -6px) scale(1)"
+        },
+        "& .MuiFormHelperText-root": {
+            fontFamily: FontFamily.bold,
+            fontSize: FontSize.textField.error,
+            color: CommonColors.textError,
+            marginLeft: "2px",
+            marginTop: "4px"
         },
         ...sx
     };
@@ -88,7 +102,7 @@ export default function PTextField({
             multiline={multiline}
             rows={rows}
             disabled={disabled}
-            helperText={helperText || " "}
+            helperText={helperText}
             error={!!helperText}
             variant={variant}
             sx={baseSx}

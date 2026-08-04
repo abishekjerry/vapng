@@ -108,7 +108,13 @@ const Review = () => {
         });
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (e, flag) => {
+        if (!flag) {
+            navigate(labelRoutes.eqDashboard, {
+                state: { id: state.id }
+            });
+            return;
+        }
         try {
             setLoading(true);
             const response = await PostApi(`${Dashboard_API.EnqReview}?enqId=${id}&createdBy=${userID}`);
@@ -323,8 +329,8 @@ const Review = () => {
             <PDraftDialog
                 open={openDraft}
                 onClose={() => setOpenDraft(false)}
-                onSave={handleSubmit}
-                onDelete={handleSubmit}
+                onSave={(e) => handleSubmit(e, false)}
+                onDelete={(e) => handleSubmit(e, false)}
             />
         </>
     );

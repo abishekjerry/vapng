@@ -7,13 +7,13 @@ import { Labels } from "../../utils/constants/labels";
 import { EnquiryDetails_API } from "../../utils/api/apiUrl";
 import { PostApi } from "../../utils/api/networking";
 
-function PSlaTemplate({ sla, enquiryId, quoteStartDate, disabled = false, onChange, getLabel }) {
+function PSlaTemplate({ sla, enquiryId, quoteStartDate, disabled = false, onChange, getLabel, response }) {
     const keys = ["quote", "proof", "production", "filecopies", "invoice"];
     const today = formatDate(new Date());
     const [loading, setLoading] = useState(false);
     const [phaseDates, setPhaseDates] = useState([]);
 
-    const calculatePlanByQuote = (selectedDate, updatedPhases = null, startIndex = 0) => {
+    const calculatePlanByQuote = (selectedDate, updatedPhases = null, startIndex = 0, res = false) => {
         const data = updatedPhases || phaseDates;
         const updated = [...data];
 
@@ -39,12 +39,30 @@ function PSlaTemplate({ sla, enquiryId, quoteStartDate, disabled = false, onChan
                     count++;
                 }
             }
-            updated[i] = {
-                ...updated[i],
-                startDate: formatDate(tempStart),
-                endDate: formatDate(endDate)
-            };
-            startDate = new Date(endDate);
+            const key = keys[i];
+            const apiStartDate = response?.[`${key}startdate`];
+            const apiEndDate = response?.[`${key}enddate`];
+
+            if (res && apiStartDate?.trim() && apiEndDate?.trim()) {
+                updated[i] = {
+                    ...updated[i],
+                    startDate: apiStartDate,
+                    endDate: apiEndDate
+                };
+            } else {
+                updated[i] = {
+                    ...updated[i],
+                    startDate: formatDate(tempStart),
+                    endDate: formatDate(endDate)
+                };
+            }
+            startDate = parseDate(updated[i].endDate);
+            // updated[i] = {
+            //     ...updated[i],
+            //     startDate: formatDate(tempStart),
+            //     endDate: formatDate(endDate)
+            // };
+            // startDate = new Date(endDate);
         }
         setPhaseDates(updated);
         const dynamicData = updated.reduce((acc, item, i) => {
@@ -69,7 +87,7 @@ function PSlaTemplate({ sla, enquiryId, quoteStartDate, disabled = false, onChan
         if (isNaN(num) || num <= 0) return;
         const updated = [...phaseDates];
         updated[index] = { ...updated[index], mdays: value };
-        calculatePlanByQuote(updated[0]?.startDate || today, updated, index);
+        calculatePlanByQuote(updated[0]?.startDate || today, updated, index, false);
     };
 
     const handleStartDateChange = (index, selectedDate) => {
@@ -81,7 +99,7 @@ function PSlaTemplate({ sla, enquiryId, quoteStartDate, disabled = false, onChan
             ...updated[index],
             startDate: selectedDate
         };
-        calculatePlanByQuote(updated[0]?.startDate || today, updated, index);
+        calculatePlanByQuote(updated[0]?.startDate || today, updated, index, false);
     };
 
     const slaTemplate = async (slaId) => {
@@ -99,7 +117,7 @@ function PSlaTemplate({ sla, enquiryId, quoteStartDate, disabled = false, onChan
                 { name: getLabel("lbl57"), days: response?.defFileCopies, mdays: response?.fileCopies },
                 { name: getLabel("lbl58"), days: response?.defInvoices, mdays: response?.invoicing }
             ];
-            calculatePlanByQuote(quoteStartDate ? quoteStartDate : today, phases);
+            calculatePlanByQuote(quoteStartDate ? quoteStartDate : today, phases, 0, true);
         }
         catch (error) {
             toast(Labels.status.failure, Labels.message.somethingWentWrong);
@@ -108,10 +126,14 @@ function PSlaTemplate({ sla, enquiryId, quoteStartDate, disabled = false, onChan
             setLoading(false);
         }
     };
+    // useEffect(() => {
+    //     if (!sla && response) return;
+    //     slaTemplate(sla);
+    // }, [sla]);
     useEffect(() => {
-        if (!sla) return;
+        if (!sla || !response || Object.keys(response).length === 0) return;
         slaTemplate(sla);
-    }, [sla]);
+    }, [sla, response]);
 
     return (
         <>
@@ -138,6 +160,7 @@ function PSlaTemplate({ sla, enquiryId, quoteStartDate, disabled = false, onChan
                             value={phase.mdays}
                             disabled={disabled}
                             onChange={(e) => handleModifiedDays(index, e.target.value)}
+                            sx={{ mb: 2 }}
                         />
                     </PGrid>
 
@@ -146,20 +169,14 @@ function PSlaTemplate({ sla, enquiryId, quoteStartDate, disabled = false, onChan
                             width={100}
                             value={phase.startDate}
                             disabled={disabled}
-                            minDate={
-                                index === 0
-                                    ? parseDate(today)
-                                    : parseDate(
-                                        phaseDates[index - 1]?.endDate
-                                    )
-                            }
+                            minDate={index === 0 ? parseDate(today) : parseDate(phaseDates[index - 1]?.endDate)}
                             allowFuture={true}
                             onChange={(e) => {
                                 const selectedDate = e?.target?.value
                                     ? e.target.value
                                     : formatDate(e);
                                 if (index === 0) {
-                                    calculatePlanByQuote(selectedDate, phaseDates, 0);
+                                    calculatePlanByQuote(selectedDate, phaseDates, 0, false);
                                 } else {
                                     handleStartDateChange(index, selectedDate);
                                 }
@@ -171,6 +188,7 @@ function PSlaTemplate({ sla, enquiryId, quoteStartDate, disabled = false, onChan
                         <PTextField
                             value={phase.endDate}
                             disabled
+                            sx={{ mb: 2 }}
                         />
                     </PGrid>
                 </PGrid>

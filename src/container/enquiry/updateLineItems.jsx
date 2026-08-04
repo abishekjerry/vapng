@@ -247,6 +247,7 @@ const UpdateLineItems = ({ open, onClose, data = {}, step, refreshSummary }) => 
                         onChange={handleChange}
                         helperText={errors?.itemName}
                         name={Labels.lineItems.itemName}
+                        sx ={{mb : 3}}
                     />
                     <PTextField
                         label={`${getLabel("lbl87")} ${Labels.symbols.required}`}

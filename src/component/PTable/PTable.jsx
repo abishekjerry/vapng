@@ -9,12 +9,12 @@ import {
   Paper,
   TableContainer,
   Box,
-  Checkbox, Tooltip
+  Checkbox, Tooltip, Skeleton
 } from "@mui/material";
 import { Labels } from "../../utils/constants/labels";
 import { CommonColors } from "../../utils/constants/colors";
 
-const PTable = ({ columns, rows, onClick, isChecked = false, showCheckbox = false, onValidationChange, selectedRows = [], disabled = false, showHeader = true, showPagination = true, bgColor = false }) => {
+const PTable = ({ columns, rows, onClick, isChecked = false, showCheckbox = false, onValidationChange, selectedRows = [], disabled = false, showHeader = true, showPagination = true, bgColor = false, loading = false }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const isPageLoad = useRef(false);
@@ -60,7 +60,12 @@ const PTable = ({ columns, rows, onClick, isChecked = false, showCheckbox = fals
   };
 
   const renderCell = (col, data, rowIndex, meta = {}) => {
-    const content = col.render ? col.render(data, rowIndex) : renderText(data[col.field]);
+    const content = loading ? (
+      <Skeleton variant="text" width="80%" height={24} />
+    ) : (
+      col.render ? col.render(data, rowIndex) : renderText(data[col.field])
+    );
+    //const content = col.render ? col.render(data, rowIndex) : renderText(data[col.field]);
     if (showCheckbox && meta.isFirstCol) {
       return (
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -68,7 +73,7 @@ const PTable = ({ columns, rows, onClick, isChecked = false, showCheckbox = fals
             size="small"
             checked={disabled ? false : isSelected(data)}
             onChange={() => handleRowSelect(data)}
-            disabled={disabled}
+            disabled={disabled || loading}
           />
           {content}
         </Box>

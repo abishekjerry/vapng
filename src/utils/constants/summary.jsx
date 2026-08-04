@@ -25,14 +25,10 @@ export const getSummarySections = ({ clientInfo = [], enquiryDetails = [], lineI
   ].filter(Boolean);
 };
 
-export const getClientInfo = (fields = {}, formData = {}, formDataList = {}, getLabel, getOptionLabel, response = null, flag = false) => {
+export const getClientInfo = (fields = {}, formData = {}, formDataList = {}, getLabel, getOptionLabel, response = null, extraInfo = []) => {
   const source = response || formData;
   return [
-    ...(flag ? [
-      { label: getLabel("lbl164"), value: "" },
-      { label: getLabel("lbl10"), value: "" },
-      { label: getLabel("lbl162"), value: source.enqUId }
-    ] : []),
+    ...extraInfo,
     { label: getLabel("lbl27"), value: response ? source.divisionname : getOptionLabel(formDataList.division, source.division) },
     { label: getLabel("lbl28"), value: response ? source.client : fields.clientName },
     { label: getLabel("lbl09"), value: response ? source.country : fields.country },
@@ -73,10 +69,10 @@ export const getLineneItems = (formData = {}, formDataList = {}, getLabel, getOp
   const lineItemMapping = [
     { key: "printornonprint", label: "lbl154" },
     { key: "productcategory", label: "lbl61" },
-    { key: "", label: "lbl156" },
+    { key: "urgent", label: "lbl156" },
     { key: "dictatedJob", label: "lbl63" },
-    { key: "itemtype", label: "lbl64" },
-    { key: "", label: "lbl157" },
+    { key: "ProductType", label: "lbl64" },
+    { key: "reengineering", label: "lbl157" },
     { key: "localRateCard", label: "lbl65" },
     { key: "incoterm", label: "lbl152" },
     { key: "itemName", label: "lbl66" },

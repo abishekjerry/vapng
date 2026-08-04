@@ -122,37 +122,57 @@ const PDeliveryOrder = (props) => {
         }
     };
 
-    const handleSave = async (e) => {
-        try {
-            setLoading(true);
-            const response = await PostApi(ProjectEnquiry_API.AddUpdateDeliveryAddress,
-                {
-                    Enqid : id,
-                    id: formData.id,
-                    companyName: formData.companyName,
-                    addressLineOne: formData.addressLineOne,
-                    addressLineTwo: formData.addressLineTwo,
-                    addressLineThree: formData.addressLineThree,
-                    nameorDept: formData.nameorDept,
-                    contactNo: formData.contactNo,
-                    remarks: formData.remarks
-                }
-            );
-            if (response.status) {
-                await props.fetchData();
-                await props.setFormData(prev => ({
-                    ...prev,
-                    activeTab : "Delivery Order",
-                }))
-                await handleCancel();
-                toast(Labels.status.success, response.data);
+    const DeliveryOrderValidation = () => {
+        const requiredFields = [
+            Labels.deliveryOrder.companyName,
+            Labels.deliveryOrder.addressLineOne,
+            Labels.deliveryOrder.nameorDept,
+            Labels.deliveryOrder.contactNo,
+        ];
+        let newErrors = {};
+        requiredFields.forEach((field) => {
+            if (!formData[field]) {
+                newErrors[field] = Labels.commonLabel.required;
             }
-        } catch (error) {
-            toast(Labels.status.failure, Labels.message.somethingWentWrong);
-        } finally {
-            setLoading(false);
+        });
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+    
+    const handleSave = async (e) => {
+        const isValid = DeliveryOrderValidation();
+        if (isValid) {
+            try {
+                setLoading(true);
+                const response = await PostApi(ProjectEnquiry_API.AddUpdateDeliveryAddress,
+                    {
+                        Enqid: id,
+                        id: formData.id,
+                        companyName: formData.companyName,
+                        addressLineOne: formData.addressLineOne,
+                        addressLineTwo: formData.addressLineTwo,
+                        addressLineThree: formData.addressLineThree,
+                        nameorDept: formData.nameorDept,
+                        contactNo: formData.contactNo,
+                        remarks: formData.remarks
+                    }
+                );
+                if (response.status) {
+                    await props.fetchData();
+                    await props.setFormData(prev => ({
+                        ...prev,
+                        activeTab: "Delivery Order",
+                    }))
+                    await handleCancel();
+                    toast(Labels.status.success, response.data);
+                }
+            } catch (error) {
+                toast(Labels.status.failure, Labels.message.somethingWentWrong);
+            } finally {
+                setLoading(false);
+            }
         }
-        
+
     }
 
     const handleCancel = async (e) => {

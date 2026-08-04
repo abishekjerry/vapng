@@ -3,7 +3,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { IconButton } from "@mui/material";
 import "./PCard.css";
 import { CommonColors } from "../../utils/constants/colors";
-
+import CircularProgress from "@mui/material/CircularProgress";
 export default function PCard({
   title,
   icon,          // ✅ new (optional)
@@ -16,6 +16,7 @@ export default function PCard({
   isOpen = true,         // 👈 new
   onToggle,
   readOnly = false,
+  loading = false,
 }) {
   return (
     <div className={`pcard-container ${className}`}>
@@ -58,8 +59,28 @@ export default function PCard({
           )}
         </div>
       )}
-      <div className="pcard-content" style={{ pointerEvents: readOnly ? "none" : "auto", opacity: readOnly ? 0.7 : 1}}>
+      <div className="pcard-content" style={{ pointerEvents: readOnly || loading ? "none" : "auto", opacity: readOnly || loading ? 0.7 : 1 }}>
         {collapsible ? isOpen && children : children}
+
+        {loading && (
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              background: "rgba(255,255,255,0.5)",
+              zIndex: 9999,
+              borderRadius: "8px",
+            }}
+          >
+            <CircularProgress size={35} />
+          </div>
+        )}
       </div>
     </div>
   );

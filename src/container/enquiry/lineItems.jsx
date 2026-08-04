@@ -20,17 +20,18 @@ import PTextField from "../../component/PTextField/PTextField";
 import { allowDecimal, allowOnlyNumbers, getEnquirySteps, getOptionLabel, getOptionValue, isNotEmpty, isSuccess, toast } from "../../utils/commonFunction/common";
 import { useLanguage } from "../../utils/constants/language";
 import { labelRoutes } from "../../navigations/labelRoutes";
-import { useLocation, useNavigate } from "react-router-dom";
+import {Link , useLocation, useNavigate } from "react-router-dom";
 import { Dashboard_API, LineItems_API } from "../../utils/api/apiUrl";
 import { PostApi } from "../../utils/api/networking";
 import { PDraftDialog } from "../../component/PDialog/PDraftDialog";
 import PreviewDialog from "../../component/PDialog/PPreviewDialog";
 import { getClientInfo, getEnquiryDetails, getLineneItems, getSummarySections } from "../../utils/constants/summary";
-import { PSummary } from "../../component/PSumary/PSummary";
+import { PSummary } from "../../component/PSummary/PSummary";
 import PDialog from "../../component/PDialog/PDialog";
 import PFileUpload from "../../component/PFileUpload/PFileUpload";
 import PAttachment from "../../component/PAttachment/PAttachment";
 import { useSelector } from "react-redux";
+import PSearch from "../../component/PSearch/PSearch";
 const LineItems = () => {
     const { state } = useLocation();
     const { getLabel } = useLanguage();
@@ -56,7 +57,7 @@ const LineItems = () => {
         materialUsed: [],
         typeOfItem: [],
         localCatalog: [],
-        reEngineering :[],
+        reEngineering: [],
         // globalOrder: [],
         // regionalOrder: [],
         // sourcingLocation: [],
@@ -142,7 +143,11 @@ const LineItems = () => {
         length: "",
         width: "",
         depth: "",
-        files: []
+        files: [],
+
+        //flags
+        specification: false,
+        search: ""
     });
 
     const [errors, setErrors] = useState({
@@ -314,12 +319,12 @@ const LineItems = () => {
         regionalOrder: getSelectedValue(formDataList.regionalOrder),
         typeOfItem: getSelectedValue(formDataList.typeOfItem),
         printingMethod: getSelectedValue(formDataList.printingMethod),
-        reEngineering  : getSelectedValue(formDataList.reEngineering),
+        reEngineering: getSelectedValue(formDataList.reEngineering),
     }), [formDataList.yesOrNo, formDataList.soYesNoNa, formDataList.yesNoNa, formDataList.incoterm, formDataList.globalOrder,
     formDataList.localCatalog, formDataList.regionalOrder, formDataList.typeOfItem, formDataList.printingMethod, formDataList.reEngineering]);
 
     useEffect(() => {
-        const { yesOrNo, soYesNoNa, yesNoNa, incoterm, globalOrder, localCatalog, regionalOrder, typeOfItem, printingMethod , reEngineering } = selectedValues;
+        const { yesOrNo, soYesNoNa, yesNoNa, incoterm, globalOrder, localCatalog, regionalOrder, typeOfItem, printingMethod, reEngineering } = selectedValues;
         setFormData(prev => {
             if (prev.incoterm === incoterm && prev.globalOrderWindowCatalogueName === globalOrder && prev.localCatalogueName === localCatalog &&
                 prev.regionalOrderWindowCatalogue === regionalOrder && prev.typeOfItem === typeOfItem //, prev.printingMethod === printingMethod
@@ -354,7 +359,7 @@ const LineItems = () => {
                 ...(localCatalog && { localCatalogueName: localCatalog }),
                 ...(typeOfItem && { typeOfItem: typeOfItem }),
                 ...(printingMethod && { printingMethod: printingMethod }),
-                ...(reEngineering && { reEngineering : reEngineering })
+                ...(reEngineering && { reEngineering: reEngineering })
             };
         });
 
@@ -362,7 +367,7 @@ const LineItems = () => {
 
     const LineItemsMaster = async (data) => {
         try {
-            setLoading(false);
+            setLoading(true);
             const response = await PostApi(LineItems_API.GetEnqLineItemsMaster, {
                 TypeOfJob: data
             });
@@ -481,7 +486,7 @@ const LineItems = () => {
                     localRateCard: getOptionLabel(formDataList.rateCard, formData.rateCard),
                     reengineering: getOptionLabel(formDataList.reEngineering, formData.reEngineering),
                     Dictated: getOptionLabel(formDataList.dictatedJob, formData.dictatedJob),
-                    urgent : getOptionLabel(formDataList.urgentJob, formData.urgentJob),
+                    urgent: getOptionLabel(formDataList.urgentJob, formData.urgentJob),
                     ProductType: getOptionLabel(formDataList.itemType, formData.itemType),
                     Incoterm: getOptionLabel(formDataList.incoterm, formData.incoterm),
                     ItemName: formData.itemName,
@@ -510,15 +515,15 @@ const LineItems = () => {
                     plasticweightage: formData.plasticWeightKg,
                     recycledplasticweightage: formData.recycledPlasticWeightKg,
                     recycledmaterialweightage: formData.recycledMaterialWeightKg,
-                    
-                    
+
+
                     //CompetetiveWinningSupplier
 
                     // Catalogue Section
                     Innovation: getOptionLabel(formDataList.yesNoNa, formData.innovation),
                     CatalogueUsage: getOptionLabel(formDataList.localCatalog, formData.localCatalogueName),
                     printingmethod: getOptionLabel(formDataList.printingMethod, formData.printingMethod),
-                    materialused : getOptionLabel(formDataList.materialUsed, formData.materialUsed),
+                    materialused: getOptionLabel(formDataList.materialUsed, formData.materialUsed),
                     //RateCard: getOptionLabel(formDataList.tcoYesOrNo, formData.ratecardCatalogueItemDeclined),
                     //PromoOSSOrderWindows: getOptionLabel(formDataList.globalOrder, formData.globalOrderWindowCatalogueName),
                     //Regionalname: getOptionLabel(formDataList.regionalOrder, formData.regionalOrderWindowCatalogue),
@@ -759,7 +764,7 @@ const LineItems = () => {
             LineItemsMaster(category);
             SavingsReasonMaster(formDataList.lineItems[0].savingstype, true);
         }
-    }, [hybird, lineItems.length]);
+    }, [hybird, lineItems.length, category]);
 
     return (
         <>
@@ -970,6 +975,7 @@ const LineItems = () => {
                                         onChange={handleChange}
                                         helperText={errors?.itemName}
                                         name={Labels.lineItems.itemName}
+                                        sx={{ mb: 3 }}
                                     />
 
                                 </PGrid>
@@ -1419,14 +1425,27 @@ const LineItems = () => {
                                     weight={FontWeight.bold}
                                 />
                                 <PTypography
-                                    labelText={getLabel("lbl84")}
+                                    labelText={
+                                        <>
+                                            {getLabel("lbl84").split("populate from an existing item")[0]}
+                                            <span style={{ color: CommonColors.blue.main }} onClick={() => {
+                                                setFormData(prev => ({
+                                                    ...prev,
+                                                    specification: formData.itemCategory
+                                                }))
+                                            }}>
+                                                populate from an existing item
+                                            </span>
+                                            {getLabel("lbl84").split("populate from an existing item")[1]}
+                                        </>
+                                    }
                                     flag={Labels.fontFlags.smallText}
                                     color={CommonColors.grey.main}
                                     weight={FontWeight.bold}
                                 />
 
                             </PGrid>
-                            <PGrid container>
+                            <PGrid container className={Labels.margin.mb3}>
                                 <PGrid item xs={12} sm={6} md={6}>
                                     <PTextField
                                         label={`${getLabel("lbl85")} ${Labels.symbols.required}`}
@@ -1596,7 +1615,7 @@ const LineItems = () => {
 
                                         <PGrid item xs={12} sm={12} md={6} className="d-flex justify-content-end gap-2 mb-1">
                                             <PButton
-                                                label={"Update Line items"}
+                                                label={getLabel("lbl128")}
                                                 variant="outlined"
                                                 onClick={(e) => handleSubmit(e, false)}
                                                 width={180}
@@ -1678,6 +1697,29 @@ const LineItems = () => {
                 onSave={handleSubmit}
                 onDelete={handleSubmit}
             />
+
+            <PDialog
+                open={formData.specification}
+                onClose={() => setFormData((prev) => ({
+                    ...prev,
+                    specification: false,
+                    search: ""
+                }))}
+                title={"Specifications"}
+                showCloseIcon={true}
+                maxWidth="md"
+            //actions={}
+            >
+                <PGrid container className={Labels.margin.mb4}>
+                    <PGrid item xs={12} sm={6} md={12}>
+                        <PSearch width="100%" placeholder={"Search a enquiry, item category, specifications"}
+                            onChange={(e) => setFormData((prev) => ({
+                                ...prev,
+                                search: e.target.value
+                            }))} />
+                    </PGrid>
+                </PGrid>
+            </PDialog>
         </>
     );
 };

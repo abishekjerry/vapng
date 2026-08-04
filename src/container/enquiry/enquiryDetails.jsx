@@ -18,7 +18,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Dashboard_API, EnquiryDetails_API } from "../../utils/api/apiUrl";
 import { PostApi } from "../../utils/api/networking";
 import { PDraftDialog } from "../../component/PDialog/PDraftDialog";
-import { PSummary } from "../../component/PSumary/PSummary";
+import { PSummary } from "../../component/PSummary/PSummary";
 import { getClientInfo, getEnquiryDetails, getSummarySections } from "../../utils/constants/summary";
 import PSlaTemplate from "../../component/PSlaTemplate/PSlaTemplate";
 import { useSelector } from "react-redux";
@@ -74,29 +74,32 @@ const EnquiryDetails = () => {
     const id = state?.id > 0 ? state.id : 0;
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setLoading(true);
-                const response = await PostApi(Dashboard_API.Master, {
-                    userCountryId: countryID,
-                    role: role
-                });
-                setFormDataList(prev => ({
-                    ...prev,
-                    managementFeeType: response.managementFeetype,
-                    projectAttribute: response.projectAttribute,
-                    year: response.year,
-                    slaTemplate: response.sla
-                }));
-                await GetData(response);
-            } catch (error) {
-                toast(Labels.status.failure, Labels.message.somethingWentWrong);
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchData();
     }, []);
+
+    const fetchData = async () => {
+        try {
+            setLoading(true);
+            const response = await PostApi(Dashboard_API.Master, {
+                userCountryId: countryID,
+                role: role
+            });
+            setFormDataList(prev => ({
+                ...prev,
+                managementFeeType: response.managementFeetype,
+                projectAttribute: response.projectAttribute,
+                year: response.year,
+                slaTemplate: response.sla
+            }));
+            if (id !== 0) {
+                await GetData(response);
+            }
+        } catch (error) {
+            toast(Labels.status.failure, Labels.message.somethingWentWrong);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
         if (formDataList?.slaTemplate?.length && !formData.slaTemplate) {
@@ -291,6 +294,7 @@ const EnquiryDetails = () => {
                                         value={formData.projectNo}
                                         onChange={handleChange}
                                         helperText={errors?.projectNo}
+                                        sx={{ mb: 3 }}
                                     />
                                     <PDatepicker
                                         name={Labels.enquiryDetails.estdeliveryDate}
@@ -419,7 +423,7 @@ const EnquiryDetails = () => {
 
                             <PSlaTemplate sla={formData.slaTemplate} enquiryId={id} getLabel={getLabel}
                                 quoteStartDate={formDataList?.enquiryDetails?.quotestartdate}
-                                onChange={handleSlaChange}
+                                onChange={handleSlaChange} response={formDataList?.enquiryDetails}
                             />
 
                             <hr className="my-4" />

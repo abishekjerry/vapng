@@ -144,6 +144,7 @@ export const Labels = {
     dashboard: "Dashboard",
     logo: "logo",
     required: "Required",
+    status : "status"
   },
 
   status: {

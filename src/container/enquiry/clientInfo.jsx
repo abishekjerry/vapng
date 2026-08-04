@@ -19,7 +19,7 @@ import { PostApi } from "../../utils/api/networking";
 import PDialog from "../../component/PDialog/PDialog";
 import PTextField from "../../component/PTextField/PTextField";
 import { PDraftDialog } from "../../component/PDialog/PDraftDialog";
-import { PSummary } from "../../component/PSumary/PSummary";
+import { PSummary } from "../../component/PSummary/PSummary";
 import { getClientInfo, getSummarySections } from "../../utils/constants/summary";
 import { useSelector } from "react-redux";
 
