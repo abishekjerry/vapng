@@ -1,5 +1,3 @@
-
-
 import React from "react";
 import {
   Box, Grid, Typography, Paper, Container,
@@ -18,11 +16,12 @@ import PDashboardCard from "../../component/PDashboardCard/PDashboardCard";
 import PTypography from "../../component/PTypography/PTypography";
 import { FontWeight } from "../../utils/constants/fonts";
 import { useLanguage } from "../../utils/constants/language";
-
+import { useSelector } from "react-redux";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { getLabel } = useLanguage();
+  const { userType } = useSelector((state) => state.userDetails.user);
   const apps = [
     {
       title: getLabel("lbl03"),
@@ -38,11 +37,13 @@ const Dashboard = () => {
       route: null
     },
     {
-      title: getLabel("lbl05"),
+      title: userType?.toLowerCase() === Labels.userType.supplier ? "UPLOAD IMAGES" : getLabel("lbl05"),
       icon: <MenuBookIcon />,
       iconBg: "#7CA6F6",
       route: null
     },
+  ...(userType?.toLowerCase() === Labels.userType.agency
+    ? [
     {
       title: getLabel("lbl06"),
       icon: <BarChartIcon />,
@@ -50,6 +51,8 @@ const Dashboard = () => {
       route: labelRoutes.report,
       showNavIcon: true
     }
+  ]
+    : [])
   ];
 
   // Default props to pass to PDashboardCard
@@ -73,35 +76,11 @@ const Dashboard = () => {
                 weight={FontWeight.bold}
               />
             </PGrid>
-            {/* <PGrid item className="mb-3">
-              <PTypography
-                labelText={Labels.dashboard.agencyPortal}
-                font={FontWeight.bold}
-                flag={Labels.fontFlags.subHeader}
-              />
-            </PGrid> */}
-
-            {/* Subheader */}
-            {/* <PGrid item className="mb-3">
-              <PTypography
-                labelText={Labels.dashboard.toBeginPleaseChooseAnApplication}
-                flag={Labels.fontFlags.errorLbl}
-                font={FontWeight.medium}
-              />
-            </PGrid> */}
           </PGrid>
           <br/><br/><br/>
-          <PGrid container className= {`${Labels.margin.mt4}${Labels.margin.mb4}`}>
+          <PGrid container className= {`${Labels.margin.mt4}${Labels.margin.mb4} ${"justify-content-center"}`}>
             {apps.map((app, index) => (
-              <PGrid
-                key={index}
-                item
-                xs={12}  
-                sm={3}  
-                md={3}  
-                lg={3}   
-                className="mb-3" 
-              >
+              <PGrid key={index} item xs={12} sm={3} md={3} lg={3} className="mb-3">
                 <PDashboardCard key={index} {...defaultCardProps} {...app} />
               </PGrid>
             ))}

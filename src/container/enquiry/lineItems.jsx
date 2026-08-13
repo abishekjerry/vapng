@@ -367,7 +367,7 @@ const LineItems = () => {
 
     const LineItemsMaster = async (data) => {
         try {
-            setLoading(true);
+            setLoading(false);
             const response = await PostApi(LineItems_API.GetEnqLineItemsMaster, {
                 TypeOfJob: data
             });
@@ -406,61 +406,66 @@ const LineItems = () => {
     };
 
 
-    const handleChange = (e) => {
+   const handleChange = (e) => {
         const { name, value, files, label } = e.target;
-        const config = fieldConfig[name];
-        const formattedValue = config?.type === "number"
-            ? allowOnlyNumbers(value) : config?.type === "decimal" ? allowDecimal(value) : value;
+        const type = fieldConfig[name]?.type;
 
-        // Restrict No. of Materials to 1-5
-        if (name === Labels.lineItems.noOfMaterials && formattedValue !== ""
-            && (Number(formattedValue) < 1 || Number(formattedValue) > 5)
-        ) {
+        const formattedValue = type === "number" ? allowOnlyNumbers(value)
+            : type === "decimal" ? allowDecimal(value) : value;
+
+        // Restrict No. of Materials (1-5)
+        if (name === Labels.lineItems.noOfMaterials && formattedValue &&
+            (+formattedValue < 1 || +formattedValue > 5)) {
             return;
         }
 
-        // Handle special field logic
-        if (name === Labels.lineItems.category) {
-            LineItemsMaster(label);
-        }
-
-        if (name === Labels.lineItems.savingsType) {
-            SavingsReasonMaster(label);
-        }
-
-        // Prepare updated form data
         let data = {
-            [name]: files ? files : formattedValue
+            [name]: files || formattedValue,
         };
 
-        if (name === Labels.lineItems.typeOfJob) {
-            const isType4 = formattedValue == 4;
-            data = {
-                ...data,
-                competitiveBiddingCompliant: isType4 ? 3 : "",
-                competitiveBiddingExceptionFormSigned: isType4 ? 3 : "",
-                competitiveBiddingMandatory: isType4 ? 3 : "",
-                exceptionsReasonCode: isType4 ? 8 : "",
-            };
-        }
-        if (name === Labels.lineItems.globalOrderWindowCatalogueName) {
-            const isType4 = formattedValue == 1;
-            data = {
-                ...data,
-                harmonizedOrder: isType4 ? 2 : 1,
-            };
+        switch (name) {
+            case Labels.lineItems.category:
+                LineItemsMaster(label);
+                break;
+
+            case Labels.lineItems.savingsType:
+                SavingsReasonMaster(label);
+                break;
+
+            case Labels.lineItems.typeOfJob:
+                if (formattedValue == 4) {
+                    Object.assign(data, {
+                        competitiveBiddingCompliant: 3,
+                        competitiveBiddingExceptionFormSigned: 3,
+                        competitiveBiddingMandatory: 3,
+                        exceptionsReasonCode: 8,
+                    });
+                } else {
+                    Object.assign(data, {
+                        competitiveBiddingCompliant: "",
+                        competitiveBiddingExceptionFormSigned: "",
+                        competitiveBiddingMandatory: "",
+                        exceptionsReasonCode: "",
+                    });
+                }
+                break;
+
+            case Labels.lineItems.globalOrderWindowCatalogueName:
+                data.harmonizedOrder = formattedValue == 1 ? 2 : 1;
+                break;
+
+            default:
+                break;
         }
 
-
-        // Update states
-        setFormData(prev => ({
+        setFormData((prev) => ({
             ...prev,
-            ...data
+            ...data,
         }));
 
-        setErrors(prev => ({
+        setErrors((prev) => ({
             ...prev,
-            [name]: ""
+            [name]: "",
         }));
     };
 
@@ -760,10 +765,13 @@ const LineItems = () => {
         : getOptionLabel(formDataList.category, formData.category);
 
     useEffect(() => {
-        if (hybird && lineItems.length > 0) {
-            LineItemsMaster(category);
-            SavingsReasonMaster(formDataList.lineItems[0].savingstype, true);
-        }
+        const loadMasters = async () => {
+            if (hybird && lineItems.length > 0) {
+                await LineItemsMaster(category);
+                await SavingsReasonMaster(formDataList.lineItems[0].savingstype, true);
+            }
+        };
+        loadMasters();
     }, [hybird, lineItems.length, category]);
 
     return (

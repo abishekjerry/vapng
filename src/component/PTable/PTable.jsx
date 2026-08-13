@@ -13,11 +13,27 @@ import {
 } from "@mui/material";
 import { Labels } from "../../utils/constants/labels";
 import { CommonColors } from "../../utils/constants/colors";
+import PDropdown from "../PDropdown/PDropdown";
+import PGrid from "../PGrid/PGrid";
+import PButton from "../PButton/PButton";
+import PDialog from "../PDialog/PDialog";
+import { useLanguage } from "../../utils/constants/language";
+import PTypography from "../PTypography/PTypography";
+import { FontWeight } from "../../utils/constants/fonts";
 
 const PTable = ({ columns, rows, onClick, isChecked = false, showCheckbox = false, onValidationChange, selectedRows = [], disabled = false, showHeader = true, showPagination = true, bgColor = false, loading = false }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const isPageLoad = useRef(false);
+  const { getLabel } = useLanguage();
+  const [formData, setFormData] = useState({
+    open: false,
+    itemNumber: null,
+    supplierB: "",
+    supplierC: "",
+    suppliers: [],
+    selectedSuppliers: {}
+  });
 
   // Parent Select All
   const handleRowSelect = (row) => {
@@ -54,18 +70,71 @@ const PTable = ({ columns, rows, onClick, isChecked = false, showCheckbox = fals
   // Show only selected rows when global checkbox checked
   const filteredRows = isChecked ? rows.filter(row => selectedRows.some(sel => sel.supplierId === row.supplierId)) : (Array.isArray(rows) ? rows : []);
 
-  const renderText = (value) => {
-    const text = value == null || value === 0 ? "" : typeof value === "number" ? value.toFixed(2) : String(value);
-    return <Tooltip title={text}><span>{text.length > 30 ? `${text.slice(0, 30)}...` : text}</span></Tooltip>;
+  const renderText = (value, type) => {
+    let text = value == null || value === 0 ? "" : String(value);
+
+    if (type === "rupee") {
+      text = Number(value).toLocaleString("en-IN", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+    }
+
+    if (type === "percentage") {
+      text = `${Number(value).toFixed(2)}%`;
+    }
+
+    return text.length > 30 ? <Tooltip title={text}><span>{text.length > 30 ? `${text.slice(0, 30)}...` : text}</span></Tooltip> : <span>{text}</span>;
+  };
+
+  // handle supplierBc 
+
+  const handleChange = async (e) => {
+    const { name, value, label } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value
+    }));
+  }
+
+  const handleSupplierBC = (group) => {
+    const itemNumber = group.items?.[0]?.itemNumber;
+    if (!itemNumber) return;
+    const items = group.items || [];
+    // All suppliers for this item
+    const allSuppliers = [...new Map(items.filter((x) => x.supplierId && x.supplierName).map((x) => [
+      x.supplierId, { value: x.supplierId, label: x.supplierName, },])).values(),
+    ];
+
+    // Existing selected supplier
+    // supplierId === isCalculateId
+    const existingSupplier = items.find((x) => x.supplierId === x.isCalculateId);
+    const existingSupplierId = existingSupplier?.supplierId || null;
+    const existingSupplierName = existingSupplier?.supplierName || "";
+    const selectedForItem = formData.selectedSuppliers?.[itemNumber] || [];
+
+    // Existing API-selected supplier + manually selected suppliers
+    const excludedSupplierIds = [existingSupplierId, ...selectedForItem
+      .map((x) => typeof x === "object" ? x.supplierId : x),
+    ].filter(Boolean);
+
+    const availableSuppliers = allSuppliers.filter((supplier) => !excludedSupplierIds.includes(supplier.value));
+    setFormData((prev) => ({
+      ...prev,
+      open: true,
+      itemNumber,
+      supplierB: "",
+      supplierC: "",
+      suppliers: availableSuppliers,
+    }));
   };
 
   const renderCell = (col, data, rowIndex, meta = {}) => {
     const content = loading ? (
       <Skeleton variant="text" width="80%" height={24} />
     ) : (
-      col.render ? col.render(data, rowIndex) : renderText(data[col.field])
+      col.render ? col.render(data, rowIndex) : renderText(data[col.field], col.type)
     );
-    //const content = col.render ? col.render(data, rowIndex) : renderText(data[col.field]);
     if (showCheckbox && meta.isFirstCol) {
       return (
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -94,6 +163,7 @@ const PTable = ({ columns, rows, onClick, isChecked = false, showCheckbox = fals
     >
       {columns.map((col, i) => (
         <TableCell
+          align={col.align || "left"}
           key={i}
           sx={{
             fontSize: Labels.fontSize.xs,
@@ -120,7 +190,31 @@ const PTable = ({ columns, rows, onClick, isChecked = false, showCheckbox = fals
             fontSize: "16px"
           }}
         >
-          {group.subTitle}
+          <div
+            style={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center"
+            }}
+          >
+            <span>
+              {group.subTitle}
+            </span>
+
+            {group.supplierLink && (
+              <a
+                onClick={() => handleSupplierBC(group)}
+                style={{
+                  cursor: "pointer",
+                  fontSize: "14px",
+                  color: CommonColors.blue.main,
+                }}
+              >
+                Supplier B & C
+              </a>
+            )}
+          </div>
         </TableCell>
       </TableRow>
 
@@ -132,15 +226,13 @@ const PTable = ({ columns, rows, onClick, isChecked = false, showCheckbox = fals
           sx={{
             cursor: onClick ? "pointer" : "default",
             backgroundColor: item.isCalculateId && item.supplierId === item.isCalculateId ? "#BCCDDE" : i % 2 ? "#f9fafb" : "#fff",
-            // "&:hover": {
-            //   backgroundColor: `${item.supplierId === item.isCalculateId ? "#BCCDDE" : "#f1f5f9" } !important`,
-            // },
           }}
         >
           {columns.map((col, cIndex) => {
             if (col.rowSpan && i !== 0) return null;
             return (
               <TableCell key={cIndex} rowSpan={col.rowSpan ? group.items.length : 1}
+                align={col.align || "left"}
                 sx={{
                   fontSize: Labels.fontSize.xs, py: 1.8,
                   verticalAlign: "middle", borderLeft: col.rowSpan ? "1px solid #e5e7eb" : "",
@@ -157,79 +249,156 @@ const PTable = ({ columns, rows, onClick, isChecked = false, showCheckbox = fals
   );
 
   const paginatedRows = filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  const supplierB = formData.supplierB;
+  const supplierC = formData.supplierC;
 
   return (
-    <Paper elevation={0} sx={{ mt: 3, borderRadius: "16px", overflow: "hidden", border: "1px solid #e2e8f0", boxShadow: "0 10px 25px rgba(0,0,0,0.05)" }}>
-      <TableContainer>
-        <Table>
-          {/* HEADER */}
-          {showHeader && (
-            <TableHead>
-              <TableRow sx={{ background: "#f8fafc" }}>
-                {columns.map((col, i) => (
-                  <TableCell key={i} sx={{ fontWeight: 500, fontSize: Labels.fontSize.xs, color: CommonColors.pTable.darkGrey, py: 2, textWrap: Labels.rap.nowrap }}>
-                    {col.header}
-                  </TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-          )}
-
-          {/* BODY */}
-          <TableBody>
-            {paginatedRows.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={columns.length} align="center" align="center" sx={{ py: 3, fontSize: Labels.fontSize.xxs, color: CommonColors.pTable.darkGrey }}>
-                  No data available
-                </TableCell>
-              </TableRow>
-            ) : (
-              paginatedRows.map((row, i) => row.isSubTitle ? renderGroup(row, i) : renderRow(row, i))
+    <>
+      <Paper elevation={0} sx={{ mt: 3, borderRadius: "16px", overflow: "hidden", border: "1px solid #e2e8f0", boxShadow: "0 10px 25px rgba(0,0,0,0.05)" }}>
+        <TableContainer>
+          <Table>
+            {/* HEADER */}
+            {showHeader && (
+              <TableHead>
+                <TableRow sx={{ background: "#f8fafc" }}>
+                  {columns.map((col, i) => (
+                    <TableCell key={i} sx={{ fontWeight: 500, fontSize: Labels.fontSize.xs, color: CommonColors.pTable.darkGrey, py: 2, textWrap: Labels.rap.nowrap }}>
+                      {col.header}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
             )}
-          </TableBody>
-        </Table>
-      </TableContainer>
 
-      {/* PAGINATION */}
-      {showPagination && (
-        <Box sx={{ borderTop: "1px solid #e2e8f0" }}>
-          <TablePagination
-            component="div"
-            count={filteredRows.length}
-            page={page}
-            rowsPerPage={rowsPerPage}
-            onPageChange={(e, p) => setPage(p)}
-            onRowsPerPageChange={(e) => {
-              setRowsPerPage(parseInt(e.target.value, 10));
-              setPage(0);
-            }}
-            sx={{
-              ".MuiTablePagination-toolbar": {
-                px: 2,
-                justifyContent: "flex-end",
-                alignItems: "center",
-                minHeight: "48px",
-              },
-              ".MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows": {
-                fontSize: "13px",
-                color: "#64748b",
-                mb: 0,
-                mt: 0,
-              },
-              ".MuiTablePagination-select": {
-                paddingTop: "0px",
-                paddingBottom: "0px",
-              },
-              ".MuiTablePagination-actions": {
-                marginLeft: "8px",
-                display: "flex",
-                alignItems: "center",
-              },
-            }}
-          />
-        </Box>
-      )}
-    </Paper>
+            {/* BODY */}
+            <TableBody>
+              {paginatedRows.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={columns.length} align="center" align="center" sx={{ py: 3, fontSize: Labels.fontSize.xxs, color: CommonColors.pTable.darkGrey }}>
+                    No data available
+                  </TableCell>
+                </TableRow>
+              ) : (
+                paginatedRows.map((row, i) => row.isSubTitle ? renderGroup(row, i) : renderRow(row, i))
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+
+        {/* PAGINATION */}
+        {showPagination && (
+          <Box sx={{ borderTop: "1px solid #e2e8f0" }}>
+            <TablePagination
+              component="div"
+              count={filteredRows.length}
+              page={page}
+              rowsPerPage={rowsPerPage}
+              onPageChange={(e, p) => setPage(p)}
+              onRowsPerPageChange={(e) => {
+                setRowsPerPage(parseInt(e.target.value, 10));
+                setPage(0);
+              }}
+              sx={{
+                ".MuiTablePagination-toolbar": {
+                  px: 2,
+                  justifyContent: "flex-end",
+                  alignItems: "center",
+                  minHeight: "48px",
+                },
+                ".MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows": {
+                  fontSize: "13px",
+                  color: "#64748b",
+                  mb: 0,
+                  mt: 0,
+                },
+                ".MuiTablePagination-select": {
+                  paddingTop: "0px",
+                  paddingBottom: "0px",
+                },
+                ".MuiTablePagination-actions": {
+                  marginLeft: "8px",
+                  display: "flex",
+                  alignItems: "center",
+                },
+              }}
+            />
+          </Box>
+        )}
+      </Paper>
+
+      <PDialog
+        open={formData.open}
+        onClose={() => setFormData((prev) => ({
+          ...prev,
+          open: false,
+        }))}
+        title={"Choose Supplier"}
+        showCloseIcon={true}
+        maxWidth="sm"
+        actions={
+          < PGrid className="d-flex align-items-center justify-content-end gap-2" >
+            <PButton
+              fullWidth
+              label={getLabel("lbl125")}
+              variant="outlined"
+              onClick={() => setFormData((prev) => ({
+                ...prev,
+                open: false
+              }))}
+              color={CommonColors.grey.main}
+              width={120}
+            />
+            <PButton
+              fullWidth
+              label={"Ok"}
+              variant={Labels.contained}
+              onClick={(e) => handleSubmit(e)}
+              color={CommonColors.green.main}
+              width={120}
+              disabled={supplierB === supplierC}
+            />
+          </PGrid >
+        }
+      >
+        <PGrid container className={Labels.margin.mb4}>
+          <PGrid item xs={12} sm={6} md={12}>
+            <PDropdown
+              name={"supplierB"}
+              label={`${"Supplier B"}`}
+              value={formData.supplierB}
+              onChange={handleChange}
+              options={formData.suppliers}
+              width={100}
+              flag={Labels.flag.auto}
+            />
+          </PGrid>
+        </PGrid>
+        <PGrid container className={Labels.margin.mb4}>
+          <PGrid item xs={12} sm={6} md={12}>
+            <PDropdown
+              name={"supplierC"}
+              label={`${"Supplier C"}`}
+              value={formData.supplierC}
+              onChange={handleChange}
+              options={formData.suppliers}
+              width={100}
+              flag={Labels.flag.auto}
+            />
+          </PGrid>
+        </PGrid>
+        {supplierB && supplierC && supplierB === supplierC && (
+          <PGrid container className={Labels.margin.mb3}>
+            <PGrid item xs={12} md={12} sm={8}>
+              <PTypography
+                labelText={"Please select different suppliers."}
+                weight={FontWeight.bold}
+                color={CommonColors.red.main}
+              />
+            </PGrid>
+          </PGrid>
+        )}
+      </PDialog>
+    </>
   );
 };
 

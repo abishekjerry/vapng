@@ -19,6 +19,12 @@ export const Labels = {
     resetUsername: "resetUsername"
   },
 
+  userType: {
+    agency: "agency",
+    client: "client",
+    supplier: "supplier"
+  },
+
   dashboard: {
     startDate: "startDate",
     endDate: "endDate",
@@ -69,7 +75,7 @@ export const Labels = {
     incoterm: "incoterm",
     itemName: "itemName",
     typeOfJob: "typeOfJob",
-    reEngineering : "reEngineering",
+    reEngineering: "reEngineering",
     itemNameDescription: "itemNameDescription",
     competitiveBiddingMandatory: "competitiveBiddingMandatory",
     competitiveBiddingCompliant: "competitiveBiddingCompliant",
@@ -91,7 +97,7 @@ export const Labels = {
     containsRecycledPlastic: "containsRecycledPlastic",
     recycledMaterialWeightKg: "recycledMaterialWeightKg",
     plasticWeightKg: "plasticWeightKg",
-    recycledPlasticWeightKg : "recycledPlasticWeightKg",
+    recycledPlasticWeightKg: "recycledPlasticWeightKg",
 
     // Catalogue Section
     ratecardCatalogueItemDeclined: "ratecardCatalogueItemDeclined",
@@ -110,7 +116,7 @@ export const Labels = {
     savingsType: "savingsType",
     savingsReason: "savingsReason",
     owWithLink: "owWithLink",
-    materialUsed : "materialUsed",
+    materialUsed: "materialUsed",
 
     // Specifications
     noOfVersion: "noOfVersion",
@@ -144,7 +150,7 @@ export const Labels = {
     dashboard: "Dashboard",
     logo: "logo",
     required: "Required",
-    status : "status"
+    status: "status"
   },
 
   status: {

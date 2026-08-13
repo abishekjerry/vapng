@@ -11,6 +11,8 @@ import PButton from "../../component/PButton/PButton";
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import { useLanguage } from "../../utils/constants/language";
+import { Divider } from "@mui/material";
+
 const Report = () => {
     const { getLabel } = useLanguage();
     const [formData, setFormData] = useState({
@@ -20,14 +22,15 @@ const Report = () => {
         jobstatus: "",
         fromDate: "",
         toDate: ""
-
     });
+
     const [formDataList, setFormDataList] = useState({
         clientName: [],
         typeofReport: [{ label: "Enquries", value: 1 }, { label: "Ebidding", value: 2 }, { label: "Ecatalogue", value: 3 }],
         country: [],
         jobstatus: [],
     });
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({
@@ -39,18 +42,20 @@ const Report = () => {
             [name]: ""
         }));
     };
+
+    const handleReset = () => {
+        setFormData({
+            clientName: "",
+            typeofReport: "",
+            country: "",
+            jobstatus: "",
+            fromDate: "",
+            toDate: "",
+        });
+    }
+
     return (
         <>
-            {/* <PGrid container className="text-center">
-                <PTypography
-                    labelText={"Report"}
-                    flag={Labels.fontFlags.mainHeader}
-                    color={CommonColors.grey.main}
-                    weight={FontWeight.bold}
-                />
-            </PGrid> 
-            <hr className="mt-3" />*/}
-
             <PGrid container className={Labels.margin.mb4} >
                 <PGrid item xs={12} sm={12} md={12} >
                     <PCard>
@@ -127,27 +132,16 @@ const Report = () => {
                             </PGrid>
                         </PGrid>
 
-                        <hr className="my-4" />
-
+                        <Divider sx={{ mb: 2, mt: 4 }}></Divider>
                         <PGrid container className="d-flex align-items-center justify-content-between">
-
-                            {/* Left Button */}
                             <PGrid item xs={12} sm={6} md={8}>
-
                             </PGrid>
 
-                            {/* Right Buttons */}
-                            <PGrid
-                                item
-                                xs={12}
-                                sm={6}
-                                md={4}
-                                className="d-flex justify-content-end gap-2"
-                            >
+                            <PGrid item xs={12} sm={6} md={4} className="d-flex justify-content-end gap-2">
                                 <PButton
                                     label={getLabel("lbl123")}
                                     variant="outlined"
-                                    onClick={(e) => handleExitDraft(e)}
+                                    onClick={(e) => handleReset(e)}
                                     width={180}
                                     startIcon={<RestartAltIcon />}
                                 />

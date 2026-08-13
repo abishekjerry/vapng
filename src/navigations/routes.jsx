@@ -4,6 +4,7 @@ import PageLayout from "../container/layout/pageLayout";
 import { labelRoutes } from "./labelRoutes";
 import PageNotFound from "../container/pageNotFound/pageNotFound";
 import { useSelector } from "react-redux";
+import PScroll from "../component/PScroll/PScroll";
 
 const UserRoute = () => {
   const verifiedUser = useSelector((state) => state.userDetails.user);
@@ -24,8 +25,9 @@ const EnquirySuccess = lazy(() => import("../container/enquiry/enquirySuccess"))
 const ProjectEnquiry = lazy(() => import("../container/enquiry/projectEnquiry"))
 function AppRoutes() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <Routes>
+    <>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Routes>
 
         {/* Login */}
         <Route path={labelRoutes.home} element={<LoginPage />} />
@@ -54,6 +56,8 @@ function AppRoutes() {
 
       </Routes>
     </Suspense>
+      <PScroll></PScroll>
+    </>
   );
 }
 

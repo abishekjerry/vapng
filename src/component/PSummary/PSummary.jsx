@@ -16,24 +16,24 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { isSuccess, toast } from "../../utils/commonFunction/common";
 import { LineItems_API } from "../../utils/api/apiUrl";
 import { PostApi } from "../../utils/api/networking";
+import { useSelector } from "react-redux";
 
-export const PSummary = ({ sections = [], currentStep = 1, refreshSummary, duplicate = false, showFlag = true , lineItems = [] }) => {
+export const PSummary = ({ sections = [], currentStep = 1, refreshSummary, duplicate = false, showFlag = true, lineItems = [] }) => {
     const { state } = useLocation();
     const navigate = useNavigate();
     const [activeStep, setActiveStep] = useState(currentStep);
     const [activeItemIndex, setActiveItemIndex] = useState({ 3: 0 });
     const [open, setOpen] = useState(false);
     const [formData, setFormData] = useState({});
-    const enquiryID = localStorage.getItem("enquiryID")
+    const enquiryID = localStorage.getItem("enquiryID");
+    const { userType } = useSelector((state) => state.userDetails.user);
+    const flag = userType?.toLowerCase() === Labels.userType.agency
     const handleOpen = (data = {}) => {
         setFormData(data);
         setOpen(true);
     };
 
-    const visibleSections = sections.filter(
-        (section) => section.step <= currentStep
-    );
-
+    const visibleSections = sections.filter((section) => section.step <= currentStep);
     const handleEdit = (step, enquiryId = null) => {
         const data = lineItems.find(item => item.enqdetailsId === enquiryId);
         if (step === 3 && data) {
@@ -185,7 +185,7 @@ export const PSummary = ({ sections = [], currentStep = 1, refreshSummary, dupli
                                                                 ))}
                                                             </PGrid>
 
-                                                            {/* {section.step && (
+                                                           {/* {section.step && flag &&(
                                                                 <PGrid container>
                                                                     <PGrid item xs={12} className="d-flex justify-content-end gap-2">
                                                                         <PButton
@@ -209,7 +209,7 @@ export const PSummary = ({ sections = [], currentStep = 1, refreshSummary, dupli
 
                                                                     </PGrid>
                                                                 </PGrid>
-                                                            )} */}
+                                                            )}  */}
                                                         </>
                                                     )}
                                                 </Fragment>

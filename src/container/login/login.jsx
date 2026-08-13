@@ -151,6 +151,7 @@ function Login(props) {
             currency: user?.currency,
             country: user?.country,
             countryID: user?.countryId,
+            userType : user?.usertype,
           });
           navigate(labelRoutes.dashboard);
         } else {

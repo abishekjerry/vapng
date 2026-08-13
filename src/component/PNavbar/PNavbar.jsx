@@ -24,23 +24,13 @@ import { FaBars } from "react-icons/fa";
 import { FontWeight } from "../../utils/constants/fonts";
 import { CommonColors } from "../../utils/constants/colors";
 import { useLanguage } from "../../utils/constants/language";
-const PNavbar = ({
-  name = "User",
-  email = "",
-  avatar = "",
-  notificationCount = 0,
-  title = "",
-  toggleSidebar
-}) => {
-
+import { useSelector } from "react-redux";
+const PNavbar = ({ name = "User", email = "", avatar = "", notificationCount = 0, title = "", toggleSidebar }) => {
   const navigate = useNavigate();
   const { getLabel, changeLanguage, language } = useLanguage();
+  const { userType } = useSelector((state) => state.userDetails.user);
 
-  const [menuState, setMenuState] = useState({
-    anchorEl: null,
-    type: null
-  });
-
+  const [menuState, setMenuState] = useState({ anchorEl: null, type: null });
   const open = Boolean(menuState.anchorEl);
 
   const handleOpenMenu = (event, type) => {
@@ -73,21 +63,9 @@ const PNavbar = ({
     }
   };
   return (
-    <AppBar
-      position="sticky"
-      elevation={0}
-      sx={{
-        backgroundColor: "white",
-        borderBottom: "0px solid #f1f5f9",
-      }}
-    >
-      <Toolbar
-        sx={{
-          justifyContent: "space-between",
-          position: "relative",
-          minHeight: 50
-        }}
-      >
+    <AppBar position="sticky" elevation={0} sx={{ backgroundColor: "white", borderBottom: "0px solid #f1f5f9", }}>
+
+      <Toolbar sx={{ justifyContent: "space-between", position: "relative", minHeight: 50 }}>
 
         {/* LEFT SECTION */}
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
@@ -111,19 +89,11 @@ const PNavbar = ({
           }}
         >
           <PTypography
-            labelText={
-              title == ""
-                ? ""
-                : title !== "Dashboard"
-                  ? `${title} - ${getLabel("lbl01")}`
-                  : getLabel("lbl01")
-            }
+            labelText={title == "" ? "" : title !== "Dashboard" ? `${title} - ${userType} ${getLabel("lbl01")}` : `${userType} ${getLabel("lbl01")}`}
             flag={Labels.fontFlags.subHeader}
             color={CommonColors.red.main}
             weight={FontWeight.bold}
-            style={{
-              fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
-            }}
+            style={{ fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" }}
           />
         </Box>
 
@@ -162,8 +132,6 @@ const PNavbar = ({
           >
             <Language fontSize="small" />
           </IconButton>
-
-
 
           {/* PROFILE */}
           <Paper

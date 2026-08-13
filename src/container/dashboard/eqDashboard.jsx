@@ -36,6 +36,14 @@ import { useNavigate } from "react-router-dom";
 import { labelRoutes } from "../../navigations/labelRoutes";
 import PDialog from "../../component/PDialog/PDialog";
 import { useSelector } from "react-redux";
+import MoveToInboxIcon from "@mui/icons-material/MoveToInbox";
+import LocalOfferIcon from "@mui/icons-material/LocalOffer";
+import Inventory2Icon from "@mui/icons-material/Inventory2";
+import EditIcon from "@mui/icons-material/Edit";
+import ImageIcon from "@mui/icons-material/Image";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
+import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
 
 const EqDashboard = () => {
   const navigate = useNavigate();
@@ -49,7 +57,7 @@ const EqDashboard = () => {
   const [summary, setSummary] = useState({});
   const [loading, setLoading] = useState(true);
   const [chartOrginalData, setChartOrginalData] = useState([]);
-  const { countryID, role, userName } = useSelector((state) => state.userDetails.user);
+   const { countryID, role, userName, userType } = useSelector((state) => state.userDetails.user);
   const [formData, setFormData] = useState({
     country: "",
     user: "",
@@ -147,39 +155,114 @@ const EqDashboard = () => {
     { field: "surveyStatus", header: "Survey Status" },
   ];
 
-  const cardData = [
-    {
-      title: getLabel("lbl12"),
-      value: summary.active || 0,
-      subtitle: getLabel("lbl16"),
-      iconColor: Labels.primary,
-      icon: <AssignmentIcon />,
-      statusId: 1
-    },
-    {
-      title: getLabel("lbl13"),
-      value: summary.approval || 0,
-      subtitle: getLabel("lbl17"),
-      iconColor: Labels.primary,
-      icon: <PendingActionsIcon />,
-      statusId: 3
-    },
-    {
-      title: getLabel("lbl14"),
-      value: summary.awarded || 0,
-      subtitle: getLabel("lbl18"),
-      iconColor: Labels.primary,
-      icon: <EmojiEventsIcon />,
-      statusId: 6
-    },
-    {
-      title: getLabel("lbl15"),
-      value: summary.completed || 0,
-      subtitle: getLabel("lbl18"),
-      iconColor: Labels.primary,
-      icon: <TaskAltIcon />,
-      statusId: 24
-    },
+ const cardData = [
+    ...(userType?.toLowerCase() === Labels.userType.agency
+      ? [
+        {
+          title: getLabel("lbl12"),
+          value: summary.active || 0,
+          subtitle: getLabel("lbl16"),
+          iconColor: Labels.primary,
+          icon: <AssignmentIcon />,
+          statusId: 1
+        },
+        {
+          title: getLabel("lbl13"),
+          value: summary.approval || 0,
+          subtitle: getLabel("lbl17"),
+          iconColor: Labels.primary,
+          icon: <PendingActionsIcon />,
+          statusId: 3
+        },
+        {
+          title: getLabel("lbl14"),
+          value: summary.awarded || 0,
+          subtitle: getLabel("lbl18"),
+          iconColor: Labels.primary,
+          icon: <EmojiEventsIcon />,
+          statusId: 6
+        },
+        {
+          title: getLabel("lbl15"),
+          value: summary.completed || 0,
+          subtitle: getLabel("lbl18"),
+          iconColor: Labels.primary,
+          icon: <TaskAltIcon />,
+          statusId: 24
+        },]
+      : []),
+
+    ...(userType?.toLowerCase() === Labels.userType.supplier
+      ? [
+        {
+          title: "New RFQ'S",
+          value: summary.newrfq || 0,
+          subtitle: "New requests for quotation",
+          iconColor: Labels.primary,
+          icon: <MoveToInboxIcon />,
+          statusId: 24
+        },
+        {
+          title: "Quotes Proposed",
+          value: summary.quoteproposed || 0,
+          subtitle: "Number of active quotes you have submitted for review",
+          iconColor: Labels.primary,
+          icon: <LocalOfferIcon />,
+          statusId: 24
+        },
+        {
+          title: "Invites",
+          value: summary.invites || 0,
+          subtitle: "Total number of enquiries you have received",
+          iconColor: Labels.primary,
+          icon: <Inventory2Icon />,
+          statusId: 24
+        },]
+      : []),
+
+    ...(userType?.toLowerCase() === Labels.userType.client
+      ? [
+        {
+          title: getLabel("lbl13"),
+          value: summary.forapproval || 0,
+          subtitle: getLabel("lbl17"),
+          iconColor: Labels.primary,
+          icon: <EditIcon />,
+          statusId: 3
+        },
+        {
+          title: "Art Work",
+          value: summary.artwork || 0,
+          subtitle: "Awaiting Artwork/Sample",
+          iconColor: Labels.primary,
+          icon: <ImageIcon />,
+          statusId: 24
+        },
+        {
+          title: "Proof",
+          value: summary.proof || 0,
+          subtitle: "Proof Approved",
+          iconColor: Labels.primary,
+          icon: <VisibilityIcon />,
+          statusId: 24
+        },
+        {
+          title: "Production",
+          value: summary.production || 0,
+          subtitle: "Number of projects in production",
+          iconColor: Labels.primary,
+          icon: <HourglassEmptyIcon />,
+          statusId: 24
+        },
+        {
+          title: getLabel("lbl15"),
+          value: summary.completed || 0,
+          subtitle: "Number of completed projects",
+          iconColor: Labels.primary,
+          icon: <AssignmentTurnedInIcon />,
+          statusId: 24
+        },]
+      : [])
   ];
 
   const chartOptions = [
@@ -410,7 +493,7 @@ const EqDashboard = () => {
         <PGrid container className={Labels.margin.mb3}>
           {loading ? (
             cardData.map((card, index) => (
-              <PGrid key={index} item xs={12} sm={6} md={3} lg={3}>
+              <PGrid key={index} item xs={12} sm={6} md={3} lg={cardData.length === 5 ? 20 : cardData.length === 3 ? 4 : 3} >
                 <Skeleton
                   variant="rectangular"
                   height={130}
@@ -420,7 +503,7 @@ const EqDashboard = () => {
             ))
           ) : (
             cardData.map((card, index) => (
-              <PGrid key={index} item xs={12} sm={6} md={3} lg={3}>
+             <PGrid key={index} item xs={12} sm={6} md={3} lg={cardData.length === 5 ? 20 : cardData.length === 3 ? 4 : 3} >
                 <PDashboardCard {...{ ...card, bgColor: CommonColors.bg_violet }} onClick={() => handleFilter(card.statusId)} />
               </PGrid>
             ))
@@ -431,7 +514,7 @@ const EqDashboard = () => {
           <PGrid item xs={12} sm={6} md={8}>
             <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", margin: "6px 0px", width: "100%" }}>
               <Box sx={{ width: 180 }}>
-                {icons.length > 0 && (
+                {icons.length > 0 && userType?.toLowerCase() === Labels.userType.agency && (
                   <PToggle options={[{ ...icons[0], value: formData.createEnquiry, label: icons[0].tooltip }]}
                     value={formData.createEnquiry}
                     onclick={icons[0].action}

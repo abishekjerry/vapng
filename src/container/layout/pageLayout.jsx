@@ -23,7 +23,7 @@ function PageLayout() {
   const [openMenu, setOpenMenu] = useState(null);
   const [isDashborad, setIsDashborad] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { userName } = useSelector((state) => state.userDetails.user);
+  const { userName, userType } = useSelector((state) => state.userDetails.user);
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
@@ -39,11 +39,15 @@ function PageLayout() {
       name: getLabel("lbl11"),
       route: labelRoutes.eqDashboard,
     },
-    {
-      icon: <FaFileInvoice size={20} />,
-      name: getLabel("lbl150"),
-      route: labelRoutes.report,
-    }
+    ...(userType?.toLowerCase() === Labels.userType.agency
+      ? [
+        {
+          icon: <FaFileInvoice size={20} />,
+          name: getLabel("lbl150"),
+          route: labelRoutes.report,
+        }
+      ]
+    : [])
   ];
 
   const location = useLocation();
