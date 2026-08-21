@@ -1,14 +1,4 @@
-import React from "react";
-import {
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Area,
-} from "recharts";
+import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Area, } from "recharts";
 
 const PLineChart = ({ data }) => {
   // 1️⃣ Custom Tooltip

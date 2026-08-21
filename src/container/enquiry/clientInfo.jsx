@@ -3,7 +3,7 @@ import PTypography from "../../component/PTypography/PTypography";
 import PGrid from "../../component/PGrid/PGrid";
 import PDropdown from "../../component/PDropdown/PDropdown";
 import { Labels } from "../../utils/constants/labels";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { FontWeight } from "../../utils/constants/fonts";
 import PCard from "../../component/PCard/PCard";
 import { CommonColors } from "../../utils/constants/colors";
@@ -26,8 +26,9 @@ import { useSelector } from "react-redux";
 const ClientInfo = () => {
     const { state } = useLocation();
     const { getLabel } = useLanguage();
+    const { countryID, userID, fkID, role, menuId , country} = useSelector((state) => state.userDetails.user);
     const navigate = useNavigate();
-    const enquirySteps = getEnquirySteps(getLabel);
+    const enquirySteps = getEnquirySteps(getLabel, menuId);
     const [allowRedirect, setAllowRedirect] = useState(false);
     const [loading, setLoading] = useState(true);
     const [ccOpenFilter, setCcOpenFilter] = useState(false);
@@ -36,7 +37,6 @@ const ClientInfo = () => {
     const [disible, setDisible] = useState(true);
     const [type, setType] = useState("");
     const [openSummary, setOpenSummary] = useState(true);
-    const { countryID, userID, fkID, role, country } = useSelector((state) => state.userDetails.user);
     const [formData, setFormData] = useState({
         division: "",
         brand: "",
@@ -114,7 +114,7 @@ const ClientInfo = () => {
     const id = state?.id > 0 ? state.id : 0;
 
     const clientInfo = getClientInfo(fields, formData, formDataList, getLabel, getOptionLabel, id ? formDataList.clientInfo : null);
-    const sections = getSummarySections({ clientInfo, getLabel });
+    const sections = getSummarySections({ menuId, clientInfo, getLabel });
 
     const GlobalBuMappingMaster = async (division) => {
         try {
@@ -327,7 +327,8 @@ const ClientInfo = () => {
                     pMGEntity: formData.pmgEntity,
                     aboveorAtmarket: "Above",//getOptionLabel(formDataList.aboveAtMarket, formData.aboveAtMarket),
                     Action: flag,
-                    Enqid: id
+                    Enqid: id,
+                    menuId: menuId
                 });
                 if (isSuccess(response)) {
                     setAllowRedirect(true);

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -25,6 +25,7 @@ import { FontWeight } from "../../utils/constants/fonts";
 import { CommonColors } from "../../utils/constants/colors";
 import { useLanguage } from "../../utils/constants/language";
 import { useSelector } from "react-redux";
+
 const PNavbar = ({ name = "User", email = "", avatar = "", notificationCount = 0, title = "", toggleSidebar }) => {
   const navigate = useNavigate();
   const { getLabel, changeLanguage, language } = useLanguage();
@@ -156,7 +157,7 @@ const PNavbar = ({ name = "User", email = "", avatar = "", notificationCount = 0
               src={avatar || ""}
               sx={{ width: 40, height: 40 }}
             >
-               <img src={Logo} alt="Logo" style={{ height: 55, width: 60 }} />
+              <img src={Logo} alt="Logo" style={{ height: 55, width: 60 }} />
               {/* {!avatar && name ? name.charAt(0).toUpperCase() : ""} */}
             </Avatar>
 

@@ -1,11 +1,4 @@
-import React from "react";
-import {
-    Grid,
-    Typography,
-    IconButton,
-    Paper,
-} from "@mui/material";
-
+import { Grid, Typography, IconButton, Paper, } from "@mui/material";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import CloseIcon from "@mui/icons-material/Close";

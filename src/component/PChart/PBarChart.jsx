@@ -1,13 +1,4 @@
-import React from "react";
-import {
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  CartesianGrid,
-} from "recharts";
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, } from "recharts";
 
 const PBarChart = ({ data }) => {
   // 1️⃣ Custom Tooltip
@@ -56,7 +47,7 @@ const PBarChart = ({ data }) => {
 
           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
 
-          <XAxis dataKey="name" tick={{ fill: "#64748b", fontSize: 8 }} axisLine={false} tickLine={false}/>
+          <XAxis dataKey="name" tick={{ fill: "#64748b", fontSize: 8 }} axisLine={false} tickLine={false} />
 
           <YAxis tick={{ fill: "#64748b", fontSize: 10 }} axisLine={false} tickLine={false} />
 

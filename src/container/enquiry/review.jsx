@@ -1,10 +1,9 @@
 
-import { Box, Checkbox } from "@mui/material";
+import { Box } from "@mui/material";
 import PTypography from "../../component/PTypography/PTypography";
 import PGrid from "../../component/PGrid/PGrid";
-import PDropdown from "../../component/PDropdown/PDropdown";
 import { Labels } from "../../utils/constants/labels";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { FontWeight } from "../../utils/constants/fonts";
 import PCard from "../../component/PCard/PCard";
 import { CommonColors } from "../../utils/constants/colors";
@@ -33,15 +32,15 @@ import { useSelector } from "react-redux";
 
 const Review = () => {
     const { getLabel } = useLanguage();
-    const enquirySteps = getEnquirySteps(getLabel);
+    const { userID , menuId} = useSelector((state) => state.userDetails.user);
+    const enquirySteps = getEnquirySteps(getLabel, menuId);
     const { state } = useLocation();
     const navigate = useNavigate();
     const [allowRedirect, setAllowRedirect] = useState(false);
     const [loading, setLoading] = useState(true);
     const [open, setOpen] = useState(0); // first item open by default
     const [openDraft, setOpenDraft] = useState();
-    const { userID } = useSelector((state) => state.userDetails.user);
-
+    
     const [formDataList, setFormDataList] = useState({
         clientInfo: [],
         enquiryDetails: [],

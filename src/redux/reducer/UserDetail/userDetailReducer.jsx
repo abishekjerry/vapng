@@ -10,7 +10,10 @@ export default function userDetailsReducer(state = initialState, action) {
     case userDetails:
       return {
         ...state,
-        user: action.payload,
+        user: {
+          ...state.user,
+          ...action.payload,
+        },
       };
     case clearUserDetails:
       return initialState;

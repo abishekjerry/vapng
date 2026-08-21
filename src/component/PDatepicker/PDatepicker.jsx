@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { TextField, InputAdornment, IconButton } from "@mui/material";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import flatpickr from "flatpickr";
@@ -114,7 +114,7 @@ export default function PDatepicker({
       helperText={helperText || " "}
       error={!!helperText}
       variant="outlined"
-      sx={baseSx}     
+      sx={baseSx}
       onKeyDown={handleKeyDown}
       onInput={handleInput}
       autoComplete="off"

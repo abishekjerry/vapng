@@ -3,7 +3,7 @@ import PTypography from "../../component/PTypography/PTypography";
 import PGrid from "../../component/PGrid/PGrid";
 import PDropdown from "../../component/PDropdown/PDropdown";
 import { Labels } from "../../utils/constants/labels";
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { FontWeight } from "../../utils/constants/fonts";
 import PCard from "../../component/PCard/PCard";
 import { CommonColors } from "../../utils/constants/colors";
@@ -26,12 +26,12 @@ const EnquiryDetails = () => {
     const { state } = useLocation();
     const { getLabel } = useLanguage();
     const navigate = useNavigate();
-    const enquirySteps = getEnquirySteps(getLabel);
+    const { countryID, role, fkID, menuId } = useSelector((state) => state.userDetails.user);
+    const enquirySteps = getEnquirySteps(getLabel, menuId);
     const [allowRedirect, setAllowRedirect] = useState(false);
     const [loading, setLoading] = useState(true);
     const [dynamicData, setDynamicData] = useState({});
     const [open, setOpen] = useState(false);
-    const { countryID, role, fkID } = useSelector((state) => state.userDetails.user);
     const [formData, setFormData] = useState({
         projectNo: "",
         estdeliveryDate: "",
@@ -43,6 +43,11 @@ const EnquiryDetails = () => {
         hybrid: "",
         projectAttribute: "",
         slaTemplate: "",
+
+        startDate: "",
+        startTime: "",
+        duration: "",
+        endDate: ""
     });
 
     // Single state for all errors
@@ -57,6 +62,10 @@ const EnquiryDetails = () => {
         hybrid: "",
         projectAttribute: "",
         slaTemplate: "",
+
+        startDate: "",
+        startTime: "",
+        duration: "",
     });
 
     const [formDataList, setFormDataList] = useState({
@@ -66,6 +75,7 @@ const EnquiryDetails = () => {
         slaTemplate: [],
         quoteType: [{ label: "Quote By Total Price", value: 1 }, { label: "Quote By Unit Price", value: 2 }],
         hybird: [{ label: "Yes", value: 1 }, { label: "No", value: 2, selected: true }],
+        duration: [{ label: "15 mins", value: 1, selected: true }, { label: "30 mins", value: 2 }, { label: "1 hour", value: 3 }],
 
         clientInfo: [],
         enquiryDetails: []
@@ -73,8 +83,51 @@ const EnquiryDetails = () => {
     const flag = isNotEmpty(state?.id) && state?.id !== 0 ? Labels.flag.Update : Labels.flag.Insert;
     const id = state?.id > 0 ? state.id : 0;
 
+    const startTime = Array.from({ length: 48 }, (_, index) => {
+        const hours = Math.floor(index / 2);
+        const minutes = index % 2 === 0 ? "00" : "30";
+        const period = hours < 12 ? "AM" : "PM";
+        const displayHour = hours % 12 === 0 ? 12 : hours % 12;
+        return {
+            value: index + 1,
+            label: `${String(displayHour).padStart(2, "0")}:${minutes} ${period}`,
+        };
+    });
+
+    const setDefaultDateTime = () => {
+        const now = new Date();
+        const start = new Date(now);
+        const minutes = start.getMinutes();
+        if (minutes <= 30) {
+            start.setMinutes(30, 0, 0);
+        } else {
+            start.setHours(start.getHours() + 1);
+            start.setMinutes(30, 0, 0);
+        }
+        const end = new Date(start);
+        end.setMinutes(end.getMinutes() + 15);
+        const formatDate = date =>
+            `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+
+        const formatTime = date => {
+            const hours = date.getHours();
+            return `${String(hours % 12 || 12).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')} ${hours >= 12 ? 'PM' : 'AM'}`;
+        };
+
+        const currentTime = formatTime(start);
+        const data = getOptionValue(startTime, currentTime);
+        setFormData(prev => ({
+            ...prev,
+            startDate: formatDate(start),
+            startTime: data,
+            duration: 1,
+            endDate: `${formatDate(end)} ${formatTime(end)}`
+        }));
+    };
+
     useEffect(() => {
         fetchData();
+        setDefaultDateTime();
     }, []);
 
     const fetchData = async () => {
@@ -221,7 +274,11 @@ const EnquiryDetails = () => {
             //Labels.enquiryDetails.hybrid,
             //Labels.enquiryDetails.projectAttribute,
             Labels.enquiryDetails.slaTemplate,
-            Labels.enquiryDetails.projectQuoteType
+            Labels.enquiryDetails.projectQuoteType,
+
+            ...(menuId == 2 ? [Labels.enquiryDetails.startDate] : []),
+            ...(menuId == 2 ? [Labels.enquiryDetails.startTime] : []),
+            ...(menuId == 2 ? [Labels.enquiryDetails.duration] : []),  
         ];
 
         let newErrors = {};
@@ -262,7 +319,7 @@ const EnquiryDetails = () => {
     const today = formatDate(new Date());
     const clientInfo = getClientInfo({}, {}, {}, getLabel, getOptionLabel, formDataList.clientInfo);
     const enquiryDetails = getEnquiryDetails(formData, dynamicData, formDataList, getLabel, getOptionLabel, id ? formDataList.enquiryDetails : null);
-    const sections = getSummarySections({ clientInfo, enquiryDetails, getLabel });
+    const sections = getSummarySections({ menuId, clientInfo, enquiryDetails, getLabel });
     return (
         <>
             <Box sx={{ px: 3, py: 3 }}>
@@ -286,7 +343,7 @@ const EnquiryDetails = () => {
                                     weight={FontWeight.bold}
                                 />
                             </PGrid>
-                            <PGrid container className={Labels.margin.mb4}>
+                            <PGrid container className={Labels.margin.mb3}>
                                 <PGrid item xs={12} sm={6} md={4}>
                                     <PTextField
                                         name={Labels.enquiryDetails.projectNo}
@@ -305,6 +362,7 @@ const EnquiryDetails = () => {
                                         width={100}
                                         allowFuture={true}
                                         minDate={today}
+                                        sx={{ mb: 3 }}
                                     />
                                 </PGrid>
                                 <PGrid item xs={12} sm={6} md={8}>
@@ -319,7 +377,7 @@ const EnquiryDetails = () => {
                                     />
                                 </PGrid>
                             </PGrid>
-                            <PGrid container className={Labels.margin.mb4}>
+                            <PGrid container className={Labels.margin.mb3}>
                                 <PGrid item xs={12} sm={6} md={4}>
                                     <PDatepicker
                                         name={Labels.enquiryDetails.briefReceivedDate}
@@ -330,6 +388,7 @@ const EnquiryDetails = () => {
                                         width={100}
                                         allowFuture={true}
                                         maxDate={formData.estdeliveryDate}
+                                        sx={{ mb: 3 }}
                                     />
                                 </PGrid>
                                 <PGrid item xs={12} sm={6} md={4}>
@@ -357,7 +416,7 @@ const EnquiryDetails = () => {
                                     />
                                 </PGrid>
                             </PGrid>
-                            <PGrid container className={Labels.margin.mb4}>
+                            <PGrid container className={Labels.margin.mb3}>
                                 <PGrid item xs={12} sm={6} md={4}>
                                     <PDropdown
                                         name={Labels.enquiryDetails.managementFeeType}
@@ -366,7 +425,6 @@ const EnquiryDetails = () => {
                                         onChange={handleChange}
                                         helperText={errors?.managementFeeType}
                                         options={formDataList.managementFeeType}
-                                        width={100}
                                         flag={Labels.flag.auto}
                                     />
                                 </PGrid>
@@ -378,7 +436,6 @@ const EnquiryDetails = () => {
                                         onChange={handleChange}
                                         helperText={errors?.hybrid}
                                         options={formDataList.hybird}
-                                        width={100}
                                         disabled={true}
                                     />
                                 </PGrid> */}
@@ -395,6 +452,74 @@ const EnquiryDetails = () => {
                                     />
                                 </PGrid> */}
                             </PGrid>
+
+                            {[2].includes(menuId) && (
+                                <>
+                                    <hr className="my-4" />
+                                    <PGrid container className={Labels.margin.mb4}>
+                                        <PTypography
+                                            labelText={"Bid Details"}
+                                            flag={Labels.fontFlags.subHeader}
+                                            color={CommonColors.blue.main}
+                                            weight={FontWeight.bold}
+                                        />
+                                        <PTypography
+                                            labelText={"Enter the bid dates and times required to set up the event."}
+                                            flag={Labels.fontFlags.smallText}
+                                            color={CommonColors.grey.main}
+                                            weight={FontWeight.bold}
+                                        />
+                                    </PGrid>
+                                    <PGrid container className={Labels.margin.mb3}>
+                                        <PGrid item xs={12} sm={6} md={4}>
+                                            <PDatepicker
+                                                name={Labels.enquiryDetails.startDate}
+                                                label={`${"Start Date"} ${Labels.symbols.required}`}
+                                                value={formData.startDate}
+                                                onChange={handleChange}
+                                                helperText={errors?.startDate}
+                                                width={100}
+                                                allowFuture={true}
+                                                minDate={today}
+                                            />
+                                        </PGrid>
+                                        <PGrid item xs={12} sm={6} md={3}>
+                                            <PDropdown
+                                                name={Labels.enquiryDetails.startTime}
+                                                label={`${"Start Time"} ${Labels.symbols.required}`}
+                                                value={formData.startTime}
+                                                onChange={handleChange}
+                                                helperText={errors?.startTime}
+                                                options={startTime}
+                                                disabled={true}
+                                                flag={Labels.flag.auto}
+                                            />
+                                        </PGrid>
+                                        <PGrid item xs={12} sm={6} md={3}>
+                                            <PDropdown
+                                                name={Labels.enquiryDetails.duration}
+                                                label={`${"Duration"} ${Labels.symbols.required}`}
+                                                value={formData.duration}
+                                                onChange={handleChange}
+                                                helperText={errors?.duration}
+                                                options={formDataList.duration}
+                                                disabled={true}
+                                            />
+                                        </PGrid>
+                                        <PGrid item xs={12} sm={6} md={2}>
+                                            <PTypography
+                                                labelText={"End Date and time"}
+                                                weight={FontWeight.bold}
+                                            />
+                                            <PTypography
+                                                labelText={formData.endDate}
+                                                color={CommonColors.grey.main}
+                                                weight={FontWeight.semiBold}
+                                            />
+                                        </PGrid>
+                                    </PGrid>
+                                </>
+                            )}
 
                             <hr className="my-4" />
                             <PGrid container className={Labels.margin.mb4}>

@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from "react";
+import { Suspense, lazy } from "react";
 import { Routes, Route, Navigate , Outlet } from "react-router-dom";
 import PageLayout from "../container/layout/pageLayout";
 import { labelRoutes } from "./labelRoutes";
@@ -23,6 +23,7 @@ const Review = lazy(() => import("../container/enquiry/review"));
 const Report = lazy(() => import("../container/report/Report"));
 const EnquirySuccess = lazy(() => import("../container/enquiry/enquirySuccess"))
 const ProjectEnquiry = lazy(() => import("../container/enquiry/projectEnquiry"))
+
 function AppRoutes() {
   return (
     <>

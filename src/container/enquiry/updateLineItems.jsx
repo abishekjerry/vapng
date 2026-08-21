@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import PDialog from "../../component/PDialog/PDialog";
 import { CommonColors } from "../../utils/constants/colors";
 import { Labels } from "../../utils/constants/labels";
@@ -175,6 +175,7 @@ const UpdateLineItems = ({ open, onClose, data = {}, step, refreshSummary }) => 
                     DigitalInnovation: getOptionLabel(formDataList.yesNoNa, formData.digitalInnovation),
                     Innovation: getOptionLabel(formDataList.yesNoNa, formData.innovation),
                     Sourcinglocation: getOptionLabel(formDataList.sourcingLocation, formData.sourcingLocation),
+                    harmonizedOrder  : formData.globalOrderWindowCatalogueName == 1 ? "No" : "Yes",
                     Version: formData.noOfVersion,
                     SpecNote: formData.specifications,
                     SNote: formData.notesComments,

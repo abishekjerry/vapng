@@ -6,21 +6,27 @@ import { Labels } from "../../utils/constants/labels";
 import { CommonColors } from "../../utils/constants/colors";
 import { FontWeight } from "../../utils/constants/fonts";
 import { useLanguage } from "../../utils/constants/language";
+import { useSelector } from "react-redux";
 
-export default function PStepper({ steps = [], activeStep = 0 , allowRedirect = false }) {
+export default function PStepper({ steps = [], activeStep = 0, allowRedirect = false }) {
   const navigate = useNavigate();
   const { getLabel } = useLanguage();
-   const handleRedirect = (step) => {
+  const { menuId } = useSelector((state) => state.userDetails.user);
+  const handleRedirect = (step) => {
     if (step.url && allowRedirect) {
       navigate(step.url);
     }
   };
-
+  const header = {
+    1: getLabel("lbl19"),
+    2: "Create E-Bid Event",
+    3: "Create Ecatalogue",
+  }[menuId];
   return (
     <>
       <PGrid container className="text-center">
         <PTypography
-          labelText={getLabel("lbl19")}
+          labelText={header}
           flag={Labels.fontFlags.mainHeader}
           color={CommonColors.grey.main}
           weight={FontWeight.bold}
@@ -66,82 +72,82 @@ export default function PStepper({ steps = [], activeStep = 0 , allowRedirect = 
           </React.Fragment>
         ))}
       </div>
-      <style>{`
+      <style>
+        {`
+        .p-stepper{
+          display:flex;
+          align-items:center;
+          justify-content:space-between;
+          max-width:700px;
+          margin:auto;
+          padding:10px 0;
+        }
 
-.p-stepper{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  max-width:700px;
-  margin:auto;
-  padding:10px 0;
-}
+        .p-step{
+          text-align:center;
+          cursor:pointer;
+        }
 
-.p-step{
-  text-align:center;
-  cursor:pointer;
-}
+        .p-circle{
+          width:36px;
+          height:36px;
+          border-radius:50%;
+          border:2px solid #9CA3AF;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          font-weight:600;
+          color:#6B7280;
+          margin:auto;
+          transition:.3s;
+        }
 
-.p-circle{
-  width:36px;
-  height:36px;
-  border-radius:50%;
-  border:2px solid #9CA3AF;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:600;
-  color:#6B7280;
-  margin:auto;
-  transition:.3s;
-}
+        .p-circle.completed{
+          background:#EF4444;
+          border-color:#EF4444;
+          color:#fff;
+        }
 
-.p-circle.completed{
-  background:#EF4444;
-  border-color:#EF4444;
-  color:#fff;
-}
+        .p-circle.active{
+          border-color:#EF4444;
+          color:#EF4444;
+        }
 
-.p-circle.active{
-  border-color:#EF4444;
-  color:#EF4444;
-}
+        .p-label{
+          margin-top:8px;
+          font-size:14px;
+          color:#6B7280;
+        }
 
-.p-label{
-  margin-top:8px;
-  font-size:14px;
-  color:#6B7280;
-}
+        .p-label.active{
+          color:#EF4444;
+          font-weight:600;
+        }
 
-.p-label.active{
-  color:#EF4444;
-  font-weight:600;
-}
+        .p-line{
+          flex:1;
+          height:3px;
+          background:#E5E7EB;
+          margin:0 10px 25px;
+          position:relative;
+        }
 
-.p-line{
-  flex:1;
-  height:3px;
-  background:#E5E7EB;
-  margin:0 10px 25px;
-  position:relative;
-}
+        .p-line::after{
+          content:"";
+          position:absolute;
+          left:0;
+          top:0;
+          height:100%;
+          width:0%;
+          background:#EF4444;
+          transition:width .4s ease;
+        }
 
-.p-line::after{
-  content:"";
-  position:absolute;
-  left:0;
-  top:0;
-  height:100%;
-  width:0%;
-  background:#EF4444;
-  transition:width .4s ease;
-}
-
-.p-line.completed::after{
-  width:100%;
-}
-
-`}</style>
+        .p-line.completed::after{
+          width:100%;
+        }
+      `}
+      </style>
     </>
   );
 }

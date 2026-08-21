@@ -75,13 +75,20 @@ export const getOptionValue = (options = [], label) => {
   return map[label] || "";
 };
 
-export const getEnquirySteps = (getLabel) => [
-  { text: getLabel("lbl20"), url: labelRoutes.clientInfo },
-  { text: getLabel("lbl21"), url: labelRoutes.enquiryDetails },
-  { text: getLabel("lbl22"), url: labelRoutes.lineItems },
-  { text: getLabel("lbl23"), url: labelRoutes.suppliers },
-  { text: getLabel("lbl24"), url: labelRoutes.review }
-];
+export const getEnquirySteps = (getLabel, menuId) => {
+  const labels = {
+    1: [getLabel("lbl21"), getLabel("lbl22")],
+    2: ["Bid Details", "Bid Items"],
+    3: ["Catalogue Details", "Catalogue Items"],
+  };
+  return [
+    { text: getLabel("lbl20"), url: labelRoutes.clientInfo },
+    { text: labels[menuId][0], url: labelRoutes.enquiryDetails },
+    { text: labels[menuId][1], url: labelRoutes.lineItems },
+    { text: getLabel("lbl23"), url: labelRoutes.suppliers },
+    { text: getLabel("lbl24"), url: labelRoutes.review },
+  ];
+};
 
 export const API_HEADERS = {
   "PMG-Secret-KEY": "dslgjhfg087DFFh50821571gi",

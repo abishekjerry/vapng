@@ -1,9 +1,5 @@
 
-import React, {
-  forwardRef,
-  useImperativeHandle,
-  useRef,
-} from "react";
+import React, { forwardRef, useImperativeHandle, useRef, } from "react";
 import "./Pquotation.css";
 
 const formatAmount = (value) => {
@@ -23,7 +19,7 @@ const PQuotation = forwardRef(({ data }, ref) => {
     const element = quotationRef.current;
     const quotationNo = data?.quotationNo || "Quotation";
     const { default: html2pdf } = await import("html2pdf.js");
-    
+
     const options = {
       margin: 0,
       filename: `Quotation-${quotationNo}.pdf`,

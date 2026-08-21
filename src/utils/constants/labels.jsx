@@ -62,7 +62,11 @@ export const Labels = {
     managementFeeType: "managementFeeType",
     hybrid: "hybrid",
     projectAttribute: "projectAttribute",
-    slaTemplate: "slaTemplate"
+    slaTemplate: "slaTemplate",
+
+    startDate: "startDate",
+    startTime: "startTime",
+    duration: "duration",
   },
 
   lineItems: {
@@ -122,7 +126,8 @@ export const Labels = {
     noOfVersion: "noOfVersion",
     specifications: "specifications",
     notesComments: "notesComments",
-
+    customizedSpecifications: "customizedSpecifications",
+    
     // Quantity
     quantityType: "quantityType",
     quantity: "quantity",

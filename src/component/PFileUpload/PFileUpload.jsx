@@ -1,17 +1,6 @@
-import React, { useEffect, useState } from "react";
-
-import {
-    TextField,
-    IconButton,
-    Tooltip,
-    InputAdornment
-} from "@mui/material";
-
-import {
-    UploadFile as UploadFileIcon,
-    InsertDriveFile as InsertDriveFileIcon
-} from "@mui/icons-material";
-
+import { useEffect, useState } from "react";
+import { TextField, IconButton, Tooltip, InputAdornment } from "@mui/material";
+import { UploadFile as UploadFileIcon, InsertDriveFile as InsertDriveFileIcon } from "@mui/icons-material";
 import { FontFamily, FontSize } from "../../utils/constants/fonts";
 
 export default function PFileUpload({
@@ -72,10 +61,10 @@ export default function PFileUpload({
                 break;
             }
 
-            updatedFiles.push({ name: file.name, file, url: URL.createObjectURL(file), size: file.size});
+            updatedFiles.push({ name: file.name, file, url: URL.createObjectURL(file), size: file.size });
         }
         setSelectedFiles(updatedFiles);
-        onChange?.({ target: { name, files: updatedFiles }});
+        onChange?.({ target: { name, files: updatedFiles } });
         setFileError(errorMsg);
         e.target.value = "";
     };
@@ -107,7 +96,7 @@ export default function PFileUpload({
             inputProps={{ readOnly: true }}
             sx={baseSx}
             //rows = {rows}
-            placeholder= {placeholder}
+            placeholder={placeholder}
             InputProps={{
                 startAdornment: (
                     <InputAdornment position="start">

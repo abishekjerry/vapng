@@ -2,7 +2,6 @@ import { CommonColors } from "../../utils/constants/colors";
 import { FontFamily, FontWeight } from "../../utils/constants/fonts";
 import { Labels } from "../../utils/constants/labels";
 import Typography from "@mui/material/Typography";
-import React from "react";
 
 export default function PTypography({
   flag,

@@ -1,5 +1,10 @@
 
-export const getSummarySections = ({ clientInfo = [], enquiryDetails = [], lineItems = [], suppliers = [], getLabel, handleEdit }) => {
+export const getSummarySections = ({ menuId ,clientInfo = [], enquiryDetails = [], lineItems = [], suppliers = [], getLabel, handleEdit }) => {
+  const labels = {
+    1: [getLabel("lbl21"), getLabel("lbl22")],
+    2: ["Bid Details", "Bid Items"],
+    3: ["Catalogue Details", "Catalogue Items"],
+  };
   return [
     clientInfo.length > 0 && {
       step: 1,
@@ -9,12 +14,12 @@ export const getSummarySections = ({ clientInfo = [], enquiryDetails = [], lineI
 
     enquiryDetails.length > 0 && {
       step: 2,
-      title: getLabel("lbl21"),
+      title: labels[menuId][0],
       items: enquiryDetails
     },
     {
       step: 3,
-      title: getLabel("lbl22"),
+      title: labels[menuId][1],
       items: lineItems
     },
     {

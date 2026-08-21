@@ -1,23 +1,5 @@
-import React, { useCallback, useEffect, useState } from "react";
-import {
-    Box,
-    Typography,
-    Card,
-    Grid,
-    Button,
-    Divider,
-    Avatar, Tooltip,
-    IconButton,
-    Skeleton,
-    Alert
-} from "@mui/material";
-
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import DescriptionIcon from "@mui/icons-material/Description";
-import FolderIcon from "@mui/icons-material/Folder";
-import PersonIcon from "@mui/icons-material/Person";
-import PublicIcon from "@mui/icons-material/Public";
-import EventIcon from "@mui/icons-material/Event";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { Box, Divider, Tooltip, IconButton, Skeleton, Alert } from "@mui/material";
 import PGrid from "../../component/PGrid/PGrid";
 import PCard from "../../component/PCard/PCard";
 import PTypography from "../../component/PTypography/PTypography";
@@ -38,7 +20,6 @@ import PTextField from "../../component/PTextField/PTextField";
 import PDatepicker from "../../component/PDatepicker/PDatepicker";
 import PDialog from "../../component/PDialog/PDialog";
 import PSearch from "../../component/PSearch/PSearch";
-import { PiArrowSquareUpLeftLight } from "react-icons/pi";
 import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
 import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
@@ -64,7 +45,7 @@ const ProjectEnquiry = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [dynamicData, setDynamicData] = useState({});
-    const { country, userName, userID, fkID, currency, email, userType } = useSelector((state) => state.userDetails.user);
+    const { country, userName, userID, fkID, currency, email, userType, menuId } = useSelector((state) => state.userDetails.user);
 
     const id = state?.id > 0 ? state.id : 0;
     const actionFlag = isNotEmpty(state?.id) && state?.id !== 0 ? Labels.flag.Update : Labels.flag.Insert;
@@ -155,8 +136,8 @@ const ProjectEnquiry = () => {
         projectSavings: [],
         savingsSummary: [],
 
-        savingsSummaryColumns: [{ field: "saving", header: "Savings (Inc. Fee)" }, { field: "savingPercent", header: "Savings % (Inc. Fee)" },
-        { field: "savingDisplay", header: "Savings (Excl. Fee)" }, { field: "savingPercentDisplay", header: "Savings % (Excl. Fee)" }],
+        savingsSummaryColumns: [{ field: "savingDisplay", header: "Savings (Inc. Fee)" }, { field: "savingPercentDisplay", header: "Savings % (Inc. Fee)" },
+        { field: "savingExclfeeDisplay", header: "Savings (Excl. Fee)" }, { field: "savingExclfeePercentDisplay", header: "Savings % (Excl. Fee)" }],
         savingsCalculation: [{ field: "label" }, { field: "value", align: "right" }],
         savingsResponseDto: { totalPreviousPrice: 0, totalSellPrice: 0, totalSaving: 0, totalSavingPercent: 0 },
         savingsReasons: [],
@@ -179,12 +160,12 @@ const ProjectEnquiry = () => {
         deliveryOrder: [],
 
         //Perview Quotes Suppliers
-        perviewQuotes: [{ field: "supplierA", header: "Supplier A" }, { field: "supplierAInitialAmount", header: "Supplier A Init. Amount" },
-        { field: "supplierANegotiatedAmount", header: "Supplier A Neg. Amount" }, { field: "supplierB", header: "Supplier B" },
-        { field: "supplierBInitialAmount", header: "Supplier B Init. Amount" }, { field: "supplierBNegotiatedAmount", header: "Supplier B Neg. Amount" },
-        { field: "supplierC", header: "Supplier C" }, { field: "supplierCInitialAmount", header: "Supplier C Init. Amount" },
-        { field: "supplierCNegotiatedAmount", header: "Supplier C Neg. Amount" }],
-        perviewSupplierQuotes: [],
+        previewQuotes: [{ field: "supplierA", header: "Supplier A" }, { field: "supplierAInitAmount", header: "Supplier A Init. Amount" },
+        { field: "supplierANegAmount", header: "Supplier A Neg. Amount" }, { field: "supplierB", header: "Supplier B" },
+        { field: "supplierBInitAmount", header: "Supplier B Init. Amount" }, { field: "supplierBNegAmount", header: "Supplier B Neg. Amount" },
+        { field: "supplierC", header: "Supplier C" }, { field: "supplierCInitAmount", header: "Supplier C Init. Amount" },
+        { field: "supplierCNegAmount", header: "Supplier C Neg. Amount" }],
+        previewSupplierQuotes: [],
 
         //Project Quotations
         projectQuotes: [{ field: "itemName", header: "Item Name" }, { field: "quantity", header: "Quantity" },
@@ -291,6 +272,13 @@ const ProjectEnquiry = () => {
                     items: projectResponse.savingsResponseDto.itemWiseSummary.filter(y => y.itemNumber === x.itemNumber)
                 }));
 
+            // const previewQuotes = [...new Map(projectResponse.previewQuotes.map(x => [x.itemNumber, x])).values()]
+            //     .map(x => ({
+            //         isSubTitle: true,
+            //         subTitle: x.itemName,
+            //         items: projectResponse.previewQuotes.filter(y => y.itemNumber === x.itemNumber)
+            //     }));
+
             setFormDataList(prev => ({
                 ...prev,
                 lineItems: response.enqlineItems,
@@ -313,6 +301,7 @@ const ProjectEnquiry = () => {
                 savingsResponseDto: projectResponse.savingsResponseDto,
                 deliveryOrder: projectResponse.deliveryOrder,
                 status: projectResponse.projectStatus,
+                //previewSupplierQuotes: previewQuotes
             }));
 
             setFormData(prev => ({
@@ -432,7 +421,7 @@ const ProjectEnquiry = () => {
         items: item.items,
     }));
 
-    const sections = getSummarySections({ lineItems, getLabel });
+    const sections = getSummarySections({ menuId, lineItems, getLabel });
 
     //Edit & cancel section function
 
@@ -620,19 +609,30 @@ const ProjectEnquiry = () => {
         }));
     }
     const renderProjectEditableField = (field) => ({
-        render: (row) => (
-            <PTextField
-                name={field}
-                value={row[field] || ""}
-                onChange={(e) => handleProjectInputChange(e.target.value, row.id, row.enquiryId, field)}
-                width={170}
-                sx={{
-                    "& .MuiInputBase-root": {
-                        height: 50,
-                    }
-                }}
-            />
-        )
+        render: (row) => {
+            // const isCostReduction = row?.savingType === "Cost Reduction";
+            // if ((field === "baselineQuantity" || field === "previousSupplier") && !isCostReduction) {
+            //     return row[field];
+            // }
+
+            return (
+                <PTextField
+                    name={field}
+                    value={row[field]}
+                    onChange={(e) =>
+                        handleProjectInputChange((field === "baselineQuantity" || field === "previousPrice")
+                            ? e.target.value.replace(/[^0-9.]/g, "") : e.target.value,
+                            row.id, row.enquiryId, field
+                        )}
+                    width={100}
+                    sx={{
+                        "& .MuiInputBase-root": {
+                            height: 40,
+                        }
+                    }}
+                />
+            )
+        }
     });
 
     const savings = formDataList.savingsResponseDto;
@@ -2060,6 +2060,7 @@ const ProjectEnquiry = () => {
                         </PGrid>
                     </PCard>
                 )}
+
                 {formData.activeTab === "Project Quotation" && (
                     <PCard className={Labels.margin.mb3}>
                         <PGrid container className={Labels.margin.mb4}>
@@ -2335,7 +2336,7 @@ const ProjectEnquiry = () => {
                 </PGrid>
             </PDialog>
 
-             {/* Preview Supplier Quotes dialog */}
+            {/* Preview Supplier Quotes dialog */}
             <PDialog
                 open={formData.preview}
                 onClose={() => setFormData((prev) => ({
@@ -2348,7 +2349,7 @@ const ProjectEnquiry = () => {
             >
                 <PGrid container className={Labels.margin.mb4}>
                     <PGrid item xs={12} sm={6} md={12}>
-                        <PTable columns={formDataList.perviewQuotes} rows={formDataList.perviewSupplierQuotes} showPagination={false} />
+                        <PTable columns={formDataList.previewQuotes} rows={formDataList.previewSupplierQuotes} showPagination={false} />
                     </PGrid>
                 </PGrid>
             </PDialog>

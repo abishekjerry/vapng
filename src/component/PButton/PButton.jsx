@@ -1,9 +1,9 @@
-import React from "react";
 import Button from "@mui/material/Button";
 import { useTheme } from "@mui/material/styles";
 import { FontFamily } from "../../utils/constants/fonts";
 import { CommonColors } from "../../utils/constants/colors";
 import CircularProgress from "@mui/material/CircularProgress";
+
 export default function PButton({
   label,
   onClick,

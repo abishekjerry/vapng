@@ -1,8 +1,6 @@
-import React from "react";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { IconButton } from "@mui/material";
 import "./PCard.css";
-import { CommonColors } from "../../utils/constants/colors";
 import CircularProgress from "@mui/material/CircularProgress";
 export default function PCard({
   title,

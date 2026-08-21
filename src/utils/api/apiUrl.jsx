@@ -66,6 +66,7 @@ export const ProjectEnquiry_API = {
   AddUpdateDeliveryAddress : Base_Url + "/VA/AddUpdateDeliveryAddress",
   UpdateSavingsReasons : Base_Url + "/VA/UpdateSavingsReasons",
   UpdateJobSummary : Base_Url + "/VA/UpdateJobSummary",
+  UpdatePreviewQuotes : Base_Url + "/VA/UpdatePreviewQuotes",
 }
 
 

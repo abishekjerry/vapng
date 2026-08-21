@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import PTypography from "../../component/PTypography/PTypography";
 import PTextField from "../../component/PTextField/PTextField";
 import PersonIcon from "@mui/icons-material/Person";
@@ -8,20 +8,15 @@ import { Labels } from "../../utils/constants/labels";
 import LoginImg from "../../utils/assets/images/Login.png";
 import "./login.css";
 import { CommonColors } from "../../utils/constants/colors";
-import PContainer from "../../component/PContainer/PContainer";
 import PDialog from "../../component/PDialog/PDialog";
-import {
-  allowOnlyAlphabets,
-  validatePassword,
-  validateName, isSuccess
-} from "../../utils/commonFunction/common";
+import { validatePassword, validateName, isSuccess } from "../../utils/commonFunction/common";
 import { userDetails, clearUserDetails } from "../../redux/actionType/actionType";
 import { connect } from "react-redux";
 import { AppNavigation } from "../../navigations/appNavigation";
 import { labelRoutes } from "../../navigations/labelRoutes";
 import Logo from "../../utils/assets/images/Valogo.png"
 import { PostApi } from "../../utils/api/networking";
-import { Account_API, Dashboard_API } from "../../utils/api/apiUrl";
+import { Account_API } from "../../utils/api/apiUrl";
 import PGrid from "../../component/PGrid/PGrid";
 import { useNavigate } from "react-router-dom";
 
@@ -151,7 +146,8 @@ function Login(props) {
             currency: user?.currency,
             country: user?.country,
             countryID: user?.countryId,
-            userType : user?.usertype,
+            userType: user?.usertype,
+            menuId: 0
           });
           navigate(labelRoutes.dashboard);
         } else {
@@ -221,13 +217,7 @@ function Login(props) {
             <div className="login-left">
               <div className="login-box">
                 <div style={{ display: "flex", justifyContent: "center" }}>
-                  <img src={Logo} alt="Logo"
-                    style={{
-                      height: 80,
-                      width: 100,
-                      margin: 10,
-                    }}
-                  />
+                  <img src={Logo} alt="Logo" style={{ height: 80, width: 100, margin: 10, }} />
                 </div>
 
                 <PTextField
@@ -265,13 +255,7 @@ function Login(props) {
             <div className="login-left">
               <div className="login-box">
                 <div style={{ display: "flex", justifyContent: "center" }}>
-                  <img src={Logo} alt="Logo"
-                    style={{
-                      height: 80,
-                      width: 100,
-                      margin: 10,
-                    }}
-                  />
+                  <img src={Logo} alt="Logo" style={{ height: 80, width: 100, margin: 10, }} />
                 </div>
 
                 <PTextField

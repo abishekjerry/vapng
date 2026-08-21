@@ -1,14 +1,6 @@
-import React, { useState } from "react";
-import {
-    TextField,
-    IconButton,
-    InputAdornment
-} from "@mui/material";
-import {
-    Visibility,
-    VisibilityOff
-} from "@mui/icons-material";
-
+import { useState } from "react";
+import { TextField, IconButton, InputAdornment } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Labels } from "../../utils/constants/labels";
 import { FontFamily, FontSize } from "../../utils/constants/fonts";
 import { CommonColors } from "../../utils/constants/colors";

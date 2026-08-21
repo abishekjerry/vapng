@@ -1,12 +1,8 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, lazy, Suspense } from "react";
 import { Box, IconButton, Tooltip, Skeleton } from "@mui/material";
-import PNavbar from "../../component/PNavbar/PNavbar";
 import PDropdown from "../../component/PDropdown/PDropdown";
 import PDatepicker from "../../component/PDatepicker/PDatepicker";
 import PDashboardCard from "../../component/PDashboardCard/PDashboardCard";
-import PPieChart from "../../component/PChart/PPieChart";
-import PBarChart from "../../component/PChart/PBarChart";
-import PLineChart from "../../component/PChart/PLineChart";
 import PTable from "../../component/PTable/PTable";
 import { Labels } from "../../utils/constants/labels";
 import PButton from "../../component/PButton/PButton";
@@ -18,18 +14,15 @@ import ShowChartIcon from "@mui/icons-material/ShowChart"
 import BarChartIcon from "@mui/icons-material/BarChart";
 import PieChartIcon from "@mui/icons-material/PieChart";
 import PToggle from "../../component/PToggle/PToggle";
-import AssignmentIcon from "@mui/icons-material/Assignment";
-import PendingActionsIcon from "@mui/icons-material/PendingActions";
-import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import PSearch from "../../component/PSearch/PSearch";
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import CheckCircleIcon from '@mui/icons-material/TaskAlt';
 import AddTaskRoundedIcon from '@mui/icons-material/AddTaskRounded';
-import { FontFamily, FontWeight } from '../../utils/constants/fonts'
+import { FontWeight } from '../../utils/constants/fonts'
 import { useLanguage } from "../../utils/constants/language";
-import { Dashboard_API } from "../../utils/api/apiUrl";
+import { Account_API, Dashboard_API } from "../../utils/api/apiUrl";
 import { PostApi } from "../../utils/api/networking";
 import { exportToExcel, isNotEmpty, isSuccess, toast } from "../../utils/commonFunction/common";
 import { useNavigate } from "react-router-dom";
@@ -44,6 +37,12 @@ import ImageIcon from "@mui/icons-material/Image";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
+import PauseIcon from "@mui/icons-material/Pause";
+import SettingsInputAntennaIcon from "@mui/icons-material/SettingsInputAntenna";
+import PrintIcon from "@mui/icons-material/Print";
+import OutboxOutlinedIcon from "@mui/icons-material/OutboxOutlined";
+import MoveToInboxOutlinedIcon from "@mui/icons-material/MoveToInboxOutlined";
+import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 
 const EqDashboard = () => {
   const navigate = useNavigate();
@@ -57,7 +56,7 @@ const EqDashboard = () => {
   const [summary, setSummary] = useState({});
   const [loading, setLoading] = useState(true);
   const [chartOrginalData, setChartOrginalData] = useState([]);
-   const { countryID, role, userName, userType } = useSelector((state) => state.userDetails.user);
+  const { countryID, role, userName, userType, menuId } = useSelector((state) => state.userDetails.user);
   const [formData, setFormData] = useState({
     country: "",
     user: "",
@@ -66,7 +65,6 @@ const EqDashboard = () => {
     search: "",
     chartType: "pie",
     status: "",
-    createEnquiry: "Create Enquiry"
   });
   const [errors, setErrors] = useState({
     startDate: "",
@@ -95,6 +93,7 @@ const EqDashboard = () => {
         jobposition: "",
         client: "",
         username: userName, //localStorage.getItem("user"),
+        menuId: menuId
       });
 
       if (isSuccess(res)) {
@@ -135,7 +134,7 @@ const EqDashboard = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [menuId]);
 
   useEffect(() => {
     if (country.length === 1) {
@@ -155,114 +154,178 @@ const EqDashboard = () => {
     { field: "surveyStatus", header: "Survey Status" },
   ];
 
- const cardData = [
+  const agencyCards = {
+    1: [
+      {
+        title: getLabel("lbl12"),
+        value: summary.active || 0,
+        subtitle: getLabel("lbl16"),
+        iconColor: Labels.primary,
+        icon: <OutboxOutlinedIcon />,
+        statusId: 1,
+      },
+      {
+        title: getLabel("lbl13"),
+        value: summary.approval || 0,
+        subtitle: getLabel("lbl17"),
+        iconColor: Labels.primary,
+        icon: <MoveToInboxOutlinedIcon />,
+        statusId: 3,
+      },
+      {
+        title: getLabel("lbl14"),
+        value: summary.awarded || 0,
+        subtitle: getLabel("lbl18"),
+        iconColor: Labels.primary,
+        icon: <PrintOutlinedIcon />,
+        statusId: 6,
+      },
+      {
+        title: getLabel("lbl15"),
+        value: summary.completed || 0,
+        subtitle: getLabel("lbl18"),
+        iconColor: Labels.primary,
+        icon: <TaskAltIcon />,
+        statusId: 24,
+      },
+      // {
+      //  fileName: true,
+      // },
+    ],
+
+    2: [
+      {
+        title: "LIVE",
+        value: 0,
+        subtitle: "Jobs suppliers are bidding on",
+        iconColor: Labels.primary,
+        icon: <SettingsInputAntennaIcon />,
+        statusId: 1,
+      },
+      {
+        title: "PAUSED",
+        value: 0,
+        subtitle: "EBids that you have put on hold",
+        iconColor: Labels.primary,
+        icon: <PauseIcon />,
+        statusId: 3,
+      },
+      {
+        title: "SCHEDULED",
+        value: 0,
+        subtitle: "Your upcoming eBids",
+        iconColor: Labels.primary,
+        icon: <PrintIcon />,
+        statusId: 6,
+      },
+    ],
+
+    3: [
+      {
+        title: getLabel("lbl12"),
+        value: summary.active || 0,
+        subtitle: getLabel("lbl16"),
+        iconColor: Labels.primary,
+        icon: <OutboxOutlinedIcon />,
+        statusId: 1,
+      },
+      {
+        title: getLabel("lbl13"),
+        value: summary.approval || 0,
+        subtitle: getLabel("lbl17"),
+        iconColor: Labels.primary,
+        icon: <MoveToInboxOutlinedIcon />,
+        statusId: 3,
+      },
+      {
+        title: getLabel("lbl14"),
+        value: summary.awarded || 0,
+        subtitle: getLabel("lbl18"),
+        iconColor: Labels.primary,
+        icon: <PrintOutlinedIcon />,
+        statusId: 6,
+      },
+    ],
+  };
+
+  const supplierCards = [
+    {
+      title: "New RFQ'S",
+      value: summary.newrfq || 0,
+      subtitle: "New requests for quotation",
+      iconColor: Labels.primary,
+      icon: <MoveToInboxIcon />,
+      statusId: 24,
+    },
+    {
+      title: "Quotes Proposed",
+      value: summary.quoteproposed || 0,
+      subtitle: "Number of active quotes you have submitted for review",
+      iconColor: Labels.primary,
+      icon: <LocalOfferIcon />,
+      statusId: 24,
+    },
+    {
+      title: "Invites",
+      value: summary.invites || 0,
+      subtitle: "Total number of enquiries you have received",
+      iconColor: Labels.primary,
+      icon: <Inventory2Icon />,
+      statusId: 24,
+    },
+  ];
+
+  const clientCards = [
+    {
+      title: getLabel("lbl13"),
+      value: summary.forapproval || 0,
+      subtitle: getLabel("lbl17"),
+      iconColor: Labels.primary,
+      icon: <EditIcon />,
+      statusId: 3,
+    },
+    {
+      title: "Art Work",
+      value: summary.artwork || 0,
+      subtitle: "Awaiting Artwork/Sample",
+      iconColor: Labels.primary,
+      icon: <ImageIcon />,
+      statusId: 24,
+    },
+    {
+      title: "Proof",
+      value: summary.proof || 0,
+      subtitle: "Proof Approved",
+      iconColor: Labels.primary,
+      icon: <VisibilityIcon />,
+      statusId: 24,
+    },
+    {
+      title: "Production",
+      value: summary.production || 0,
+      subtitle: "Number of projects in production",
+      iconColor: Labels.primary,
+      icon: <HourglassEmptyIcon />,
+      statusId: 24,
+    },
+    {
+      title: getLabel("lbl15"),
+      value: summary.completed || 0,
+      subtitle: "Number of completed projects",
+      iconColor: Labels.primary,
+      icon: <AssignmentTurnedInIcon />,
+      statusId: 24,
+    },
+  ];
+
+  const cardData = [
     ...(userType?.toLowerCase() === Labels.userType.agency
-      ? [
-        {
-          title: getLabel("lbl12"),
-          value: summary.active || 0,
-          subtitle: getLabel("lbl16"),
-          iconColor: Labels.primary,
-          icon: <AssignmentIcon />,
-          statusId: 1
-        },
-        {
-          title: getLabel("lbl13"),
-          value: summary.approval || 0,
-          subtitle: getLabel("lbl17"),
-          iconColor: Labels.primary,
-          icon: <PendingActionsIcon />,
-          statusId: 3
-        },
-        {
-          title: getLabel("lbl14"),
-          value: summary.awarded || 0,
-          subtitle: getLabel("lbl18"),
-          iconColor: Labels.primary,
-          icon: <EmojiEventsIcon />,
-          statusId: 6
-        },
-        {
-          title: getLabel("lbl15"),
-          value: summary.completed || 0,
-          subtitle: getLabel("lbl18"),
-          iconColor: Labels.primary,
-          icon: <TaskAltIcon />,
-          statusId: 24
-        },]
-      : []),
-
-    ...(userType?.toLowerCase() === Labels.userType.supplier
-      ? [
-        {
-          title: "New RFQ'S",
-          value: summary.newrfq || 0,
-          subtitle: "New requests for quotation",
-          iconColor: Labels.primary,
-          icon: <MoveToInboxIcon />,
-          statusId: 24
-        },
-        {
-          title: "Quotes Proposed",
-          value: summary.quoteproposed || 0,
-          subtitle: "Number of active quotes you have submitted for review",
-          iconColor: Labels.primary,
-          icon: <LocalOfferIcon />,
-          statusId: 24
-        },
-        {
-          title: "Invites",
-          value: summary.invites || 0,
-          subtitle: "Total number of enquiries you have received",
-          iconColor: Labels.primary,
-          icon: <Inventory2Icon />,
-          statusId: 24
-        },]
-      : []),
-
-    ...(userType?.toLowerCase() === Labels.userType.client
-      ? [
-        {
-          title: getLabel("lbl13"),
-          value: summary.forapproval || 0,
-          subtitle: getLabel("lbl17"),
-          iconColor: Labels.primary,
-          icon: <EditIcon />,
-          statusId: 3
-        },
-        {
-          title: "Art Work",
-          value: summary.artwork || 0,
-          subtitle: "Awaiting Artwork/Sample",
-          iconColor: Labels.primary,
-          icon: <ImageIcon />,
-          statusId: 24
-        },
-        {
-          title: "Proof",
-          value: summary.proof || 0,
-          subtitle: "Proof Approved",
-          iconColor: Labels.primary,
-          icon: <VisibilityIcon />,
-          statusId: 24
-        },
-        {
-          title: "Production",
-          value: summary.production || 0,
-          subtitle: "Number of projects in production",
-          iconColor: Labels.primary,
-          icon: <HourglassEmptyIcon />,
-          statusId: 24
-        },
-        {
-          title: getLabel("lbl15"),
-          value: summary.completed || 0,
-          subtitle: "Number of completed projects",
-          iconColor: Labels.primary,
-          icon: <AssignmentTurnedInIcon />,
-          statusId: 24
-        },]
-      : [])
+      ? agencyCards[menuId] || []
+      : userType?.toLowerCase() === Labels.userType.supplier
+        ? supplierCards
+        : userType?.toLowerCase() === Labels.userType.client
+          ? clientCards
+          : []),
   ];
 
   const chartOptions = [
@@ -273,10 +336,11 @@ const EqDashboard = () => {
 
   // Map chartType string to component
   const chartComponents = {
-    line: PLineChart,
-    bar: PBarChart,
-    pie: PPieChart
+    line: lazy(() => import("../../component/PChart/PLineChart")),
+    bar: lazy(() => import("../../component/PChart/PBarChart")),
+    pie: lazy(() => import("../../component/PChart/PPieChart")),
   };
+
 
   const SelectedChart = chartComponents[formData.chartType];
 
@@ -451,11 +515,17 @@ const EqDashboard = () => {
   };
 
   const handleRedirect = () => {
-    navigate(labelRoutes.clientInfo);
+    menuId === 3 ? window.open(Account_API.Echo, "_blank") : navigate(labelRoutes.clientInfo);
   };
 
+  const eProcurement = {
+    1: "Create Enquiry",
+    2: "Create E-Bidding Event",
+    3: "Echo",
+  }[menuId];
+
   const icons = [
-    { icon: <AddTaskRoundedIcon fontSize="small" color="green" />, tooltip: getLabel("lbl19"), action: handleRedirect },
+    { icon: <AddTaskRoundedIcon fontSize="small" color="green" />, tooltip: eProcurement, action: handleRedirect },
     { icon: <RestartAltIcon fontSize="small" />, tooltip: "Reset", action: handleReset },
     { icon: <FileDownloadIcon fontSize="small" />, tooltip: "Export", action: handleExport },
     { icon: <CheckCircleIcon fontSize="small" />, tooltip: "Date Range Filter", action: handleOpenChoose },
@@ -503,7 +573,7 @@ const EqDashboard = () => {
             ))
           ) : (
             cardData.map((card, index) => (
-             <PGrid key={index} item xs={12} sm={6} md={3} lg={cardData.length === 5 ? 20 : cardData.length === 3 ? 4 : 3} >
+              <PGrid key={index} item xs={12} sm={6} md={3} lg={cardData.length === 5 ? 20 : cardData.length === 3 ? 4 : 3} >
                 <PDashboardCard {...{ ...card, bgColor: CommonColors.bg_violet }} onClick={() => handleFilter(card.statusId)} />
               </PGrid>
             ))
@@ -513,10 +583,10 @@ const EqDashboard = () => {
         <PGrid container className={Labels.margin.mb3}>
           <PGrid item xs={12} sm={6} md={8}>
             <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", margin: "6px 0px", width: "100%" }}>
-              <Box sx={{ width: 180 }}>
-                {icons.length > 0 && userType?.toLowerCase() === Labels.userType.agency && (
-                  <PToggle options={[{ ...icons[0], value: formData.createEnquiry, label: icons[0].tooltip }]}
-                    value={formData.createEnquiry}
+              <Box sx={{ width: 250 }}>
+                {icons.length > 0 && userType?.toLowerCase() === Labels.userType.agency && [2, 1, 3].includes(menuId) && (
+                  <PToggle options={[{ ...icons[0], value: eProcurement, label: icons[0].tooltip }]}
+                    value={eProcurement}
                     onclick={icons[0].action}
                     disabled={loading}
                     sx={{
@@ -533,7 +603,6 @@ const EqDashboard = () => {
                       sx={iconStyle}
                       onClick={item.action}
                       disabled={loading}
-                      color={CommonColors.green.main}
                     >
                       {item.icon}
                     </IconButton>
@@ -605,13 +674,15 @@ const EqDashboard = () => {
           <PGrid item xs={12} sm={6} md={4} style={{ display: "flex" }}>
             <PCard style={{ height: "100%", width: "100%", display: "flex", flexDirection: "column" }}>
               <div style={{ flexGrow: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                {loading ? (
-                  <Skeleton variant="rectangular" height={350} width="100%" sx={{ borderRadius: 2 }} />
-                ) : (
-                  SelectedChart && chartData.length > 0 && (
-                    <SelectedChart data={chartData} onSliceClick={handleOnClick} />
-                  )
-                )}
+                <Suspense>
+                  {loading ? (
+                    <Skeleton variant="rectangular" height={350} width="100%" sx={{ borderRadius: 2 }} />
+                  ) : (
+                    SelectedChart && chartData.length > 0 && (
+                      <SelectedChart data={chartData} onSliceClick={handleOnClick} />
+                    )
+                  )}
+                </Suspense>
               </div>
             </PCard>
           </PGrid>
@@ -643,7 +714,7 @@ const EqDashboard = () => {
         }
       >
         <PGrid>
-          <PGrid item xs={12} sm={6} md={5}>
+          <PGrid item xs={12} sm={6} md={5} className={Labels.margin.mb3}>
             <PDatepicker
               name={Labels.dashboard.startDate}
               label={getLabel("lbl120")}

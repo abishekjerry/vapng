@@ -3,7 +3,7 @@ import PTypography from "../../component/PTypography/PTypography";
 import PGrid from "../../component/PGrid/PGrid";
 import PDropdown from "../../component/PDropdown/PDropdown";
 import { Labels } from "../../utils/constants/labels";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { FontWeight } from "../../utils/constants/fonts";
 import PCard from "../../component/PCard/PCard";
 import { CommonColors } from "../../utils/constants/colors";
@@ -21,9 +21,11 @@ import { Dashboard_API, Suppliers_API } from "../../utils/api/apiUrl";
 import { getClientInfo, getEnquiryDetails, getLineneItems, getSummarySections, getSuppliers } from "../../utils/constants/summary";
 import { PSummary } from "../../component/PSummary/PSummary";
 import { useSelector } from "react-redux";
+
 const Suppliers = () => {
     const { getLabel } = useLanguage();
-    const enquirySteps = getEnquirySteps(getLabel);
+    const { country, currency, fkID , menuId} = useSelector((state) => state.userDetails.user);
+    const enquirySteps = getEnquirySteps(getLabel, menuId);
     const navigate = useNavigate();
     const { state } = useLocation();
     const [allowRedirect, setAllowRedirect] = useState(false);
@@ -34,8 +36,7 @@ const Suppliers = () => {
     const [search, setSearch] = useState("");
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(true);
-    const { country, currency, fkID } = useSelector((state) => state.userDetails.user);
- 
+    
     const [formDataList, setFormDataList] = useState({
         country: [],
         print: [],
@@ -143,7 +144,7 @@ const Suppliers = () => {
         items: item.items
     }));
     const suppliers = getSuppliers(formDataList.suppliers, formDataList.selectedRows)
-    const sections = getSummarySections({ clientInfo, enquiryDetails, lineItems, suppliers, getLabel });
+    const sections = getSummarySections({ menuId, clientInfo, enquiryDetails, lineItems, suppliers, getLabel });
 
 
     const handleSubmit = async (e, flag) => {
