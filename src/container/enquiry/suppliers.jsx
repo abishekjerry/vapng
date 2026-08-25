@@ -160,7 +160,7 @@ const Suppliers = () => {
             setLoading(true);
             const payload = {
                 EnqId: id,
-                SelectedSuppliers: supplierIds,
+                SelectedSuppliers : supplierIds,
                 ModifiedBy: fkID,
             };
             const response = await PostApi(Suppliers_API.AddUpdateSuppliers, payload);

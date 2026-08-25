@@ -28,7 +28,7 @@ import { exportToExcel, isNotEmpty, isSuccess, toast } from "../../utils/commonF
 import { useNavigate } from "react-router-dom";
 import { labelRoutes } from "../../navigations/labelRoutes";
 import PDialog from "../../component/PDialog/PDialog";
-import { useSelector } from "react-redux";
+import { useSelector , useDispatch} from "react-redux";
 import MoveToInboxIcon from "@mui/icons-material/MoveToInbox";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
@@ -43,12 +43,13 @@ import PrintIcon from "@mui/icons-material/Print";
 import OutboxOutlinedIcon from "@mui/icons-material/OutboxOutlined";
 import MoveToInboxOutlinedIcon from "@mui/icons-material/MoveToInboxOutlined";
 import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
+import { userDetails } from "../../redux/actionType/actionType";
 
 const EqDashboard = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { getLabel } = useLanguage();
   const [openFilter, setOpenFilter] = useState("");
-  //const [chartType, setChartType] = useState("pie");
   const [country, setCountry] = useState([]);
   const [filter, setFilter] = useState(false);
   const [rows, setRows] = useState([]);
@@ -542,6 +543,12 @@ const EqDashboard = () => {
 
   const handleRoute = (row) => {
     const route = row.status === "Draft" ? (stepRoutes[row.stepID]) : labelRoutes.projectEnquiry;
+    dispatch({
+      type: userDetails,
+      payload: {
+        enquiryId : row.enquiryId,
+      },
+    });
     navigate(route, { state: { id: row.id } });
   }
 

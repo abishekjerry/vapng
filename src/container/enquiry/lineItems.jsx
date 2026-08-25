@@ -13,7 +13,7 @@ import PTextField from "../../component/PTextField/PTextField";
 import { allowDecimal, allowOnlyNumbers, getEnquirySteps, getOptionLabel, getOptionValue, isNotEmpty, isSuccess, toast } from "../../utils/commonFunction/common";
 import { useLanguage } from "../../utils/constants/language";
 import { labelRoutes } from "../../navigations/labelRoutes";
-import {useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Dashboard_API, LineItems_API } from "../../utils/api/apiUrl";
 import { PostApi } from "../../utils/api/networking";
 import { PDraftDialog } from "../../component/PDialog/PDraftDialog";
@@ -214,21 +214,6 @@ const LineItems = () => {
         depth: "",
     });
 
-    //Quote of Quantity 
-    const type = Number(formData.quantityType);
-    const flatSize = type === 3 ? (+formData.length || 0) * (+formData.width || 0) * (+formData.depth || 0) : (+formData.length || 0) * (+formData.width || 0);
-    const totalSize = flatSize * (+formData.quantity || 0);
-
-    const clientInfo = getClientInfo({}, {}, {}, getLabel, getOptionLabel, formDataList.clientInfo);
-    const enquiryDetails = getEnquiryDetails({}, {}, {}, getLabel, getOptionLabel, formDataList.enquiryDetails);
-    const rawLineItems = getLineneItems(formData, formDataList, getLabel, getOptionLabel, formDataList.lineItems);
-    const lineItems = rawLineItems.map((item, index) => ({
-        subTitle: `${item.itemTitle}`,
-        enquiryId: item.enquiryId,
-        items: item.items,
-    }));
-
-    const sections = getSummarySections({ menuId, clientInfo, enquiryDetails, lineItems, getLabel });
     const fetchData = async () => {
         try {
             setLoading(true);
@@ -259,7 +244,21 @@ const LineItems = () => {
             setLoading(false);
         }
     };
+    //Quote of Quantity 
+    const type = Number(formData.quantityType);
+    const flatSize = type === 3 ? (+formData.length || 0) * (+formData.width || 0) * (+formData.depth || 0) : (+formData.length || 0) * (+formData.width || 0);
+    const totalSize = flatSize * (+formData.quantity || 0);
 
+    const clientInfo = getClientInfo({}, {}, {}, getLabel, getOptionLabel, formDataList.clientInfo);
+    const enquiryDetails = getEnquiryDetails({}, {}, {}, getLabel, getOptionLabel, formDataList.enquiryDetails);
+    const rawLineItems = getLineneItems(formData, formDataList, getLabel, getOptionLabel, formDataList.lineItems);
+    const lineItems = rawLineItems.map((item, index) => ({
+        subTitle: `${item.itemTitle}`,
+        enquiryId: item.enquiryId,
+        items: item.items,
+    }));
+
+    const sections = getSummarySections({ menuId, clientInfo, enquiryDetails, lineItems, getLabel });
     const SavingsReasonMaster = async (data, hybird = false) => {
         try {
             setLoading(false);
@@ -400,11 +399,13 @@ const LineItems = () => {
         [Labels.lineItems.length]: { type: "decimal" },
         [Labels.lineItems.depth]: { type: "decimal" },
         [Labels.lineItems.recycledMaterialWeightKg]: { type: "decimal" },
+        [Labels.lineItems.recycledPlasticWeightKg]: { type: "decimal" },
+        [Labels.lineItems.plasticWeightKg]: { type: "decimal" },
         [Labels.lineItems.competitiveBiddingWinningSupplierCost]: { type: "decimal" }
     };
 
 
-   const handleChange = (e) => {
+    const handleChange = (e) => {
         const { name, value, files, label } = e.target;
         const type = fieldConfig[name]?.type;
 
@@ -486,11 +487,11 @@ const LineItems = () => {
                     EnqId: id,
                     Printornonprint: getOptionLabel(formDataList.category, formData.category),
                     ProductCategoryId: formData.itemCategory,
-                    localRateCard: getOptionLabel(formDataList.rateCard, formData.rateCard),
+                    RateCard : getOptionLabel(formDataList.rateCard, formData.rateCard),
                     reengineering: getOptionLabel(formDataList.reEngineering, formData.reEngineering),
-                    Dictated: getOptionLabel(formDataList.dictatedJob, formData.dictatedJob),
+                    dictated: getOptionLabel(formDataList.dictatedJob, formData.dictatedJob),
                     urgent: getOptionLabel(formDataList.urgentJob, formData.urgentJob),
-                    ProductType: getOptionLabel(formDataList.itemType, formData.itemType),
+                    Itemtype : getOptionLabel(formDataList.itemType, formData.itemType),
                     Incoterm: getOptionLabel(formDataList.incoterm, formData.incoterm),
                     ItemName: formData.itemName,
                     ItemDescription: formData.itemNameDescription,
@@ -552,6 +553,8 @@ const LineItems = () => {
                     FlatSizeLength: formData.length,
                     FlatSizeWidth: formData.width,
                     FlatSizeDandH: formData.depth,
+                    TotalFlatSize: flatSize.toString(),
+                    TotalQtySize: totalSize.toString(),
                     ModifiedBy: fkID,
                 };
                 const response = await PostApi(LineItems_API.AddUpdateLineItems, payload);
@@ -569,11 +572,11 @@ const LineItems = () => {
                         await fetchData();
                     };
                 } else {
-                    setErrors((prev) => ({
-                        ...prev,
-                        name: ""
-                    }));
-                    toast(Labels.status.failure, response.data.message);
+                    //     setErrors((prev) => ({
+                    //         ...prev,
+                    //         name: ""
+                    //     }));
+                    //     toast(Labels.status.failure, response.data.message);
                 }
             } catch (error) {
                 toast(Labels.status.failure, Labels.message.somethingWentWrong);
@@ -1160,7 +1163,7 @@ const LineItems = () => {
                                     </PGrid>
                                 )}
                                 {[1].includes(formData.containsRecycledPlastic) && (
-                                    <PGrid item xs={12} sm={6} md={4}>
+                                    <PGrid item xs={12} sm={6} md={4} className={Labels.margin.mb3}>
                                         <PTextField
                                             label={`${getLabel("lbl78")} ${Labels.symbols.required} ${Labels.symbols.optional}`}
                                             value={formData.containsRecycledPlastic == 1 ? formData.recycledPlasticWeightKg : ""}

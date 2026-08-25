@@ -39,7 +39,7 @@ export const getClientInfo = (fields = {}, formData = {}, formDataList = {}, get
     { label: getLabel("lbl09"), value: response ? source.country : fields.country },
     { label: getLabel("lbl29"), value: response ? source.entityname : fields.entityName },
     { label: getLabel("lbl30"), value: response ? source.bussinessUnit : fields.businessUnit },
-    { label: getLabel("lbl31"), value: response ? source.chennal : fields.chennal },
+    { label: getLabel("lbl31"), value: response ? source.departmentorproduct : fields.channel },
     // { label: getLabel("lbl91"), value: response ? source.globalBussinessUnit : getOptionLabel(formDataList.globalBUMapping, source.globalBUMapping) },
     // { label: getLabel("lbl92"), value: response ? source.aboveorAtmarket : getOptionLabel(formDataList.aboveAtMarket, source.aboveAtMarket) },
     { label: getLabel("lbl33"), value: response ? source.brand : getOptionLabel(formDataList.brand, source.brand) },
@@ -75,10 +75,10 @@ export const getLineneItems = (formData = {}, formDataList = {}, getLabel, getOp
     { key: "printornonprint", label: "lbl154" },
     { key: "productcategory", label: "lbl61" },
     { key: "urgent", label: "lbl156" },
-    { key: "dictatedJob", label: "lbl63" },
-    { key: "ProductType", label: "lbl64" },
+    { key: "dictated", label: "lbl63" },
+    { key: "itemtype", label: "lbl64" },
     { key: "reengineering", label: "lbl157" },
-    { key: "localRateCard", label: "lbl65" },
+    { key: "rateCard", label: "lbl65" },
     { key: "incoterm", label: "lbl152" },
     { key: "itemName", label: "lbl66" },
     { key: "itemDescription", label: "lbl67" },
@@ -109,7 +109,7 @@ export const getLineneItems = (formData = {}, formDataList = {}, getLabel, getOp
 
 
     { key: "printingMethod", label: "lbl111" },
-    { key: "materialused", label: "lbl201" },
+    { key: "materialUsed", label: "lbl201" },
     { key: "innovation", label: "lbl158" },
     { key: "catalogueUsage", label: "lbl81" },
     
@@ -134,7 +134,6 @@ export const getLineneItems = (formData = {}, formDataList = {}, getLabel, getOp
     { key: "sNote", label: "lbl86" }
 
   ];
-
   const items = formDataList?.lineItems?.length ? formDataList.lineItems : response;
   const validItems = (items || []).filter(
     item => item?.itemNumber !== undefined && item?.itemNumber !== null

@@ -77,7 +77,7 @@ const PTable = ({ columns, rows, onClick, isChecked = false, showCheckbox = fals
   const renderText = (value, type) => {
     let text = value == null || value === 0 ? "" : String(value);
 
-    if (type === "rupee") {
+    if (type === "rupee" && value != null && value !== 0) {
       text = Number(value).toLocaleString("en-IN", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,

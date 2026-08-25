@@ -21,11 +21,14 @@ import { PDraftDialog } from "../../component/PDialog/PDraftDialog";
 import { PSummary } from "../../component/PSummary/PSummary";
 import { getClientInfo, getEnquiryDetails, getSummarySections } from "../../utils/constants/summary";
 import PSlaTemplate from "../../component/PSlaTemplate/PSlaTemplate";
-import { useSelector } from "react-redux";
+import { useSelector , useDispatch } from "react-redux";
+import { userDetails } from "../../redux/actionType/actionType";
+
 const EnquiryDetails = () => {
     const { state } = useLocation();
     const { getLabel } = useLanguage();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const { countryID, role, fkID, menuId } = useSelector((state) => state.userDetails.user);
     const enquirySteps = getEnquirySteps(getLabel, menuId);
     const [allowRedirect, setAllowRedirect] = useState(false);
@@ -196,7 +199,12 @@ const EnquiryDetails = () => {
                     projectAttribute: getOptionValue(response.projectAttribute, data.enqProjectinfo.attribute),
                     slaTemplate: data?.enqProjectinfo?.slaId,
                 }));
-                localStorage.setItem("enquiryID", data?.enqClientinfo?.enqUId);
+                dispatch({
+                    type: userDetails,
+                    payload: {
+                    enquiryId : data?.enqClientinfo?.enqUId,
+                    },
+                }); 
             }
         } catch (error) {
             toast(Labels.status.failure, Labels.message.somethingWentWrong);

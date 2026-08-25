@@ -24,8 +24,7 @@ export const PSummary = ({ sections = [], currentStep = 1, refreshSummary, dupli
     const [activeItemIndex, setActiveItemIndex] = useState({ 3: 0 });
     const [open, setOpen] = useState(false);
     const [formData, setFormData] = useState({});
-    const enquiryID = localStorage.getItem("enquiryID");
-    const { userType } = useSelector((state) => state.userDetails.user);
+    const { userType , enquiryId } = useSelector((state) => state.userDetails.user);
     const flag = userType?.toLowerCase() === Labels.userType.agency
     const handleOpen = (data = {}) => {
         setFormData(data);
@@ -107,7 +106,7 @@ export const PSummary = ({ sections = [], currentStep = 1, refreshSummary, dupli
                     <>
                         <PGrid container className="justify-content-center">
                             <PTypography
-                                labelText={`${Labels.clientInfo.summary}${enquiryID && currentStep != 1 ? ` (${enquiryID})` : ""}`}
+                                labelText={`${Labels.clientInfo.summary}${enquiryId && currentStep != 1 ? ` (${enquiryId})` : ""}`}
                                 flag={Labels.fontFlags.subHeader}
                                 weight={FontWeight.bold}
                                 color={CommonColors.blue.main}
