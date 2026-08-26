@@ -25,10 +25,10 @@ import { useLanguage } from "../../utils/constants/language";
 import { Account_API, Dashboard_API } from "../../utils/api/apiUrl";
 import { PostApi } from "../../utils/api/networking";
 import { exportToExcel, isNotEmpty, isSuccess, toast } from "../../utils/commonFunction/common";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation  } from "react-router-dom";
 import { labelRoutes } from "../../navigations/labelRoutes";
 import PDialog from "../../component/PDialog/PDialog";
-import { useSelector , useDispatch} from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import MoveToInboxIcon from "@mui/icons-material/MoveToInbox";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
@@ -49,6 +49,8 @@ const EqDashboard = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { getLabel } = useLanguage();
+  const location = useLocation();
+  const enquiryID = location.state?.enquiryID;
   const [openFilter, setOpenFilter] = useState("");
   const [country, setCountry] = useState([]);
   const [filter, setFilter] = useState(false);
@@ -76,7 +78,6 @@ const EqDashboard = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-
       const response = await PostApi(Dashboard_API.Master, {
         userCountryId: countryID,
         role: role
@@ -115,6 +116,16 @@ const EqDashboard = () => {
           id: item.id,
           stepID: item.stepId,
         }));
+
+        // PNG auto-login
+        if (enquiryID) {
+          const row = formattedRows.find(item => item.enquiryId === enquiryID);
+          if (row) {
+            handleRoute(row);
+            return;
+          }
+        }
+
         setRows(formattedRows);
         const formattedChartData = (data.summary?.jobStatus || []).map(
           ({ statusName, enquiryCount, statusId }) => ({
@@ -534,7 +545,7 @@ const EqDashboard = () => {
   ];
 
   const stepRoutes = {
-    //1: labelRoutes.clientInfo,
+    0: labelRoutes.clientInfo,
     1: labelRoutes.enquiryDetails,
     2: labelRoutes.lineItems,
     3: labelRoutes.suppliers,
@@ -546,7 +557,7 @@ const EqDashboard = () => {
     dispatch({
       type: userDetails,
       payload: {
-        enquiryId : row.enquiryId,
+        enquiryId: row.enquiryId,
       },
     });
     navigate(route, { state: { id: row.id } });

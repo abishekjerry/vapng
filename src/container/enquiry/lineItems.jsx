@@ -362,7 +362,7 @@ const LineItems = () => {
 
     }, [selectedValues]);
 
-    const LineItemsMaster = async (data) => {
+    const LineItemsMaster = async (data, update = false) => {
         try {
             setLoading(false);
             const response = await PostApi(LineItems_API.GetEnqLineItemsMaster, {
@@ -384,6 +384,17 @@ const LineItems = () => {
 
             }));
 
+            if (update) {
+                setFormData(prev => ({
+                    ...prev,
+                    category: getOptionValue(formDataList.category, row.printornonprint),
+                    itemCategory: getOptionValue(response.itemCategory, row.productcategory),
+                    itemName: row.itemName,
+                    quantity: row.quoteQtyOrSize,
+                    quantityType: 1,
+                    specifications: row.specNote,
+                }));
+            }
         } catch (error) {
             toast(Labels.status.failure, Labels.message.somethingWentWrong);
         } finally {
@@ -470,6 +481,7 @@ const LineItems = () => {
 
     const flag = isNotEmpty(state?.id) && state?.id !== 0 ? Labels.flag.Update : Labels.flag.Insert;
     const id = state?.id > 0 ? state.id : 0;
+    const lineItemId = state?.lineItemId > 0 ? state.lineItemId : 0;
 
     const handleSubmit = async (e, flag) => {
         if (lineItems.length > 0 && flag && !formData.itemCategory) {
@@ -487,11 +499,11 @@ const LineItems = () => {
                     EnqId: id,
                     Printornonprint: getOptionLabel(formDataList.category, formData.category),
                     ProductCategoryId: formData.itemCategory,
-                    RateCard : getOptionLabel(formDataList.rateCard, formData.rateCard),
+                    RateCard: getOptionLabel(formDataList.rateCard, formData.rateCard),
                     reengineering: getOptionLabel(formDataList.reEngineering, formData.reEngineering),
                     dictated: getOptionLabel(formDataList.dictatedJob, formData.dictatedJob),
                     urgent: getOptionLabel(formDataList.urgentJob, formData.urgentJob),
-                    Itemtype : getOptionLabel(formDataList.itemType, formData.itemType),
+                    Itemtype: getOptionLabel(formDataList.itemType, formData.itemType),
                     Incoterm: getOptionLabel(formDataList.incoterm, formData.incoterm),
                     ItemName: formData.itemName,
                     ItemDescription: formData.itemNameDescription,
@@ -777,6 +789,16 @@ const LineItems = () => {
         loadMasters();
     }, [hybird, lineItems.length, category]);
 
+    //upadte functionlity 
+    const row = formDataList.lineItems.find(item => Number(item.enqdetailsId) === Number(lineItemId));
+    useEffect(() => {
+        if (!row || !lineItemId) return;
+        const loadUpdateMasters = async () => {
+            await LineItemsMaster(row.printornonprint, true);
+        };
+        loadUpdateMasters();
+    }, [row, lineItemId]);
+
     return (
         <>
             <Box sx={{ px: 3, py: 3 }}>
@@ -970,7 +992,7 @@ const LineItems = () => {
                             <PGrid container >
                                 <PGrid item xs={12} sm={6} md={4}>
                                     <PDropdown
-                                        label={`${getLabel("lbl65")} ${Labels.symbols.required}`}
+                                        label={`${"Rate Card"} ${Labels.symbols.required}`}
                                         value={formData.rateCard}
                                         onChange={handleChange}
                                         helperText={errors?.rateCard}
@@ -1659,7 +1681,7 @@ const LineItems = () => {
 
                                         <PGrid item xs={12} sm={12} md={6} className="d-flex justify-content-end gap-2 mb-1">
                                             <PButton
-                                                label={getLabel("lbl128")}
+                                                label={lineItemId > 0 ? "Update Line Items" : getLabel("lbl128")}
                                                 variant="outlined"
                                                 onClick={(e) => handleSubmit(e, false)}
                                                 width={180}

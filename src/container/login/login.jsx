@@ -18,12 +18,13 @@ import Logo from "../../utils/assets/images/Valogo.png"
 import { PostApi } from "../../utils/api/networking";
 import { Account_API } from "../../utils/api/apiUrl";
 import PGrid from "../../component/PGrid/PGrid";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 function Login(props) {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(false);
   const [openRecover, setOpenRecover] = useState(false);
+  const [searchParams] = useSearchParams();
 
   // ✅ Refs for focus
   const userNameRef = useRef(null);
@@ -48,8 +49,53 @@ function Login(props) {
 
   useEffect(() => {
     userNameRef.current?.focus();
+    const params = new URLSearchParams(window.location.search);
+    const username = params.get("Username");
+    const token = params.get("Token");
+    const enquiryID = params.get("Enquiryid");
+    if (username && token) {
+      autoLogin(username, token, enquiryID);
+    }
     navigate(labelRoutes.home);
   }, []);
+
+  //vapng autologin
+  const autoLogin = async (username, token, enquiryID) => {
+    const res = await PostApi(Account_API.Login, {
+      userName: username,
+      token: token,
+    });
+
+    if (isSuccess(res)) {
+      const user = res?.data;
+
+      props.saveUserDetails({
+        userName: user?.username,
+        email: user?.email,
+        fkID: user?.fkID,
+        userID: user?.userID,
+        role: user?.role,
+        currency: user?.currency,
+        country: user?.country,
+        countryID: user?.countryId,
+        userType: user?.usertype,
+        menuId: 1,
+      });
+
+      if (enquiryID) {
+        navigate(labelRoutes.eqDashboard, {
+          state: { enquiryID }
+        });
+      } else {
+        navigate(labelRoutes.eqDashboard);
+      }
+    } else {
+      setErrors((prev) => ({
+        ...prev,
+        password: res?.data || "Login failed",
+      }));
+    }
+  };
 
   const handleOpenRecover = () => {
     setOpenRecover(true);

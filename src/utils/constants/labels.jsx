@@ -25,6 +25,11 @@ export const Labels = {
     supplier: "supplier"
   },
 
+  role:{
+    client : "ClientServices",
+    admin : "Administration"
+  },
+  
   dashboard: {
     startDate: "startDate",
     endDate: "endDate",

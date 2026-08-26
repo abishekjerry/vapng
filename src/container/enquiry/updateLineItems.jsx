@@ -129,12 +129,12 @@ const UpdateLineItems = ({ open, onClose, data = {}, step, refreshSummary }) => 
             Labels.lineItems.itemNameDescription,
 
             // Catalogue Section
-            Labels.lineItems.globalOrderWindowCatalogueName,
+            //Labels.lineItems.globalOrderWindowCatalogueName,
             Labels.lineItems.localCatalogueName,
             Labels.lineItems.printingMethod,
-            Labels.lineItems.digitalInnovation,
+            //Labels.lineItems.digitalInnovation,
             Labels.lineItems.innovation,
-            Labels.lineItems.sourcingLocation,
+            //Labels.lineItems.sourcingLocation,
 
             // Specifications
             Labels.lineItems.noOfVersion,
@@ -175,7 +175,7 @@ const UpdateLineItems = ({ open, onClose, data = {}, step, refreshSummary }) => 
                     DigitalInnovation: getOptionLabel(formDataList.yesNoNa, formData.digitalInnovation),
                     Innovation: getOptionLabel(formDataList.yesNoNa, formData.innovation),
                     Sourcinglocation: getOptionLabel(formDataList.sourcingLocation, formData.sourcingLocation),
-                    harmonizedOrder  : formData.globalOrderWindowCatalogueName == 1 ? "No" : "Yes",
+                    harmonizedOrder: formData.globalOrderWindowCatalogueName == 1 ? "No" : "Yes",
                     Version: formData.noOfVersion,
                     SpecNote: formData.specifications,
                     SNote: formData.notesComments,
@@ -248,7 +248,7 @@ const UpdateLineItems = ({ open, onClose, data = {}, step, refreshSummary }) => 
                         onChange={handleChange}
                         helperText={errors?.itemName}
                         name={Labels.lineItems.itemName}
-                        sx ={{mb : 3}}
+                        sx={{ mb: 3 }}
                     />
                     <PTextField
                         label={`${getLabel("lbl87")} ${Labels.symbols.required}`}
@@ -271,7 +271,7 @@ const UpdateLineItems = ({ open, onClose, data = {}, step, refreshSummary }) => 
                 </PGrid>
             </PGrid>
             <PGrid container className={Labels.margin.mb4}>
-                <PGrid item xs={12} sm={6} md={4}>
+                {/* <PGrid item xs={12} sm={6} md={4}>
                     <PDropdown
                         label={`${getLabel("lbl107")} ${Labels.symbols.required}`}
                         value={formData.globalOrderWindowCatalogueName}
@@ -282,7 +282,7 @@ const UpdateLineItems = ({ open, onClose, data = {}, step, refreshSummary }) => 
                         flag={Labels.flag.auto}
                         disabled={true}
                     />
-                </PGrid>
+                </PGrid> */}
                 <PGrid item xs={12} sm={6} md={4}>
                     <PDropdown
                         label={`${getLabel("lbl111")} ${Labels.symbols.required}`}
@@ -297,7 +297,7 @@ const UpdateLineItems = ({ open, onClose, data = {}, step, refreshSummary }) => 
                 </PGrid>
                 <PGrid item xs={12} sm={6} md={4}>
                     <PDropdown
-                        label={`${getLabel("lbl109")} ${Labels.symbols.required}`}
+                        label={`${getLabel("lbl81")} ${Labels.symbols.required}`}
                         value={formData.localCatalogueName}
                         onChange={handleChange}
                         helperText={errors?.localCatalogueName}
@@ -307,22 +307,9 @@ const UpdateLineItems = ({ open, onClose, data = {}, step, refreshSummary }) => 
                         disabled={true}
                     />
                 </PGrid>
-            </PGrid>
-            <PGrid container className={Labels.margin.mb4}>
                 <PGrid item xs={12} sm={6} md={4}>
                     <PDropdown
-                        label={`${getLabel("lbl114")} ${Labels.symbols.required}`}
-                        value={formData.digitalInnovation}
-                        onChange={handleChange}
-                        helperText={errors?.digitalInnovation}
-                        name={Labels.lineItems.digitalInnovation}
-                        options={formDataList.yesNoNa}
-                        disabled={true}
-                    />
-                </PGrid>
-                <PGrid item xs={12} sm={6} md={4}>
-                    <PDropdown
-                        label={`${getLabel("lbl115")} ${Labels.symbols.required}`}
+                        label={`${getLabel("lbl158")} ${Labels.symbols.required}`}
                         value={formData.innovation}
                         onChange={handleChange}
                         helperText={errors?.innovation}
@@ -331,19 +318,34 @@ const UpdateLineItems = ({ open, onClose, data = {}, step, refreshSummary }) => 
                         disabled={true}
                     />
                 </PGrid>
-                <PGrid item xs={12} sm={6} md={4}>
-                    <PDropdown
-                        label={`${getLabel("lbl116")} ${Labels.symbols.required}`}
-                        value={formData.sourcingLocation}
-                        onChange={handleChange}
-                        helperText={errors?.sourcingLocation}
-                        name={Labels.lineItems.sourcingLocation}
-                        options={formDataList.sourcingLocation}
-                        flag={Labels.flag.auto}
-
-                    />
-                </PGrid>
             </PGrid>
+            {/*
+                <PGrid container className={Labels.margin.mb4}>
+                    <PGrid item xs={12} sm={6} md={4}>
+                        <PDropdown
+                            label={`${getLabel("lbl114")} ${Labels.symbols.required}`}
+                            value={formData.digitalInnovation}
+                            onChange={handleChange}
+                            helperText={errors?.digitalInnovation}
+                            name={Labels.lineItems.digitalInnovation}
+                            options={formDataList.yesNoNa}
+                            disabled={true}
+                        />
+                    </PGrid> 
+                    <PGrid item xs={12} sm={6} md={4}>
+                        <PDropdown
+                            label={`${getLabel("lbl116")} ${Labels.symbols.required}`}
+                            value={formData.sourcingLocation}
+                            onChange={handleChange}
+                            helperText={errors?.sourcingLocation}
+                            name={Labels.lineItems.sourcingLocation}
+                            options={formDataList.sourcingLocation}
+                            flag={Labels.flag.auto}
+
+                        />
+                    </PGrid> 
+                </PGrid>
+            */}
             <PGrid container className={Labels.margin.mb3}>
                 <PGrid item xs={12} sm={6} md={4}>
                     <PTextField

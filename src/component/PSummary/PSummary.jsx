@@ -16,6 +16,7 @@ import { isSuccess, toast } from "../../utils/commonFunction/common";
 import { LineItems_API } from "../../utils/api/apiUrl";
 import { PostApi } from "../../utils/api/networking";
 import { useSelector } from "react-redux";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 
 export const PSummary = ({ sections = [], currentStep = 1, refreshSummary, duplicate = false, showFlag = true, lineItems = [] }) => {
     const { state } = useLocation();
@@ -24,7 +25,7 @@ export const PSummary = ({ sections = [], currentStep = 1, refreshSummary, dupli
     const [activeItemIndex, setActiveItemIndex] = useState({ 3: 0 });
     const [open, setOpen] = useState(false);
     const [formData, setFormData] = useState({});
-    const { userType , enquiryId } = useSelector((state) => state.userDetails.user);
+    const { userType, enquiryId, fkID} = useSelector((state) => state.userDetails.user);
     const flag = userType?.toLowerCase() === Labels.userType.agency
     const handleOpen = (data = {}) => {
         setFormData(data);
@@ -34,18 +35,19 @@ export const PSummary = ({ sections = [], currentStep = 1, refreshSummary, dupli
     const visibleSections = sections.filter((section) => section.step <= currentStep);
     const handleEdit = (step, enquiryId = null) => {
         const data = lineItems.find(item => item.enqdetailsId === enquiryId);
-        if (step === 3 && data) {
+        if (step === 3 && data && !showFlag) {
             handleOpen(data);
             return;
         }
         const routeMap = {
             1: labelRoutes.clientInfo,
             2: labelRoutes.enquiryDetails,
+            3: labelRoutes.lineItems,
             4: labelRoutes.suppliers
         };
         const route = routeMap[step] || labelRoutes.home;
         navigate(route, {
-            state: { id: state.id }
+            state: { id: state.id, lineItemId : enquiryId}
         });
     };
     const SummaryItem = ({ label, value }) => (
@@ -81,7 +83,7 @@ export const PSummary = ({ sections = [], currentStep = 1, refreshSummary, dupli
             const payload = {
                 EnqdetailsId: data.enquiryId,
                 EnqId: state.id,
-                modifiedBy: parseInt(localStorage.getItem("agancyUserID")),
+                modifiedBy: fkID,
             };
             const response = await PostApi(LineItems_API.GetEnqDuplicate, payload);
             if (isSuccess(response)) {
@@ -183,7 +185,7 @@ export const PSummary = ({ sections = [], currentStep = 1, refreshSummary, dupli
                                                                 ))}
                                                             </PGrid>
 
-                                                           {/* {section.step && flag &&(
+                                                           {section.step && flag &&(
                                                                 <PGrid container>
                                                                     <PGrid item xs={12} className="d-flex justify-content-end gap-2">
                                                                         <PButton
@@ -207,7 +209,7 @@ export const PSummary = ({ sections = [], currentStep = 1, refreshSummary, dupli
 
                                                                     </PGrid>
                                                                 </PGrid>
-                                                            )}  */}
+                                                            )}  
                                                         </>
                                                     )}
                                                 </Fragment>

@@ -26,7 +26,7 @@ import { useSelector } from "react-redux";
 const ClientInfo = () => {
     const { state } = useLocation();
     const { getLabel } = useLanguage();
-    const { countryID, userID, fkID, role, menuId , country} = useSelector((state) => state.userDetails.user);
+    const { countryID, userID, fkID, role, menuId, country } = useSelector((state) => state.userDetails.user);
     const navigate = useNavigate();
     const enquirySteps = getEnquirySteps(getLabel, menuId);
     const [allowRedirect, setAllowRedirect] = useState(false);
@@ -158,7 +158,7 @@ const ClientInfo = () => {
     };
 
     useEffect(() => {
-      fetchData();
+        fetchData();
     }, []);
 
     const fetchData = async () => {
@@ -703,15 +703,18 @@ const ClientInfo = () => {
                                         helperText={errors?.brand}
                                         flag={Labels.flag.auto}
                                     />
-                                    <div style={{ marginTop: "15px" }}>
-                                        <Tooltip title="Add New Brand" arrow>
-                                            <IconButton sx={{ backgroundColor: "#d5d5d5", color: "#fff", width: 30, height: 30, "&:hover": { backgroundColor: "#1976d2" }, }}
-                                            //onClick={!disible ? (e) => handleOpenChoose(e, "Brand") : undefined}
-                                            >
-                                                <AddIcon />
-                                            </IconButton>
-                                        </Tooltip>
-                                    </div>
+                                    {[Labels.role.admin].includes(role) && (
+                                            <div style={{ marginTop: "15px" }}>
+                                                <Tooltip title="Add New Brand" arrow>
+                                                    <IconButton sx={{ backgroundColor: "#d5d5d5", color: "#fff", width: 30, height: 30, "&:hover": { backgroundColor: "#1976d2" }, }}
+                                                    //onClick={!disible ? (e) => handleOpenChoose(e, "Brand") : undefined}
+                                                    >
+                                                        <AddIcon />
+                                                    </IconButton>
+                                                </Tooltip>
+                                            </div>
+                                        )
+                                    }
                                 </PGrid>
 
                                 <PGrid item xs={12} sm={6} md={6}>

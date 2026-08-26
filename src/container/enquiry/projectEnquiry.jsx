@@ -45,7 +45,7 @@ const ProjectEnquiry = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [dynamicData, setDynamicData] = useState({});
-    const { country, userName, userID, fkID, currency, email, userType, menuId } = useSelector((state) => state.userDetails.user);
+    const { country, userName, userID, fkID, currency, email, userType, menuId , countryID, role} = useSelector((state) => state.userDetails.user);
 
     const id = state?.id > 0 ? state.id : 0;
     const actionFlag = isNotEmpty(state?.id) && state?.id !== 0 ? Labels.flag.Update : Labels.flag.Insert;
@@ -223,6 +223,11 @@ const ProjectEnquiry = () => {
             handleLoading("savingReason", true);
             handleLoading("projectSavings", true);
 
+            const master = await PostApi(Dashboard_API.Master, {
+                userCountryId: countryID,
+                role: role
+            });
+
             const response = await PostApi(Dashboard_API.GetDetails, {
                 Enquiryid: id,
             });
@@ -287,6 +292,7 @@ const ProjectEnquiry = () => {
                 suppliers: response.supplierinfo,
                 supplierMaster: supplierResponse,
                 savingsType: enqResponse.savingsType,
+                savingsReason: master.savingsReason,
                 statusInfo: [{ label: "Enquiry ID", value: response.enqClientinfo?.enqUId || "-" }, { label: "Project Number", value: response.enqProjectinfo?.projectNo || "-" }],
                 savingsReasons: projectResponse.savingReasons,
                 historyLogs: projectResponse.historyLogs,
@@ -1678,7 +1684,7 @@ const ProjectEnquiry = () => {
                                     <PButton
                                         label={getLabel("lbl173")}
                                         variant="contained"
-                                        color={CommonColors.grey.main}
+                                        color={CommonColors.green.main}
                                         onClick={(e) => handleCalculate(e, "calculate")}
                                         width={250}
                                         disabled={formData.isCalculate}
@@ -1735,7 +1741,18 @@ const ProjectEnquiry = () => {
                                 </PGrid>
                             </PGrid>*/}
                             <PGrid container className={Labels.margin.mb3}>
-                                <PGrid item xs={12} sm={12} md={12} className="d-flex justify-content-end gap-2">
+                                <PGrid item xs={12} sm={12} md={3}>
+                                    <PDropdown
+                                        name={Labels.lineItems.savingsReason}
+                                        value={formData.savingsReason}
+                                        onChange={(e) => handleChange(e)}
+                                        options={formDataList.savingsReason}
+                                        width={100}
+                                        sx={{ height: 20 }}
+                                        flag= {Labels.flag.auto}
+                                    />
+                                </PGrid>
+                                <PGrid item xs={12} sm={12} md={9} className="d-flex justify-content-end gap-2">
                                     {renderActionButtons("inputPS")}
                                 </PGrid>
                             </PGrid>
