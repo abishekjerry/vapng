@@ -318,7 +318,8 @@ const ProjectEnquiry = () => {
                 marginFlag: projectResponse.calculationDetails?.length > 0,
                 calculateProject: projectResponse.savingsResponseDto.details.length > 0,
                 psFlag: !projectResponse.savingsResponseDto.details[0]?.previousPrice > 0,
-                statusId: response.statusId
+                statusId: response.statusId,
+                savingsReason: getOptionValue(master.savingsReason, response.enqClientinfo?.savingReason),
             }));
 
             await clientInfoMaster(response.enqClientinfo.divisionid);
@@ -341,6 +342,10 @@ const ProjectEnquiry = () => {
             ...prev,
             [name]: value
         }));
+      
+        if(name == Labels.lineItems.savingsReason){
+            handleSubmit(e,"project");
+        }
     };
 
     //loader functionality
@@ -660,7 +665,7 @@ const ProjectEnquiry = () => {
             value: savings.totalSellPrice.toFixed(2)
         },
         {
-            label: "Key Savings (Repeated Order)",
+            label: `Key Savings ${formDataList.clientInfo?.savingReason ? ` (${formDataList.clientInfo?.savingReason})` : ""}`,
             value: `${savings.totalSavingPercent.toFixed(2)} %`
         }
     ];
@@ -901,7 +906,7 @@ const ProjectEnquiry = () => {
             <PButton
                 label={flag == "inputPS" ? getLabel("lbl165") : getLabel("lbl160")}
                 variant="contained"
-                color={CommonColors.grey.main}
+                color={flag == "inputPS" ? CommonColors.green.main : CommonColors.grey.main}
                 onClick={() => handleEdit(null, flag)}
                 width={flag == "inputPS" ? 250 : 120}
                 disabled={formData.statusId >= 6 && (flag === "inputPS" || flag === "project")}
@@ -1020,12 +1025,17 @@ const ProjectEnquiry = () => {
             }))
         );
 
-        const savingsReasons = formDataList.savingsReasons.map(item => ({
-            Id: item.id,
-            savingsReason: item.savingsReason,
-            savingsType: item.savingsType,
+        // // const savingsReasons = formDataList.savingsReasons.map(item => ({
+        // //     Id: item.id,
+        // //     savingsReason: item.savingsReason,
+        // //     savingsType: item.savingsType,
+        // //     enquiryId: id,
+        // // }));
+
+        const savingsReasons = [{
+            savingsReason : e.target.label,
             enquiryId: id,
-        }));
+        }];
 
         //project status
         const updateJobStatus = {
@@ -1235,6 +1245,7 @@ const ProjectEnquiry = () => {
                                     options={formDataList.status}
                                     width={27}
                                     helperText={""}
+                                    flag={Labels.flag.auto}
                                 />
                                 <PButton
                                     label={getLabel("lbl40")}
@@ -1355,6 +1366,7 @@ const ProjectEnquiry = () => {
                                                             onChange={(e) => handleChange(e)}
                                                             options={formDataList.clientContact}
                                                             width={100}
+                                                            flag={Labels.flag.auto}
                                                         />
                                                     ) : item.label === "D/O No or PO No" && job ? (
                                                         <>
@@ -1748,8 +1760,9 @@ const ProjectEnquiry = () => {
                                         onChange={(e) => handleChange(e)}
                                         options={formDataList.savingsReason}
                                         width={100}
-                                        sx={{ height: 20 }}
+                                        sx={{ height: 10 }}
                                         flag= {Labels.flag.auto}
+                                        readOnly ={formData.statusId >= 6}
                                     />
                                 </PGrid>
                                 <PGrid item xs={12} sm={12} md={9} className="d-flex justify-content-end gap-2">

@@ -19,6 +19,7 @@ const getBaseUrl = () => {
 export const Base_Url = getBaseUrl();
 export const Account_API = {
   Login: Base_Url + "/VA/Usersignon",
+  Echo : "https://ebiz.pmgasia.com/iWeb/eCataloguepng/public/index.php/shop",
 }
 
 export const Language_API = {

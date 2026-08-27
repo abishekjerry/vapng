@@ -26,7 +26,8 @@ const PDropdown = ({
   multiple = false,
   flag = "",
   disabled = false,
-  readOnly = false
+  readOnly = false,
+  sx = {}
 }) => {
 
   const internalValue = useMemo(() => {
@@ -96,7 +97,8 @@ const PDropdown = ({
       color: CommonColors.textError,
       marginLeft: "2px",
       marginTop: "4px"
-    }
+    },
+    ...sx
   };
 
   // Shared TextField renderer
