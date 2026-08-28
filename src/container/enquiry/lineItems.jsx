@@ -3,7 +3,7 @@ import PTypography from "../../component/PTypography/PTypography";
 import PGrid from "../../component/PGrid/PGrid";
 import PDropdown from "../../component/PDropdown/PDropdown";
 import { Labels } from "../../utils/constants/labels";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { FontWeight } from "../../utils/constants/fonts";
 import PCard from "../../component/PCard/PCard";
 import { CommonColors } from "../../utils/constants/colors";
@@ -37,6 +37,8 @@ const LineItems = () => {
     const [open, setOpen] = useState(false);
     const [previewOpen, setPreviewOpen] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
+    const lastLineItemId = useRef(null);
+    const editLoadedIds = useRef(new Set());
 
     const [formDataList, setFormDataList] = useState({
         //typeOfJob: [{ label: "Strategic", value: 1 }, { label: "Tactical", value: 2 }, { label: "Operational", value: 3 }, { label: "Non-Addressable", value: 4 }],
@@ -75,6 +77,8 @@ const LineItems = () => {
     });
 
     const [formData, setFormData] = useState({
+        lineItemId: 0,
+        update: false,
         category: "",
         typeOfJob: "",
         urgentJob: "",
@@ -362,7 +366,7 @@ const LineItems = () => {
 
     }, [selectedValues]);
 
-    const LineItemsMaster = async (data, update = false) => {
+    const LineItemsMaster = async (data, item = [], id = 0) => {
         try {
             setLoading(false);
             const response = await PostApi(LineItems_API.GetEnqLineItemsMaster, {
@@ -383,16 +387,19 @@ const LineItems = () => {
                 // savingsType: response.savingsType,
 
             }));
-
-            if (update) {
+            if (item && id > 0) {
+                const values = Object.fromEntries(item.map(x => [x.formKey, x.value]));
                 setFormData(prev => ({
                     ...prev,
-                    category: getOptionValue(formDataList.category, row.printornonprint),
-                    itemCategory: getOptionValue(response.itemCategory, row.productcategory),
-                    itemName: row.itemName,
-                    quantity: row.quoteQtyOrSize,
+                    category: getOptionValue(formDataList.category, values.category),
+                    itemCategory: getOptionValue(response.itemCategory, values.itemCategory),
+                    itemName: values.itemName,
+                    itemNameDescription: values.itemNameDescription,
+                    quantity: values.quantity,
                     quantityType: 1,
-                    specifications: row.specNote,
+                    specifications: values.specifications,
+                    lineItemId: id,
+                    update: true
                 }));
             }
         } catch (error) {
@@ -481,7 +488,6 @@ const LineItems = () => {
 
     const flag = isNotEmpty(state?.id) && state?.id !== 0 ? Labels.flag.Update : Labels.flag.Insert;
     const id = state?.id > 0 ? state.id : 0;
-    const lineItemId = state?.lineItemId > 0 ? state.lineItemId : 0;
 
     const handleSubmit = async (e, flag) => {
         if (lineItems.length > 0 && flag && !formData.itemCategory) {
@@ -497,6 +503,7 @@ const LineItems = () => {
                 const payload = {
                     //lineItems
                     EnqId: id,
+                    EnqdetailsId: formData.lineItemId,
                     Printornonprint: getOptionLabel(formDataList.category, formData.category),
                     ProductCategoryId: formData.itemCategory,
                     RateCard: getOptionLabel(formDataList.rateCard, formData.rateCard),
@@ -716,25 +723,31 @@ const LineItems = () => {
         setPreviewOpen(true);
     };
 
-    const handleCancel = () => {
+    const handleCancel = async () => {
         setFormData((prev) => ({
             ...prev,
             category: "",
             typeOfJob: "",
-            competitiveBiddingMandatory: "",
-            competitiveBiddingCompliant: "",
-            competitiveBiddingExceptionFormSigned: "",
-            exceptionsReasonCode: "",
+            urgentJob: "",
+            rateCard: "",
+            // competitiveBiddingMandatory: "",
+            // competitiveBiddingCompliant: "",
+            // competitiveBiddingExceptionFormSigned: "",
+            // exceptionsReasonCode: "",
             itemCategory: "",
-            subCategory: "",
-            simplex: "",
-            tcoApprovalRequired: "",
-            tcoApproved: "",
+            // subCategory: "",
+            // simplex: "",
+            // tcoApprovalRequired: "",
+            // tcoApproved: "",
+            reEngineering: "",
             dictatedJob: "",
             itemType: "",
+            incoterm: "",
             itemName: "",
             itemNameDescription: "",
+            totalBenchmarkPrice: "",
 
+            // Sustainability Information
             fscOrPefcMaterial: "",
             taxCertification: "",
             recyclable: "",
@@ -743,6 +756,8 @@ const LineItems = () => {
             designedToBeReused: "",
             containsPlastic: "",
             containsRecycledPlastic: "",
+            plasticWeightKg: "",
+            recycledPlasticWeightKg: "",
             recycledMaterialWeightKg: "",
 
             // Catalogue Section
@@ -750,14 +765,19 @@ const LineItems = () => {
             globalOrderWindowCatalogueName: "",
             regionalOrderWindowCatalogue: "",
             localCatalogueName: "",
+            eAuction: "",
             competitiveBiddingWinningSupplierCost: "",
             printingMethod: "",
-            harmonizedOrder: 2,
             typeOfItem: "",
             noOfMaterials: "",
+            harmonizedOrder: "",
+            digitalInnovation: "",
+            innovation: "",
             sourcingLocation: "",
             savingsType: "",
             savingsReason: "",
+            owWithLink: "",
+            materialUsed: "",
 
             // Specifications
             specifications: "",
@@ -774,7 +794,6 @@ const LineItems = () => {
     }
 
     //hybird functionality
-
     const hybird = formDataList?.enquiryDetails?.hybridModel === "No" && lineItems.length > 0 && Array.isArray(lineItems);
     const category = hybird && lineItems?.length > 0 ? formDataList.lineItems[0].printornonprint
         : getOptionLabel(formDataList.category, formData.category);
@@ -789,15 +808,109 @@ const LineItems = () => {
         loadMasters();
     }, [hybird, lineItems.length, category]);
 
-    //upadte functionlity 
-    const row = formDataList.lineItems.find(item => Number(item.enqdetailsId) === Number(lineItemId));
+    //dynamically update functionlity
+    const lineItemId = state?.lineItemId > 0 ? state.lineItemId : 0;
+    const row = rawLineItems?.find(item => Number(item.enquiryId) === Number(lineItemId));
     useEffect(() => {
-        if (!row || !lineItemId) return;
-        const loadUpdateMasters = async () => {
-            await LineItemsMaster(row.printornonprint, true);
+        if (lineItemId <= 0 || !row) return;
+        if (editLoadedIds.current.has(Number(lineItemId))) return;
+        editLoadedIds.current.add(Number(lineItemId));
+        const category = row?.items?.find(x => x.formKey === Labels.lineItems.category)?.value;
+        const loadEditRow = async () => {
+            await LineItemsMaster(category, row.items, row.enquiryId);
         };
-        loadUpdateMasters();
+        loadEditRow();
     }, [row, lineItemId]);
+
+    useEffect(() => {
+        if (!formData.update || !rawLineItems?.length) return;
+        const requiredFields = [
+            Labels.lineItems.category,
+            Labels.lineItems.rateCard,
+            Labels.lineItems.itemCategory,
+            Labels.lineItems.dictatedJob,
+            Labels.lineItems.itemType,
+            Labels.lineItems.itemName,
+            Labels.lineItems.itemNameDescription,
+            Labels.lineItems.urgentJob,
+            Labels.lineItems.reEngineering,
+
+            //Labels.lineItems.typeOfJob,
+            // Labels.lineItems.competitiveBiddingMandatory,
+            // Labels.lineItems.competitiveBiddingCompliant,
+            // Labels.lineItems.competitiveBiddingExceptionFormSigned,
+            // Labels.lineItems.exceptionsReasonCode,
+            // Labels.lineItems.subCategory,
+            //Labels.lineItems.simplex,
+            // Labels.lineItems.tcoApprovalRequired,
+            // Labels.lineItems.tcoApproved,
+
+            // Sustainability Information
+            Labels.lineItems.fscOrPefcMaterial,
+            Labels.lineItems.taxCertification,
+            Labels.lineItems.recyclable,
+            Labels.lineItems.sustainabilityOption,
+            Labels.lineItems.recycledMaterial,
+            Labels.lineItems.designedToBeReused,
+            Labels.lineItems.containsPlastic,
+            Labels.lineItems.containsRecycledPlastic,
+            Labels.lineItems.recycledMaterialWeightKg,
+            ...(formData.containsRecycledPlastic == 1 ? [Labels.lineItems.recycledPlasticWeightKg] : []),
+            ...(formData.containsPlastic == 1 ? [Labels.lineItems.plasticWeightKg] : []),
+
+            // Catalogue Section
+            Labels.lineItems.localCatalogueName,
+            Labels.lineItems.printingMethod,
+            Labels.lineItems.materialUsed,
+            Labels.lineItems.innovation,
+            // Labels.lineItems.ratecardCatalogueItemDeclined,
+            // Labels.lineItems.globalOrderWindowCatalogueName,
+            // Labels.lineItems.regionalOrderWindowCatalogue,
+            //Labels.lineItems.eAuction,
+            //Labels.lineItems.typeOfItem,
+            // Labels.lineItems.noOfMaterials,
+            // Labels.lineItems.harmonizedOrder,
+            // Labels.lineItems.digitalInnovation,
+            // Labels.lineItems.sourcingLocation,
+            // Labels.lineItems.savingsType,
+            // Labels.lineItems.savingsReason,
+            // Labels.lineItems.owWithLink,
+
+            // Specifications
+            Labels.lineItems.noOfVersion,
+            Labels.lineItems.specifications,
+            ...(menuId == 3 ? [Labels.lineItems.customizedSpecifications] : []),
+
+            // Quantity
+            Labels.lineItems.quantityType,
+            Labels.lineItems.quantity,
+        ];
+        const item = rawLineItems.find(item =>
+            item.items?.some(field => {
+                if (!requiredFields.includes(field.formKey)) {
+                    return false;
+                }
+                const value = field.value;
+                return value === undefined || value === null || value === "" || value === "-";
+            })
+        );
+        if (!item) {
+            setFormData(prev => ({
+                ...prev,
+                lineItemId: 0,
+                update: false,
+            }));
+            return;
+        }
+        if (item && item.enquiryId !== lastLineItemId.current) {
+            lastLineItemId.current = item.enquiryId;
+            const category = item?.items?.find(x => x.formKey === Labels.lineItems.category)?.value;
+            const updateItemMaster = async () => {
+                await LineItemsMaster(category, item.items, item.enquiryId);
+            };
+            updateItemMaster();
+        }
+    }, [rawLineItems, formData.containsPlastic, formData.containsRecycledPlastic, menuId, lineItemId, formData.update]);
 
     return (
         <>
@@ -833,6 +946,7 @@ const LineItems = () => {
                                         name={Labels.lineItems.category}
                                         options={formDataList.category}
                                         flag={Labels.flag.auto}
+                                        readOnly={formData.update}
                                     />
                                 </PGrid>
                                 <PGrid item xs={12} sm={6} md={4}>
@@ -844,6 +958,7 @@ const LineItems = () => {
                                         name={Labels.lineItems.itemCategory}
                                         options={formDataList.itemCategory}
                                         flag={Labels.flag.auto}
+                                        readOnly={formData.update}
 
                                     />
                                 </PGrid>
@@ -1681,7 +1796,7 @@ const LineItems = () => {
 
                                         <PGrid item xs={12} sm={12} md={6} className="d-flex justify-content-end gap-2 mb-1">
                                             <PButton
-                                                label={lineItemId > 0 ? "Update Line Items" : getLabel("lbl128")}
+                                                label={formData.update ? "Update Line Items" : getLabel("lbl128")}
                                                 variant="outlined"
                                                 onClick={(e) => handleSubmit(e, false)}
                                                 width={180}
@@ -1747,6 +1862,7 @@ const LineItems = () => {
                                         color={CommonColors.green.main}
                                         onClick={(e) => handleSubmit(e, true)}
                                         width={120}
+                                        disabled={formData.update}
                                     />
                                 </PGrid>
                             </PGrid>

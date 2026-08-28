@@ -4,7 +4,6 @@ export const FontFamily = {
   medium: "Manrope, sans-serif",
   regular: "Manrope, sans-serif",
   upnormal : "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" ,
-  
 };
 
 export const FontSize = {
@@ -16,7 +15,7 @@ export const FontSize = {
 
 };
 
-export const FontWeight  = {
+export const FontWeight = {
   bold: "bold",
   big: "big",
   semiBold: "semiBold",
@@ -24,5 +23,5 @@ export const FontWeight  = {
   regular: "regular",
   normal: "normal",
   light: "light",
-  upnormal : "upnormal"
+  upnormal: "upnormal"
 }

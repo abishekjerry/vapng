@@ -47,7 +47,7 @@ export const PSummary = ({ sections = [], currentStep = 1, refreshSummary, dupli
         };
         const route = routeMap[step] || labelRoutes.home;
         navigate(route, {
-            state: { id: state.id, lineItemId : enquiryId}
+            state: { id: state.id , lineItemId : enquiryId }
         });
     };
     const SummaryItem = ({ label, value }) => (

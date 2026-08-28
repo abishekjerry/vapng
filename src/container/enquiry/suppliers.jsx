@@ -181,6 +181,7 @@ const Suppliers = () => {
             setLoading(false);
         }
     };
+    
     const handleBack = () => {
         if (window.history.length > 1) {
             navigate(labelRoutes.lineItems, {
@@ -190,6 +191,7 @@ const Suppliers = () => {
             navigate(labelRoutes.home); // fallback route
         }
     };
+
     const handleExitDraft = () => {
         setOpen(true);
     };

@@ -10,7 +10,8 @@ import {
   Paper,
   Menu,
   MenuItem,
-  ListItemIcon
+  ListItemIcon,
+  Tooltip
 } from "@mui/material";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -25,6 +26,7 @@ import { FontWeight } from "../../utils/constants/fonts";
 import { CommonColors } from "../../utils/constants/colors";
 import { useLanguage } from "../../utils/constants/language";
 import { useSelector } from "react-redux";
+import { TrackChanges } from "@mui/icons-material";
 
 const PNavbar = ({ name = "User", email = "", avatar = "", notificationCount = 0, title = "", toggleSidebar }) => {
   const navigate = useNavigate();
@@ -100,6 +102,20 @@ const PNavbar = ({ name = "User", email = "", avatar = "", notificationCount = 0
 
         {/* RIGHT SECTION */}
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+
+          {/* PROJECT TRACKING */}
+          <Tooltip title="Project Tracking" placement="top" arrow>
+            <IconButton
+              onClick={() => { window.location.href = "https://uatpapm.pmgasia.com/auth/login" }}
+              sx={{
+                border: "1px solid #e2e8f0",
+                color: "#64748b",
+                "&:hover": { bgcolor: "#f8fafc" }
+              }}
+            >
+              <TrackChanges fontSize="small" />
+            </IconButton>
+          </Tooltip>
 
           {/* NOTIFICATION */}
           <IconButton

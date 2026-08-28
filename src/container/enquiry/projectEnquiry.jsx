@@ -45,7 +45,7 @@ const ProjectEnquiry = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [dynamicData, setDynamicData] = useState({});
-    const { country, userName, userID, fkID, currency, email, userType, menuId , countryID, role} = useSelector((state) => state.userDetails.user);
+    const { country, userName, userID, fkID, currency, email, userType, menuId, countryID, role } = useSelector((state) => state.userDetails.user);
 
     const id = state?.id > 0 ? state.id : 0;
     const actionFlag = isNotEmpty(state?.id) && state?.id !== 0 ? Labels.flag.Update : Labels.flag.Insert;
@@ -72,7 +72,6 @@ const ProjectEnquiry = () => {
 
         rfqFlag: true,
         files: [],
-        calculateProject: false,
 
         //dialog state
         preview: false,
@@ -161,10 +160,13 @@ const ProjectEnquiry = () => {
 
         //Perview Quotes Suppliers
         previewQuotes: [{ field: "supplierA", header: "Supplier A" }, { field: "supplierAInitAmount", header: "Supplier A Init. Amount" },
-        { field: "supplierANegAmount", header: "Supplier A Neg. Amount" }, { field: "supplierB", header: "Supplier B" },
-        { field: "supplierBInitAmount", header: "Supplier B Init. Amount" }, { field: "supplierBNegAmount", header: "Supplier B Neg. Amount" },
-        { field: "supplierC", header: "Supplier C" }, { field: "supplierCInitAmount", header: "Supplier C Init. Amount" },
-        { field: "supplierCNegAmount", header: "Supplier C Neg. Amount" }],
+        //{ field: "supplierANegAmount", header: "Supplier A Neg. Amount" }, 
+        { field: "supplierB", header: "Supplier B" },
+        { field: "supplierBInitAmount", header: "Supplier B Init. Amount" }, 
+        //{ field: "supplierBNegAmount", header: "Supplier B Neg. Amount" },
+        { field: "supplierC", header: "Supplier C" }, { field: "supplierCInitAmount", header: "Supplier C Init. Amount" }
+        //,{ field: "supplierCNegAmount", header: "Supplier C Neg. Amount" }
+        ],
         previewSupplierQuotes: [],
 
         //Project Quotations
@@ -277,12 +279,12 @@ const ProjectEnquiry = () => {
                     items: projectResponse.savingsResponseDto.itemWiseSummary.filter(y => y.itemNumber === x.itemNumber)
                 }));
 
-            // const previewQuotes = [...new Map(projectResponse.previewQuotes.map(x => [x.itemNumber, x])).values()]
-            //     .map(x => ({
-            //         isSubTitle: true,
-            //         subTitle: x.itemName,
-            //         items: projectResponse.previewQuotes.filter(y => y.itemNumber === x.itemNumber)
-            //     }));
+            const previewQuotes = [...new Map(projectResponse.previewQuotes.map(x => [x.itemNumber, x])).values()]
+                .map(x => ({
+                    isSubTitle: true,
+                    subTitle: x.itemName,
+                    items: projectResponse.previewQuotes.filter(y => y.itemNumber === x.itemNumber)
+                }));
 
             setFormDataList(prev => ({
                 ...prev,
@@ -307,7 +309,7 @@ const ProjectEnquiry = () => {
                 savingsResponseDto: projectResponse.savingsResponseDto,
                 deliveryOrder: projectResponse.deliveryOrder,
                 status: projectResponse.projectStatus,
-                //previewSupplierQuotes: previewQuotes
+                previewSupplierQuotes: previewQuotes
             }));
 
             setFormData(prev => ({
@@ -316,7 +318,7 @@ const ProjectEnquiry = () => {
                 calculateFlag: projectResponse.requestQuotes[0].initialQuote > 0,
                 rfqFlag: projectResponse.calculationDetails?.length === 0,
                 marginFlag: projectResponse.calculationDetails?.length > 0,
-                calculateProject: projectResponse.savingsResponseDto.details.length > 0,
+                //calculateProject: projectResponse.savingsResponseDto.details.length > 0,
                 psFlag: !projectResponse.savingsResponseDto.details[0]?.previousPrice > 0,
                 statusId: response.statusId,
                 savingsReason: getOptionValue(master.savingsReason, response.enqClientinfo?.savingReason),
@@ -342,9 +344,9 @@ const ProjectEnquiry = () => {
             ...prev,
             [name]: value
         }));
-      
-        if(name == Labels.lineItems.savingsReason){
-            handleSubmit(e,"project");
+
+        if (name == Labels.lineItems.savingsReason) {
+            handleSubmit(e, "project");
         }
     };
 
@@ -888,7 +890,7 @@ const ProjectEnquiry = () => {
                     label={getLabel("lbl125")}
                     variant="outlined"
                     color={CommonColors.blue.main}
-                    onClick={() => handleCancel(null, flag)}
+                    onClick={(e) => handleCancel(e, flag)}
                     width={120}
                 />
 
@@ -896,7 +898,7 @@ const ProjectEnquiry = () => {
                     label={getLabel("lbl124")}
                     variant="contained"
                     color={CommonColors.green.main}
-                    onClick={() => handleSubmit(null, flag)}
+                    onClick={(e) => handleSubmit(e, flag)}
                     width={120}
                     disabled={formData.validateFlag}
                 />
@@ -907,7 +909,7 @@ const ProjectEnquiry = () => {
                 label={flag == "inputPS" ? getLabel("lbl165") : getLabel("lbl160")}
                 variant="contained"
                 color={flag == "inputPS" ? CommonColors.green.main : CommonColors.grey.main}
-                onClick={() => handleEdit(null, flag)}
+                onClick={(e) => handleEdit(e, flag)}
                 width={flag == "inputPS" ? 250 : 120}
                 disabled={formData.statusId >= 6 && (flag === "inputPS" || flag === "project")}
             />
@@ -1033,7 +1035,7 @@ const ProjectEnquiry = () => {
         // // }));
 
         const savingsReasons = [{
-            savingsReason : e.target.label,
+            savingsReason: e.target.label,
             enquiryId: id,
         }];
 
@@ -1084,10 +1086,6 @@ const ProjectEnquiry = () => {
                 case "inputPS":
                     activeTab = "Project Savings";
                     response = await PostApi(ProjectEnquiry_API.PostRefPrice, projectQuotes);
-                    setFormData(prev => ({
-                        ...prev,
-                        calculateProject,
-                    }))
                     break;
 
                 default:
@@ -1095,7 +1093,7 @@ const ProjectEnquiry = () => {
             }
 
             if (isSuccess(response)) {
-                handleCancel(null, flag);
+                handleCancel(e, flag);
                 setFormData(prev => ({
                     ...prev,
                     activeTab,
@@ -1633,7 +1631,7 @@ const ProjectEnquiry = () => {
                                     />
                                 </PGrid>
                                 <PGrid item xs={12} sm={6} md={6} className="d-flex justify-content-end gap-2">
-                                    {formData.marginFlag ? <></> : renderActionButtons("rfq")}
+                                    {!formData.marginFlag && (renderActionButtons("rfq"))}
                                 </PGrid>
                             </PGrid>
                         )}
@@ -1677,7 +1675,7 @@ const ProjectEnquiry = () => {
                             </PGrid>
                         </PGrid>
                         <PGrid container className={Labels.margin.mb4}>
-                            {formData.marginFlag ? <></> :
+                            {!formData.marginFlag && (
                                 <PGrid item xs={12} sm={6} md={6}>
                                     <PButton
                                         label={getLabel("lbl172")}
@@ -1690,8 +1688,9 @@ const ProjectEnquiry = () => {
                                         width={200}
                                     />
                                 </PGrid>
-                            }
-                            {formData.calculateFlag && formData.statusId <= 5 ? (
+                            )}
+
+                            {formData.calculateFlag && [1, 2, 3, 4, 5].includes(formData.statusId) && (
                                 <PGrid item xs={12} sm={12} md={formData.marginFlag ? 12 : 6} className="d-flex justify-content-end gap-2">
                                     <PButton
                                         label={getLabel("lbl173")}
@@ -1709,10 +1708,10 @@ const ProjectEnquiry = () => {
                                         width={250}
                                     />
                                 </PGrid>
-                            ) : <></>}
+                            )}
                         </PGrid>
 
-                        {formData.marginFlag ? (
+                        {formData.marginFlag && (
                             <>
                                 <PGrid container className={Labels.margin.mb4}>
                                     <PGrid item xs={12} sm={6} md={12}>
@@ -1725,7 +1724,7 @@ const ProjectEnquiry = () => {
                                     </PGrid>
                                 </PGrid>
                             </>
-                        ) : (<></>)}
+                        )}
                     </PCard>
                 )}
 
@@ -1761,8 +1760,8 @@ const ProjectEnquiry = () => {
                                         options={formDataList.savingsReason}
                                         width={100}
                                         sx={{ height: 10 }}
-                                        flag= {Labels.flag.auto}
-                                        readOnly ={formData.statusId >= 6}
+                                        flag={Labels.flag.auto}
+                                        readOnly={formData.statusId >= 6}
                                     />
                                 </PGrid>
                                 <PGrid item xs={12} sm={12} md={9} className="d-flex justify-content-end gap-2">
@@ -1787,7 +1786,7 @@ const ProjectEnquiry = () => {
                             </PGrid>
                         </PCard>
 
-                        {formData.calculateProject && (
+                        {!formData.psFlag && (
                             <>
                                 <PCard className={Labels.margin.mb3} loading={tableLoading.projectSavings}>
                                     <PGrid container className="d-flex align-items-center justify-content-between mb-3">

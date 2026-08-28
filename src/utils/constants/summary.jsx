@@ -1,5 +1,5 @@
 
-export const getSummarySections = ({ menuId ,clientInfo = [], enquiryDetails = [], lineItems = [], suppliers = [], getLabel, handleEdit }) => {
+export const getSummarySections = ({ menuId, clientInfo = [], enquiryDetails = [], lineItems = [], suppliers = [], getLabel, handleEdit }) => {
   const labels = {
     1: [getLabel("lbl21"), getLabel("lbl22")],
     2: ["Bid Details", "Bid Items"],
@@ -72,67 +72,38 @@ export const getEnquiryDetails = (formData = {}, dynamicData = {}, formDataList 
 
 export const getLineneItems = (formData = {}, formDataList = {}, getLabel, getOptionLabel, response = null) => {
   const lineItemMapping = [
-    { key: "printornonprint", label: "lbl154" },
-    { key: "productcategory", label: "lbl61" },
-    { key: "urgent", label: "lbl156" },
-    { key: "dictated", label: "lbl63" },
-    { key: "itemtype", label: "lbl64" },
-    { key: "reengineering", label: "lbl157" },
-    { key: "rateCard", label: "Rate Card"}, //"lbl65"
-    { key: "incoterm", label: "lbl152" },
-    { key: "itemName", label: "lbl66" },
-    { key: "itemDescription", label: "lbl67" },
+    { formKey: "category", key: "printornonprint", label: "lbl154" },
+    { formKey: "itemCategory", key: "productcategory", label: "lbl61" },
+    { formKey: "urgentJob", key: "urgent", label: "lbl156" },
+    { formKey: "dictatedJob", key: "dictated", label: "lbl63" },
+    { formKey: "itemType", key: "itemtype", label: "lbl64" },
+    { formKey: "reEngineering", key: "reengineering", label: "lbl157" },
+    { formKey: "rateCard", key: "rateCard", label: "Rate Card" },
+    { formKey: "incoterm", key: "incoterm", label: "lbl152" },
+    { formKey: "itemName", key: "itemName", label: "lbl66" },
+    { formKey: "itemNameDescription", key: "itemDescription", label: "lbl67" },
 
-    //{ key: "tojabc", label: "lbl60" },
-    // { key: "competbidmandate", label: "lbl96" },
-    // { key: "competbidcomplaint", label: "lbl97" },
-    // { key: "competbidexception", label: "lbl98" },
-    // { key: "exceptionreason", label: "lbl99" },
-    // { key: "subCategory", label: "lbl100" },
-    // //    { key: "simplex", label: "lbl101" },
-    // { key: "tcOapproval", label: "lbl102" },
-    // { key: "tcOapproved", label: "lbl103" },
+    { formKey: "fscOrPefcMaterial", key: "fscpefcmaterial", label: "lbl70" },
+    { formKey: "recyclable", key: "designforrecycle", label: "lbl202" },
+    { formKey: "sustainabilityOption", key: "proposedsustain", label: "lbl72" },
+    { formKey: "containsPlastic", key: "containplasticNew", label: "lbl75" },
+    { formKey: "designedToBeReused", key: "designreused", label: "lbl74" },
+    { formKey: "recycledMaterial", key: "recycledmaterial", label: "lbl73" },
+    { formKey: "containsRecycledPlastic", key: "recycledplasticNew", label: "lbl76" },
+    { formKey: "plasticWeightKg", key: "plasticweightage", label: "lbl77" },
+    { formKey: "recycledPlasticWeightKg", key: "recycledplasticweightage", label: "lbl78" },
+    { formKey: "recycledMaterialWeightKg", key: "recycledmaterialweightage", label: "lbl79" },
 
+    { formKey: "printingMethod", key: "printingMethod", label: "lbl111" },
+    { formKey: "materialUsed", key: "materialUsed", label: "lbl201" },
+    { formKey: "innovation", key: "innovation", label: "lbl158" },
+    { formKey: "localCatalogueName", key: "catalogueUsage", label: "lbl81" },
 
-    { key: "fscpefcmaterial", label: "lbl70" },
-    //{ key: "oekotexCertification", label: "" },
-    { key: "designforrecycle", label: "lbl202" },
-    { key: "proposedsustain", label: "lbl72" },
-    { key: "containplasticNew", label: "lbl75" },
-    { key: "designreused", label: "lbl74" },
-    { key: "recycledmaterial", label: "lbl73" },
-    { key: "recycledplasticNew", label: "lbl76" },
-    { key: "plasticweightage", label: "lbl77" },
-    { key: "recycledplasticweightage", label: "lbl78" },
-    { key: "recycledmaterialweightage", label: "lbl79" },
-
-
-
-    { key: "printingMethod", label: "lbl111" },
-    { key: "materialUsed", label: "lbl201" },
-    { key: "innovation", label: "lbl158" },
-    { key: "catalogueUsage", label: "lbl81" },
-    
-    // { key: "rateCard", label: "lbl106" },
-    // { key: "eauction", label: "lbl110" },
-    // { key: "promoOSSOrderWindows", label: "lbl107" },
-    // { key: "regionalname", label: "lbl108" },
-    // { key: "typeofitem", label: "lbl112" },
-    // { key: "noofmaterials", label: "lbl113" },
-    // { key: "digitalInnovation", label: "lbl114" },
-    // { key: "innovation", label: "lbl115" },
-    // { key: "sourcinglocation", label: "lbl116" },
-    // { key: "savingstype", label: "lbl117" },
-    // { key: "savingsreason", label: "lbl118" },
-    // { key: "oWlink", label: "lbl119" },
-
-    { key: "quoteType", label: "lbl89" },
-    { key: "quoteQtyOrSize", label: "lbl87" },
-    { label: "Attachment", value: "No Files" },
-    { key: "version", label: "lbl85" },
-    { key: "specNote", label: "lbl83" },
-    { key: "sNote", label: "lbl86" }
-
+    { formKey: "quantityType", key: "quoteType", label: "lbl89" },
+    { formKey: "quantity", key: "quoteQtyOrSize", label: "lbl87" },
+    { formKey: "noOfVersion", key: "version", label: "lbl85" },
+    { formKey: "specifications", key: "specNote", label: "lbl83" },
+    { formKey: "notesComments", key: "sNote", label: "lbl86" },
   ];
   const items = formDataList?.lineItems?.length ? formDataList.lineItems : response;
   const validItems = (items || []).filter(
@@ -143,10 +114,11 @@ export const getLineneItems = (formData = {}, formDataList = {}, getLabel, getOp
     itemColor: "warning",
     enquiryId: item.enqdetailsId,
     items: lineItemMapping.filter(field => field.key !== "incoterm" || item.printornonprint === "Promo")
-    .map(field => ({
-      label: field.label === "Attachment" ? field.label : getLabel(field.label),
-      value: field.key ? item[field.key] ?? "-" : field.value
-    }))
+      .map(field => ({
+        label: field.label === "Attachment" ? field.label : getLabel(field.label),
+        value: field.key ? item[field.key] ?? "-" : field.value,
+        formKey: field.formKey
+      }))
   }));
   return lineItems;
 };
