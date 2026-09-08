@@ -59,6 +59,15 @@ function Login(props) {
     navigate(labelRoutes.home);
   }, []);
 
+  const currency = {
+    INR: "₹",
+    IDR: "Rp",
+    MYR: "RM",
+    PHP: "₱",
+    SGD: "$",
+    THB: "฿",
+    VND: "₫"
+  };
   //vapng autologin
   const autoLogin = async (username, token, enquiryID) => {
     const res = await PostApi(Account_API.Login, {
@@ -80,6 +89,8 @@ function Login(props) {
         countryID: user?.countryId,
         userType: user?.usertype,
         menuId: 1,
+        symbol: currency[user?.currency],
+        portal : false,
       });
 
       if (enquiryID) {
@@ -193,7 +204,9 @@ function Login(props) {
             country: user?.country,
             countryID: user?.countryId,
             userType: user?.usertype,
-            menuId: 0
+            menuId: 0,
+            symbol: currency[user?.currency],
+            portal : false
           });
           navigate(labelRoutes.dashboard);
         } else {

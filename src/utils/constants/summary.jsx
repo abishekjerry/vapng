@@ -78,7 +78,7 @@ export const getLineneItems = (formData = {}, formDataList = {}, getLabel, getOp
     { formKey: "dictatedJob", key: "dictated", label: "lbl63" },
     { formKey: "itemType", key: "itemtype", label: "lbl64" },
     { formKey: "reEngineering", key: "reengineering", label: "lbl157" },
-    { formKey: "rateCard", key: "rateCard", label: "Rate Card" },
+    { formKey: "rateCard", key: "rateCard", label: "lbl231" },
     { formKey: "incoterm", key: "incoterm", label: "lbl152" },
     { formKey: "itemName", key: "itemName", label: "lbl66" },
     { formKey: "itemNameDescription", key: "itemDescription", label: "lbl67" },

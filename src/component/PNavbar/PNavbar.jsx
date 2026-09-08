@@ -31,11 +31,10 @@ import { TrackChanges } from "@mui/icons-material";
 const PNavbar = ({ name = "User", email = "", avatar = "", notificationCount = 0, title = "", toggleSidebar }) => {
   const navigate = useNavigate();
   const { getLabel, changeLanguage, language } = useLanguage();
-  const { userType } = useSelector((state) => state.userDetails.user);
+  const { userType, url, portal } = useSelector((state) => state.userDetails.user);
 
   const [menuState, setMenuState] = useState({ anchorEl: null, type: null });
   const open = Boolean(menuState.anchorEl);
-
   const handleOpenMenu = (event, type) => {
     setMenuState({
       anchorEl: event.currentTarget,
@@ -104,19 +103,20 @@ const PNavbar = ({ name = "User", email = "", avatar = "", notificationCount = 0
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
 
           {/* PROJECT TRACKING */}
-          <Tooltip title="Project Tracking" placement="top" arrow>
-            <IconButton
-              onClick={() => { window.location.href = "https://uatpapm.pmgasia.com/auth/login" }}
-              sx={{
-                border: "1px solid #e2e8f0",
-                color: "#64748b",
-                "&:hover": { bgcolor: "#f8fafc" }
-              }}
-            >
-              <TrackChanges fontSize="small" />
-            </IconButton>
-          </Tooltip>
-
+          {(portal &&
+            <Tooltip title="Project Tracking" placement="top" arrow>
+              <IconButton
+                onClick={() => { window.location.href = url }}
+                sx={{
+                  border: "1px solid #e2e8f0",
+                  color: "#64748b",
+                  "&:hover": { bgcolor: "#f8fafc" }
+                }}
+              >
+                <TrackChanges fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          )}
           {/* NOTIFICATION */}
           <IconButton
             sx={{

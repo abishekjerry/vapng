@@ -68,8 +68,8 @@ const LineItems = () => {
         yesOrNoNot: [{ label: "Yes", value: 1 }, { label: "No", value: 2 }, { label: "Not Applicable", value: 3 }],
         competitiveBiddingExceptionFormSigned: [],
         //simplex: [{ label: "Non-Simplex", value: 1 }, { label: "Simplex", value: 2 }, { label: "Not Applicable", value: 3 }],
-        quoteType: [{ label: "Quote by Quantity", value: 1 }, { label: "Quote by Quantity & Size 2D", value: 2 }, { label: "Quote by Quantity & Size 3D", value: 3 }],
-
+        //quoteType: [{ label: "Quote by Quantity", value: 1 }, { label: "Quote by Quantity & Size 2D", value: 2 }, { label: "Quote by Quantity & Size 3D", value: 3 }],
+        quoteType: [{ label: "Quote by Quantity", value: 1 }, { label: "Quote by Quantity & Size", value: 2 }],
         //editable states
         clientInfo: [],
         enquiryDetails: [],
@@ -387,6 +387,7 @@ const LineItems = () => {
                 // savingsType: response.savingsType,
 
             }));
+
             if (item && id > 0) {
                 const values = Object.fromEntries(item.map(x => [x.formKey, x.value]));
                 setFormData(prev => ({
@@ -794,15 +795,15 @@ const LineItems = () => {
     }
 
     //hybird functionality
-    const hybird = formDataList?.enquiryDetails?.hybridModel === "No" && lineItems.length > 0 && Array.isArray(lineItems);
+    //const hybird = formDataList?.enquiryDetails?.hybridModel === "No" && lineItems.length > 0 && Array.isArray(lineItems);
     const category = hybird && lineItems?.length > 0 ? formDataList.lineItems[0].printornonprint
         : getOptionLabel(formDataList.category, formData.category);
 
     useEffect(() => {
         const loadMasters = async () => {
-            if (hybird && lineItems.length > 0) {
+            if (lineItems.length > 0) {
                 await LineItemsMaster(category);
-                await SavingsReasonMaster(formDataList.lineItems[0].savingstype, true);
+                //await SavingsReasonMaster(formDataList.lineItems[0].savingstype, true);
             }
         };
         loadMasters();
@@ -1107,7 +1108,7 @@ const LineItems = () => {
                             <PGrid container >
                                 <PGrid item xs={12} sm={6} md={4}>
                                     <PDropdown
-                                        label={`${"Rate Card"} ${Labels.symbols.required}`}
+                                        label={`${getLabel("lbl231")} ${Labels.symbols.required}`}
                                         value={formData.rateCard}
                                         onChange={handleChange}
                                         helperText={errors?.rateCard}
@@ -1160,7 +1161,7 @@ const LineItems = () => {
                                 <PGrid container className={Labels.margin.mb4}>
                                     <PGrid item xs={12} sm={6} md={4}>
                                         <PTextField
-                                            label={`${"Total Benchmark Price"} ${Labels.symbols.required}`}
+                                            label={`${getLabel("lbl232")} ${Labels.symbols.required}`}
                                             value={formData.totalBenchmarkPrice}
                                             onChange={handleChange}
                                             helperText={errors?.totalBenchmarkPrice}
@@ -1640,7 +1641,7 @@ const LineItems = () => {
                                 {[3].includes(menuId) && (
                                     <PGrid item xs={12} sm={6} md={6} className={Labels.margin.mb3}>
                                         <PTextField
-                                            label={`${"Customized Specification"} ${Labels.symbols.required}`}
+                                            label={`${getLabel("lbl233")} ${Labels.symbols.required}`}
                                             value={formData.customizedSpecifications}
                                             onChange={handleChange}
                                             helperText={errors?.customizedSpecifications}
@@ -1796,7 +1797,7 @@ const LineItems = () => {
 
                                         <PGrid item xs={12} sm={12} md={6} className="d-flex justify-content-end gap-2 mb-1">
                                             <PButton
-                                                label={formData.update ? "Update Line Items" : getLabel("lbl128")}
+                                                label={formData.update ? getLabel("lbl234") : getLabel("lbl128")}
                                                 variant="outlined"
                                                 onClick={(e) => handleSubmit(e, false)}
                                                 width={180}
@@ -1887,7 +1888,7 @@ const LineItems = () => {
                     specification: false,
                     search: ""
                 }))}
-                title={"Specifications"}
+                title={getLabel("lbl83")}
                 showCloseIcon={true}
                 maxWidth="md"
             //actions={}

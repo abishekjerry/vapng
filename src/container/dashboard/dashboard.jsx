@@ -35,7 +35,7 @@ const Dashboard = () => {
       showNavIcon: true
     },
     {
-      title: userType?.toLowerCase() === Labels.userType.supplier ? "UPLOAD IMAGES" : getLabel("lbl05"),
+      title: userType?.toLowerCase() === Labels.userType.supplier ? getLabel("lbl203") : getLabel("lbl05"),
       icon: <MenuBookIcon />,
       iconBg: "#7CA6F6",
       route: labelRoutes.eqDashboard,

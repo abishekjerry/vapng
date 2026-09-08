@@ -207,25 +207,25 @@ const EqDashboard = () => {
 
     2: [
       {
-        title: "LIVE",
+        title: getLabel("lbl204"),
         value: 0,
-        subtitle: "Jobs suppliers are bidding on",
+        subtitle: getLabel("lbl215"),
         iconColor: Labels.primary,
         icon: <SettingsInputAntennaIcon />,
         statusId: 1,
       },
       {
-        title: "PAUSED",
+        title:getLabel("lbl205"),
         value: 0,
-        subtitle: "EBids that you have put on hold",
+        subtitle: getLabel("lbl216"),
         iconColor: Labels.primary,
         icon: <PauseIcon />,
         statusId: 3,
       },
       {
-        title: "SCHEDULED",
+        title: getLabel("lbl206"),
         value: 0,
-        subtitle: "Your upcoming eBids",
+        subtitle: getLabel("lbl217"),
         iconColor: Labels.primary,
         icon: <PrintIcon />,
         statusId: 6,
@@ -262,25 +262,25 @@ const EqDashboard = () => {
 
   const supplierCards = [
     {
-      title: "New RFQ'S",
+      title: getLabel("lbl220"),
       value: summary.newrfq || 0,
-      subtitle: "New requests for quotation",
+      subtitle: getLabel("lbl218"),
       iconColor: Labels.primary,
       icon: <MoveToInboxIcon />,
       statusId: 24,
     },
     {
-      title: "Quotes Proposed",
+      title: getLabel("lbl220"),
       value: summary.quoteproposed || 0,
-      subtitle: "Number of active quotes you have submitted for review",
+      subtitle: getLabel("lbl219"),
       iconColor: Labels.primary,
       icon: <LocalOfferIcon />,
       statusId: 24,
     },
     {
-      title: "Invites",
+      title: getLabel("lbl220"),
       value: summary.invites || 0,
-      subtitle: "Total number of enquiries you have received",
+      subtitle: getLabel("lbl220"),
       iconColor: Labels.primary,
       icon: <Inventory2Icon />,
       statusId: 24,
@@ -297,25 +297,25 @@ const EqDashboard = () => {
       statusId: 3,
     },
     {
-      title: "Art Work",
+      title: getLabel("lbl210"),
       value: summary.artwork || 0,
-      subtitle: "Awaiting Artwork/Sample",
+      subtitle: getLabel("lbl213"),
       iconColor: Labels.primary,
       icon: <ImageIcon />,
       statusId: 24,
     },
     {
-      title: "Proof",
+      title: getLabel("lbl211"),
       value: summary.proof || 0,
-      subtitle: "Proof Approved",
+      subtitle: getLabel("lbl214"),
       iconColor: Labels.primary,
       icon: <VisibilityIcon />,
       statusId: 24,
     },
     {
-      title: "Production",
+      title: getLabel("lbl212"),
       value: summary.production || 0,
-      subtitle: "Number of projects in production",
+      subtitle: getLabel("lbl221"),
       iconColor: Labels.primary,
       icon: <HourglassEmptyIcon />,
       statusId: 24,
@@ -323,7 +323,7 @@ const EqDashboard = () => {
     {
       title: getLabel("lbl15"),
       value: summary.completed || 0,
-      subtitle: "Number of completed projects",
+      subtitle: getLabel("lbl222"),
       iconColor: Labels.primary,
       icon: <AssignmentTurnedInIcon />,
       statusId: 24,
@@ -531,9 +531,9 @@ const EqDashboard = () => {
   };
 
   const eProcurement = {
-    1: "Create Enquiry",
-    2: "Create E-Bidding Event",
-    3: "Echo",
+    1: getLabel("lbl19"),
+    2: getLabel("lbl223"),
+    3: getLabel("lbl224"),
   }[menuId];
 
   const icons = [
@@ -658,7 +658,7 @@ const EqDashboard = () => {
                     options={country}
                     width={Labels.fontSize.xxxxl}
                     flag={Labels.flag.auto}
-                    readOnly={role === "Admin" ? false : true}
+                    readOnly={role === Labels.role.admin ? false : true}
                   />
                 </PGrid>
                 <PGrid item xs={12} sm={6} md={3}>

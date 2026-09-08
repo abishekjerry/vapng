@@ -17,18 +17,18 @@ const Report = () => {
     const { getLabel } = useLanguage();
     const [formData, setFormData] = useState({
         clientName: "",
-        typeofReport: "",
+        typeOfReport: "",
         country: "",
-        jobstatus: "",
+        jobStatus: "",
         fromDate: "",
         toDate: ""
     });
 
     const [formDataList, setFormDataList] = useState({
         clientName: [],
-        typeofReport: [{ label: "Enquries", value: 1 }, { label: "Ebidding", value: 2 }, { label: "Ecatalogue", value: 3 }],
+        typeOfReport: [{ label: "Enquries", value: 1 }, { label: "Ebidding", value: 2 }, { label: "Ecatalogue", value: 3 }],
         country: [],
-        jobstatus: [],
+        jobStatus: [],
     });
 
     const handleChange = (e) => {
@@ -46,9 +46,9 @@ const Report = () => {
     const handleReset = () => {
         setFormData({
             clientName: "",
-            typeofReport: "",
+            typeOfReport: "",
             country: "",
-            jobstatus: "",
+            jobStatus: "",
             fromDate: "",
             toDate: "",
         });
@@ -62,8 +62,8 @@ const Report = () => {
                         <PGrid container className={Labels.margin.mt4}>
                             <PGrid item xs={12} sm={6} md={4}>
                                 <PDropdown
-                                    name={"ClientName"}
-                                    label={`${'ClientName'} ${Labels.symbols.required}`}
+                                    name={Labels.report.clientName}
+                                    label={`${getLabel("lbl28")} ${Labels.symbols.required}`}
                                     value={formData.clientName}
                                     onChange={handleChange}
                                     options={formDataList.clientName}
@@ -73,11 +73,11 @@ const Report = () => {
                             </PGrid>
                             <PGrid item xs={12} sm={6} md={4}>
                                 <PDropdown
-                                    name={"typeofReport"}
+                                    name={Labels.report.typeOfReport}
                                     label={`${"Type Of Report"} ${Labels.symbols.required}`}
-                                    value={formData.typeofReport}
+                                    value={formData.typeOfReport}
                                     onChange={handleChange}
-                                    options={formDataList.typeofReport}
+                                    options={formDataList.typeOfReport}
                                     width={100}
                                     //helperText={errors?.globalBUMapping}
                                     flag={Labels.flag.auto}
@@ -85,7 +85,7 @@ const Report = () => {
                             </PGrid>
                             <PGrid item xs={12} sm={6} md={4}>
                                 <PDropdown
-                                    name={"country"}
+                                    name={Labels.report.country}
                                     label={`${getLabel("lbl09")} ${Labels.symbols.required}`}
                                     value={formData.country}
                                     onChange={handleChange}
@@ -99,18 +99,18 @@ const Report = () => {
                         <PGrid container className={Labels.margin.mt4} >
                             <PGrid item xs={12} sm={6} md={4}>
                                 <PDropdown
-                                    name={"jobstatus"}
+                                    name={Labels.report.jobStatus}
                                     label={`${'Job Status'} ${Labels.symbols.required}`}
-                                    value={formData.clientName}
+                                    value={formData.jobStatus}
                                     onChange={handleChange}
-                                    options={formDataList.clientName}
+                                    options={formDataList.jobStatus}
                                     width={100}
 
                                 />
                             </PGrid>
                             <PGrid item xs={12} sm={6} md={4}>
                                 <PDatepicker
-                                    name={"fromDate"}
+                                    name={Labels.report.fromDate}
                                     label={"From Date"}
                                     value={formData.fromDate}
                                     onChange={handleChange}
@@ -121,7 +121,7 @@ const Report = () => {
                             </PGrid>
                             <PGrid item xs={12} sm={6} md={4}>
                                 <PDatepicker
-                                    name={"toDate"}
+                                    name={Labels.report.toDate}
                                     label={"To Date"}
                                     value={formData.toDate}
                                     onChange={handleChange}

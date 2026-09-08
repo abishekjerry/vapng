@@ -466,13 +466,13 @@ const EnquiryDetails = () => {
                                     <hr className="my-4" />
                                     <PGrid container className={Labels.margin.mb4}>
                                         <PTypography
-                                            labelText={"Bid Details"}
+                                            labelText={getLabel("lbl225")}
                                             flag={Labels.fontFlags.subHeader}
                                             color={CommonColors.blue.main}
                                             weight={FontWeight.bold}
                                         />
                                         <PTypography
-                                            labelText={"Enter the bid dates and times required to set up the event."}
+                                            labelText={getLabel("lbl226")}
                                             flag={Labels.fontFlags.smallText}
                                             color={CommonColors.grey.main}
                                             weight={FontWeight.bold}
@@ -482,7 +482,7 @@ const EnquiryDetails = () => {
                                         <PGrid item xs={12} sm={6} md={4}>
                                             <PDatepicker
                                                 name={Labels.enquiryDetails.startDate}
-                                                label={`${"Start Date"} ${Labels.symbols.required}`}
+                                                label={`${getLabel("lbl227")} ${Labels.symbols.required}`}
                                                 value={formData.startDate}
                                                 onChange={handleChange}
                                                 helperText={errors?.startDate}
@@ -494,7 +494,7 @@ const EnquiryDetails = () => {
                                         <PGrid item xs={12} sm={6} md={3}>
                                             <PDropdown
                                                 name={Labels.enquiryDetails.startTime}
-                                                label={`${"Start Time"} ${Labels.symbols.required}`}
+                                                label={`${getLabel("lbl228")} ${Labels.symbols.required}`}
                                                 value={formData.startTime}
                                                 onChange={handleChange}
                                                 helperText={errors?.startTime}
@@ -506,7 +506,7 @@ const EnquiryDetails = () => {
                                         <PGrid item xs={12} sm={6} md={3}>
                                             <PDropdown
                                                 name={Labels.enquiryDetails.duration}
-                                                label={`${"Duration"} ${Labels.symbols.required}`}
+                                                label={`${getLabel("lbl229")} ${Labels.symbols.required}`}
                                                 value={formData.duration}
                                                 onChange={handleChange}
                                                 helperText={errors?.duration}
@@ -516,7 +516,7 @@ const EnquiryDetails = () => {
                                         </PGrid>
                                         <PGrid item xs={12} sm={6} md={2}>
                                             <PTypography
-                                                labelText={"End Date and time"}
+                                                labelText={getLabel("lbl230")}
                                                 weight={FontWeight.bold}
                                             />
                                             <PTypography
