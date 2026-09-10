@@ -227,7 +227,8 @@ const ProjectEnquiry = () => {
 
             const master = await PostApi(Dashboard_API.Master, {
                 userCountryId: countryID,
-                role: role
+                role: role,
+                userId : userID
             });
 
             const response = await PostApi(Dashboard_API.GetDetails, {
@@ -432,7 +433,6 @@ const ProjectEnquiry = () => {
         }
     };
 
-
     const attachments = [
         { field: "enquiryId", header: "File Name" },
         { field: "enquiryId", header: "Type" },
@@ -602,6 +602,7 @@ const ProjectEnquiry = () => {
             selectedSupplierRows: rows,
         }));
     }
+
     const handleSendChoose = async () => {
         const rows = formDataList.selectedRows || [];
         const supplierIds = rows.map(r => r.supplierId).join(",");
@@ -644,6 +645,7 @@ const ProjectEnquiry = () => {
             }))
         }));
     }
+
     const renderProjectEditableField = (field) => ({
         render: (row) => {
             // const isCostReduction = row?.savingType === "Cost Reduction";
@@ -694,6 +696,7 @@ const ProjectEnquiry = () => {
             value: `${savings.totalSavingPercent.toFixed(2)} %`
         }
     ];
+
     const projectSavings = [
         {
             field: "previousSupplier", header: "Previous PO Number",
@@ -739,6 +742,7 @@ const ProjectEnquiry = () => {
             totalsellpricewithtax: 0
         }
     );
+
     const calculateProject = [
         {
             details: [
@@ -837,7 +841,6 @@ const ProjectEnquiry = () => {
         }));
     };
 
-
     const isQuote = formData.quote == 1 && formData.rfq;
     const isUnit = formData.quote == 2 && formData.rfq;
 
@@ -870,7 +873,6 @@ const ProjectEnquiry = () => {
         { field: "negUnitPriceFee", header: `Neg.unit Price with MFee + GS (${symbol})`, type: "rupee" },
         { field: "pmgSellPrice", header: `PMG Sell Price (with MF & GS) (${symbol})`, rowSpan: true, type: "rupee", align: "center" }
     ];
-
 
     //savings reason functionality
     useEffect(() => {

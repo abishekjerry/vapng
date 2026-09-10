@@ -29,7 +29,7 @@ import PSearch from "../../component/PSearch/PSearch";
 const LineItems = () => {
     const { state } = useLocation();
     const { getLabel } = useLanguage();
-    const { fkID, menuId } = useSelector((state) => state.userDetails.user);
+    const { fkID, menuId, role, countryID, userID } = useSelector((state) => state.userDetails.user);
     const navigate = useNavigate();
     const [allowRedirect, setAllowRedirect] = useState(false);
     const enquirySteps = getEnquirySteps(getLabel, menuId);
@@ -221,7 +221,11 @@ const LineItems = () => {
     const fetchData = async () => {
         try {
             setLoading(true);
-            const response = await PostApi(Dashboard_API.Master, {});
+            const response = await PostApi(Dashboard_API.Master, {
+                userCountryId: countryID,
+                role: role,
+                userId: userID
+            });
             setFormDataList(prev => ({
                 ...prev,
                 category: response.typeofJob,
@@ -295,76 +299,12 @@ const LineItems = () => {
     }, []);
 
     useEffect(() => {
-        const filtered = formDataList.yesOrNoNot?.filter(option => option.value !== 2) || [];
-        setFormDataList(prev => {
-            // prevent infinite loop
-            if (JSON.stringify(prev.competitiveBiddingExceptionFormSigned) === JSON.stringify(filtered)) {
-                return prev;
-            }
-            return {
-                ...prev,
-                competitiveBiddingExceptionFormSigned: filtered
-            };
-        });
-
+        setFormDataList(prev => ({
+            ...prev,
+            competitiveBiddingExceptionFormSigned:
+                prev.yesOrNoNot?.filter(option => option.value !== 2) || []
+        }));
     }, [formDataList.yesOrNoNot]);
-
-    const getSelectedValue = (arr) => arr?.find(option => option.selected)?.value ?? "";
-    const selectedValues = useMemo(() => ({
-        yesOrNo: getSelectedValue(formDataList.yesOrNo),
-        soYesNoNa: getSelectedValue(formDataList.soYesNoNa),
-        yesNoNa: getSelectedValue(formDataList.yesNoNa),
-        incoterm: getSelectedValue(formDataList.incoterm),
-        globalOrder: getSelectedValue(formDataList.globalOrder),
-        localCatalog: getSelectedValue(formDataList.localCatalog),
-        regionalOrder: getSelectedValue(formDataList.regionalOrder),
-        typeOfItem: getSelectedValue(formDataList.typeOfItem),
-        printingMethod: getSelectedValue(formDataList.printingMethod),
-        reEngineering: getSelectedValue(formDataList.reEngineering),
-    }), [formDataList.yesOrNo, formDataList.soYesNoNa, formDataList.yesNoNa, formDataList.incoterm, formDataList.globalOrder,
-    formDataList.localCatalog, formDataList.regionalOrder, formDataList.typeOfItem, formDataList.printingMethod, formDataList.reEngineering]);
-
-    useEffect(() => {
-        const { yesOrNo, soYesNoNa, yesNoNa, incoterm, globalOrder, localCatalog, regionalOrder, typeOfItem, printingMethod, reEngineering } = selectedValues;
-        setFormData(prev => {
-            if (prev.incoterm === incoterm && prev.globalOrderWindowCatalogueName === globalOrder && prev.localCatalogueName === localCatalog &&
-                prev.regionalOrderWindowCatalogue === regionalOrder && prev.typeOfItem === typeOfItem //, prev.printingMethod === printingMethod
-            ) {
-                return prev;
-            }
-
-            return {
-                ...prev,
-                ...(yesNoNa && soYesNoNa && {
-                    fscOrPefcMaterial: yesNoNa,
-                    recyclable: yesNoNa,
-                    sustainabilityOption: soYesNoNa,
-                    recycledMaterial: yesNoNa,
-                    designedToBeReused: yesNoNa,
-                    digitalInnovation: yesNoNa,
-                    taxCertification: yesNoNa,
-                }),
-                ...(yesOrNo && {
-                    eAuction: yesOrNo,
-                    owWithLink: yesOrNo,
-                    //dictatedJob: yesOrNo,
-                    //rateCard: yesOrNo,
-                    containsPlastic: yesOrNo,
-                    containsRecycledPlastic: yesOrNo,
-                    innovation: yesOrNo,
-                    harmonizedOrder: yesOrNo
-                }),
-                ...(incoterm && { incoterm: incoterm }),
-                ...(globalOrder && { globalOrderWindowCatalogueName: globalOrder }),
-                ...(regionalOrder && { regionalOrderWindowCatalogue: regionalOrder }),
-                ...(localCatalog && { localCatalogueName: localCatalog }),
-                ...(typeOfItem && { typeOfItem: typeOfItem }),
-                ...(printingMethod && { printingMethod: printingMethod }),
-                ...(reEngineering && { reEngineering: reEngineering })
-            };
-        });
-
-    }, [selectedValues]);
 
     const LineItemsMaster = async (data, item = [], id = 0) => {
         try {
@@ -503,8 +443,8 @@ const LineItems = () => {
                 setLoading(true);
                 const payload = {
                     //lineItems
+                    ...(formData.lineItemId > 0 && { EnqdetailsId: formData.lineItemId }),
                     EnqId: id,
-                    EnqdetailsId: formData.lineItemId,
                     Printornonprint: getOptionLabel(formDataList.category, formData.category),
                     ProductCategoryId: formData.itemCategory,
                     RateCard: getOptionLabel(formDataList.rateCard, formData.rateCard),
@@ -592,11 +532,7 @@ const LineItems = () => {
                         await fetchData();
                     };
                 } else {
-                    //     setErrors((prev) => ({
-                    //         ...prev,
-                    //         name: ""
-                    //     }));
-                    //     toast(Labels.status.failure, response.data.message);
+                    toast(Labels.status.failure, response.data.message);
                 }
             } catch (error) {
                 toast(Labels.status.failure, Labels.message.somethingWentWrong);
@@ -643,7 +579,7 @@ const LineItems = () => {
 
             // Sustainability Information
             Labels.lineItems.fscOrPefcMaterial,
-            Labels.lineItems.taxCertification,
+            //Labels.lineItems.taxCertification,
             Labels.lineItems.recyclable,
             Labels.lineItems.sustainabilityOption,
             Labels.lineItems.recycledMaterial,
@@ -710,7 +646,6 @@ const LineItems = () => {
                 newErrors[field] = Labels.commonLabel.required;
             }
         });
-
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -750,7 +685,7 @@ const LineItems = () => {
 
             // Sustainability Information
             fscOrPefcMaterial: "",
-            taxCertification: "",
+            //taxCertification: "",
             recyclable: "",
             sustainabilityOption: "",
             recycledMaterial: "",
@@ -795,7 +730,7 @@ const LineItems = () => {
     }
 
     //hybird functionality
-    //const hybird = formDataList?.enquiryDetails?.hybridModel === "No" && lineItems.length > 0 && Array.isArray(lineItems);
+    const hybird = formDataList?.enquiryDetails?.hybridModel === "No" && lineItems.length > 0 && Array.isArray(lineItems);
     const category = hybird && lineItems?.length > 0 ? formDataList.lineItems[0].printornonprint
         : getOptionLabel(formDataList.category, formData.category);
 
@@ -848,7 +783,7 @@ const LineItems = () => {
 
             // Sustainability Information
             Labels.lineItems.fscOrPefcMaterial,
-            Labels.lineItems.taxCertification,
+            // Labels.lineItems.taxCertification,
             Labels.lineItems.recyclable,
             Labels.lineItems.sustainabilityOption,
             Labels.lineItems.recycledMaterial,

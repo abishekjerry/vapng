@@ -25,7 +25,7 @@ import { useLanguage } from "../../utils/constants/language";
 import { Account_API, Dashboard_API } from "../../utils/api/apiUrl";
 import { PostApi } from "../../utils/api/networking";
 import { exportToExcel, isNotEmpty, isSuccess, toast } from "../../utils/commonFunction/common";
-import { useNavigate, useLocation  } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { labelRoutes } from "../../navigations/labelRoutes";
 import PDialog from "../../component/PDialog/PDialog";
 import { useSelector, useDispatch } from "react-redux";
@@ -52,14 +52,13 @@ const EqDashboard = () => {
   const location = useLocation();
   const enquiryID = location.state?.enquiryID;
   const [openFilter, setOpenFilter] = useState("");
-  const [country, setCountry] = useState([]);
   const [filter, setFilter] = useState(false);
   const [rows, setRows] = useState([]);
   const [chartData, setChartData] = useState([]);
   const [summary, setSummary] = useState({});
   const [loading, setLoading] = useState(true);
   const [chartOrginalData, setChartOrginalData] = useState([]);
-  const { countryID, role, userName, userType, menuId } = useSelector((state) => state.userDetails.user);
+  const { countryID, role, userName, userType, menuId, userID } = useSelector((state) => state.userDetails.user);
   const [formData, setFormData] = useState({
     country: "",
     user: "",
@@ -69,6 +68,12 @@ const EqDashboard = () => {
     chartType: "pie",
     status: "",
   });
+
+  const [formDataList, setFormDataList] = useState({
+    country: [],
+    user: [],
+  });
+
   const [errors, setErrors] = useState({
     startDate: "",
     endDate: "",
@@ -80,9 +85,17 @@ const EqDashboard = () => {
       setLoading(true);
       const response = await PostApi(Dashboard_API.Master, {
         userCountryId: countryID,
-        role: role
+        role: role,
+        userId: userID
       });
-      setCountry(role === "Admin" ? response.country : response.country.filter((c) => c.value === countryID));
+      setFormDataList({
+        country: response.country,
+        user: response.user
+      });
+      setFormData({
+        ...formData,
+        country: role === Labels.role.admin ? 0 : countryID
+      })
       const res = await PostApi(Dashboard_API.Dashboard, {
         userCountryId: countryID,
         role: role,
@@ -94,7 +107,7 @@ const EqDashboard = () => {
         statusId: "",
         jobposition: "",
         client: "",
-        username: userName, //localStorage.getItem("user"),
+        username: userName,
         menuId: menuId
       });
 
@@ -147,15 +160,6 @@ const EqDashboard = () => {
   useEffect(() => {
     fetchData();
   }, [menuId]);
-
-  useEffect(() => {
-    if (country.length === 1) {
-      setFormData(prev => ({
-        ...prev,
-        country: country[0].value
-      }));
-    }
-  }, [country]);
 
   const columns = [
     { field: "enquiryId", header: "Enquiry ID" },
@@ -215,7 +219,7 @@ const EqDashboard = () => {
         statusId: 1,
       },
       {
-        title:getLabel("lbl205"),
+        title: getLabel("lbl205"),
         value: 0,
         subtitle: getLabel("lbl216"),
         iconColor: Labels.primary,
@@ -353,15 +357,7 @@ const EqDashboard = () => {
     pie: lazy(() => import("../../component/PChart/PPieChart")),
   };
 
-
   const SelectedChart = chartComponents[formData.chartType];
-
-  const userList = [
-    { value: 1, label: "demo sg" },
-    { value: 2, label: "Eddie Seah" },
-    { value: 3, label: "huikeng tan" }
-  ]
-
 
   const iconStyle = {
     border: "1px solid #e2e8f0",
@@ -655,7 +651,7 @@ const EqDashboard = () => {
                     label={getLabel("lbl09")}
                     value={formData.country}
                     onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                    options={country}
+                    options={formDataList.country}
                     width={Labels.fontSize.xxxxl}
                     flag={Labels.flag.auto}
                     readOnly={role === Labels.role.admin ? false : true}
@@ -666,7 +662,7 @@ const EqDashboard = () => {
                     label={getLabel("lbl10")}
                     value={formData.user}
                     onChange={(e) => setFormData({ ...formData, user: e.target.value })}
-                    options={userList}
+                    options={formDataList.user}
                     width={Labels.fontSize.xxxxl}
                     flag={Labels.flag.auto}
                   />

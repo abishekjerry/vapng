@@ -165,16 +165,21 @@ const ClientInfo = () => {
         try {
             setLoading(true);
             const response = await PostApi(Dashboard_API.Master, {
-                userCountryId: countryID,
-                role: role
+               userCountryId: countryID,
+                role: role,
+                userId : userID
             });
             setFormDataList(prev => ({
                 ...prev,
                 division: response.division,
-                pmgEntity: (role === "Admin" ? response.country : response.country.filter((c) => c.value === countryID)),
+                pmgEntity: response.country,
                 deliveryCountry: response.country,
             }));
-
+            setFormData(prev => ({
+                ...prev,
+                pmgEntity: role === Labels.role.admin ? 0 : countryID,
+                deliveryCountry : countryID,
+            }));
             if (id !== 0) {
                 const data = await PostApi(Dashboard_API.GetDetails, {
                     Enquiryid: id,
@@ -221,16 +226,6 @@ const ClientInfo = () => {
             handleDivisionSelection(formData.division, divisionLabel);
         }
     }, [formData.division, formDataList.division]);
-
-
-    useEffect(() => {
-        if (formDataList.pmgEntity.length === 1) {
-            setFormData(prev => ({
-                ...prev,
-                pmgEntity: formDataList.pmgEntity[0].value
-            }));
-        }
-    }, [formDataList.pmgEntity]); // separate effect, only does auto-select
 
     const handleChange = async (e) => {
         const { name, value, label } = e.target;
@@ -704,16 +699,16 @@ const ClientInfo = () => {
                                         flag={Labels.flag.auto}
                                     />
                                     {[Labels.role.admin].includes(role) && (
-                                            <div style={{ marginTop: "15px" }}>
-                                                <Tooltip title="Add New Brand" arrow>
-                                                    <IconButton sx={{ backgroundColor: "#d5d5d5", color: "#fff", width: 30, height: 30, "&:hover": { backgroundColor: "#1976d2" }, }}
-                                                    //onClick={!disible ? (e) => handleOpenChoose(e, "Brand") : undefined}
-                                                    >
-                                                        <AddIcon />
-                                                    </IconButton>
-                                                </Tooltip>
-                                            </div>
-                                        )
+                                        <div style={{ marginTop: "15px" }}>
+                                            <Tooltip title="Add New Brand" arrow>
+                                                <IconButton sx={{ backgroundColor: "#d5d5d5", color: "#fff", width: 30, height: 30, "&:hover": { backgroundColor: "#1976d2" }, }}
+                                                //onClick={!disible ? (e) => handleOpenChoose(e, "Brand") : undefined}
+                                                >
+                                                    <AddIcon />
+                                                </IconButton>
+                                            </Tooltip>
+                                        </div>
+                                    )
                                     }
                                 </PGrid>
 
@@ -764,8 +759,8 @@ const ClientInfo = () => {
                                         options={formDataList.pmgEntity}
                                         width={100}
                                         helperText={errors?.pmgEntity}
-                                        //flag={Labels.flag.auto}
-                                        readOnly={true}
+                                        flag={Labels.flag.auto}
+                                        readOnly={role === Labels.role.client}
                                     />
                                 </PGrid>
                             </PGrid >

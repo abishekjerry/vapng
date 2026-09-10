@@ -72,4 +72,6 @@ export const ProjectEnquiry_API = {
   GetRedirectToPAPM : Base_Url + "VA/GetRedirectToPAPM",
 }
 
-
+export const Report_API = {
+  GetReport : Base_Url + "/VA/GetReport"
+}

@@ -29,7 +29,7 @@ const EnquiryDetails = () => {
     const { getLabel } = useLanguage();
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { countryID, role, fkID, menuId } = useSelector((state) => state.userDetails.user);
+    const { countryID, role, fkID, menuId , userID} = useSelector((state) => state.userDetails.user);
     const enquirySteps = getEnquirySteps(getLabel, menuId);
     const [allowRedirect, setAllowRedirect] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -137,8 +137,9 @@ const EnquiryDetails = () => {
         try {
             setLoading(true);
             const response = await PostApi(Dashboard_API.Master, {
-                userCountryId: countryID,
-                role: role
+               userCountryId: countryID,
+                role: role,
+                userId : userID
             });
             setFormDataList(prev => ({
                 ...prev,
@@ -157,22 +158,22 @@ const EnquiryDetails = () => {
         }
     };
 
-    useEffect(() => {
-        if (formDataList?.slaTemplate?.length && !formData.slaTemplate) {
-            //const hybrid = formDataList?.enquiryDetails?.hybridModel ? getOptionValue(formDataList.hybird, data.enqProjectinfo.hybridModel) : 2;
-            //const managementfeetypeId = formDataList?.enquiryDetails?.managementfeetypeId ? data.enqProjectinfo.managementfeetypeId : 8;
-            const slaId = formDataList?.enquiryDetails?.slaId ?? 1;
-            const year = 1;
-            setFormData(prev => ({
-                ...prev,
-                slaTemplate: slaId,
-                year: year
-                // hybrid: hybrid,
-                // managementFeeType: managementfeetypeId
-            }));
-            //slaRef.current?.slaTemplate(slaId);
-        }
-    }, [formDataList.slaTemplate, formDataList.enquiryDetails]);
+    // useEffect(() => {
+    //     if (formDataList?.slaTemplate?.length && !formData.slaTemplate) {
+    //         //const hybrid = formDataList?.enquiryDetails?.hybridModel ? getOptionValue(formDataList.hybird, data.enqProjectinfo.hybridModel) : 2;
+    //         //const managementfeetypeId = formDataList?.enquiryDetails?.managementfeetypeId ? data.enqProjectinfo.managementfeetypeId : 8;
+    //         const slaId = formDataList?.enquiryDetails?.slaId ?? 1;
+    //         const year = 1;
+    //         setFormData(prev => ({
+    //             ...prev,
+    //             slaTemplate: slaId,
+    //             year: year
+    //             // hybrid: hybrid,
+    //             // managementFeeType: managementfeetypeId
+    //         }));
+    //         //slaRef.current?.slaTemplate(slaId);
+    //     }
+    // }, [formDataList.slaTemplate, formDataList.enquiryDetails]);
 
     const GetData = async (response) => {
         try {
@@ -197,7 +198,7 @@ const EnquiryDetails = () => {
                     managementFeeType: data.enqProjectinfo.managementfeetypeId,
                     hybrid: getOptionValue(formDataList.hybird, data.enqProjectinfo.hybridModel),
                     projectAttribute: getOptionValue(response.projectAttribute, data.enqProjectinfo.attribute),
-                    slaTemplate: data?.enqProjectinfo?.slaId,
+                    //slaTemplate: data?.enqProjectinfo?.slaId,
                 }));
                 dispatch({
                     type: userDetails,

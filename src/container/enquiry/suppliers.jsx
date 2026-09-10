@@ -24,7 +24,7 @@ import { useSelector } from "react-redux";
 
 const Suppliers = () => {
     const { getLabel } = useLanguage();
-    const { country, currency, fkID , menuId} = useSelector((state) => state.userDetails.user);
+    const { country, currency, fkID, menuId, userID, countryID, role } = useSelector((state) => state.userDetails.user);
     const enquirySteps = getEnquirySteps(getLabel, menuId);
     const navigate = useNavigate();
     const { state } = useLocation();
@@ -36,7 +36,7 @@ const Suppliers = () => {
     const [search, setSearch] = useState("");
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(true);
-    
+
     const [formDataList, setFormDataList] = useState({
         country: [],
         print: [],
@@ -55,7 +55,11 @@ const Suppliers = () => {
     const fetchData = async () => {
         try {
             setLoading(true);
-            const response = await PostApi(Dashboard_API.Master, {});
+            const response = await PostApi(Dashboard_API.Master, {
+                userCountryId: countryID,
+                role: role,
+                userId: userID
+            });
             const supplierResponse = await PostApi(Suppliers_API.GetEnqSupplierMaster, {
                 currency: currency,
                 Country: country
@@ -160,7 +164,7 @@ const Suppliers = () => {
             setLoading(true);
             const payload = {
                 EnqId: id,
-                SelectedSuppliers : supplierIds,
+                SelectedSuppliers: supplierIds,
                 ModifiedBy: fkID,
             };
             const response = await PostApi(Suppliers_API.AddUpdateSuppliers, payload);
@@ -181,7 +185,7 @@ const Suppliers = () => {
             setLoading(false);
         }
     };
-    
+
     const handleBack = () => {
         if (window.history.length > 1) {
             navigate(labelRoutes.lineItems, {
@@ -195,6 +199,7 @@ const Suppliers = () => {
     const handleExitDraft = () => {
         setOpen(true);
     };
+    
     return (
         <>
             <Box sx={{ px: 3, py: 3 }}>

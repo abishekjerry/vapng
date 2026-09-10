@@ -34,6 +34,7 @@ const EnquirySuccess = () => {
     useEffect(() => {
         fetchData();
     }, []);
+
     const fetchData = async () => {
         try {
             setLoading(true);
@@ -51,6 +52,7 @@ const EnquirySuccess = () => {
             setLoading(false);
         }
     };
+
     const data = [
         { label: getLabel("lbl162"), value: formDataList.clientInfo?.enqUId || "-", icon: <DescriptionIcon /> },
         { label: getLabel("lbl42"), value: formDataList.enquiryDetails?.projectNo || "-", icon: <FolderIcon /> },
@@ -64,6 +66,7 @@ const EnquirySuccess = () => {
             state: { id: state.id }
         });
     };
+
     const handleBack = async () => {
         navigate(labelRoutes.eqDashboard, {
             state: { id: 0 }
@@ -71,8 +74,6 @@ const EnquirySuccess = () => {
     };
 
     return (
-
-
         <PCard>
             <PGrid container className={Labels.margin.mb3}>
                 <PTypography
