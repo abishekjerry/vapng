@@ -41,7 +41,7 @@ const Report = () => {
 
     const [formDataList, setFormDataList] = useState({
         clientName: [],
-        typeOfReport: [{ label: "Enquries", value: 1 }, { label: "Ebidding", value: 2 }, { label: "Ecatalogue", value: 3 }],
+        typeOfReport: [{ label: "All", value: 0, selected: true }, { label: "Enquries", value: 1 }, { label: "Ebidding", value: 2 }, { label: "Ecatalogue", value: 3 }],
         country: [],
         jobStatus: [],
     });
@@ -111,10 +111,20 @@ const Report = () => {
             Labels.report.fromDate,
             Labels.report.toDate,
         ];
+        const allowZeroFields = [
+            Labels.report.typeOfReport,
+        ];
         let newErrors = {};
         requiredFields.forEach((field) => {
-            if (!formData[field]) {
-                newErrors[field] = Labels.commonLabel.required;
+            const value = formData[field];
+            if (allowZeroFields.includes(field)) {
+                if (value === "" || value === null || value === undefined) {
+                    newErrors[field] = Labels.commonLabel.required;
+                }
+            } else {
+                if (!value) {
+                    newErrors[field] = Labels.commonLabel.required;
+                }
             }
         });
         setErrors(newErrors);
