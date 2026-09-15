@@ -101,7 +101,26 @@ export default function PDatepicker({
     }
   };
 
-  const baseSx = FormControlBaseStyle(width, mt);
+  const baseSx = FormControlBaseStyle({ width: width ? `${width}%` : "100%", mt, helperText,
+    sx: {
+      "& .MuiInputAdornment-root": {
+        height: "100%",
+        margin: 0,
+      },
+
+      "& .MuiIconButton-root": {
+        width: "52px",
+        height: "45px",
+        borderRadius: "0 12px 12px 0",
+        backgroundColor: "#1976F3",
+        color: "#fff",
+
+        "&:hover": {
+          backgroundColor: "#1976F3",
+        },
+      },
+    },
+  });
 
   return (
     <TextField

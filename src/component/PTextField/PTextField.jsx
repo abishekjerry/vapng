@@ -4,6 +4,7 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Labels } from "../../utils/constants/labels";
 import { FontFamily, FontSize } from "../../utils/constants/fonts";
 import { CommonColors } from "../../utils/constants/colors";
+import { FormControlBaseStyle } from "../../utils/constants/styles";
 
 export default function PTextField({
     inputRef,
@@ -34,51 +35,8 @@ export default function PTextField({
     const handleToggleVisibility = () => {
         setShowPassword(prev => !prev);
     };
-    const baseSx = {
-        width,
-        mt: 0.4,
-        "& .MuiOutlinedInput-root": {
-            borderRadius: "12px",
-            backgroundColor: "#fff",
-
-            "& fieldset": {
-                borderColor: helperText ? "#d32f2f" : "#ccc",
-                borderWidth: "1.5px"
-            },
-
-            "&:hover fieldset": {
-                borderColor: "#62BCD8",
-            },
-
-            "&.Mui-focused fieldset": {
-                borderColor: "#62BCD8",
-            },
-        },
-        "& .MuiInputLabel-root": {
-            fontFamily: FontFamily.bold,
-            fontSize: FontSize.textField.label,
-            color: "#9e9e9e",
-            top: "0px",
-            "&.Mui-focused": { color: "#62BCD8" },
-            "&.Mui-error": { color: "#d32f2f" },
-            "&.Mui-disabled": { color: "#bdbdbd" },
-        },
-        "& .MuiInputLabel-shrink": {
-            color: "#62BCD8",
-            fontWeight: 600,
-            fontSize: "12px",
-            transform: "translate(14px, -6px) scale(1)"
-        },
-        "& .MuiFormHelperText-root": {
-            fontFamily: FontFamily.bold,
-            fontSize: FontSize.textField.error,
-            color: CommonColors.textError,
-            marginLeft: "2px",
-            marginTop: "4px"
-        },
-        ...sx
-    };
-
+    
+    const baseSx = FormControlBaseStyle({ width, mt: 0.4, helperText, sx, });
     return (
         <TextField
             placeholder={placeHolder}
