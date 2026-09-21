@@ -111,8 +111,8 @@ const PDropdown = ({ name = "", label, value = "", onChange, options = [], requi
           onChange({
             target: {
               name: name,
-              value: e.target.value,
-              label: selected?.label || ""
+              value: selected.value,
+              label: selected?.label
             }
           });
         }}

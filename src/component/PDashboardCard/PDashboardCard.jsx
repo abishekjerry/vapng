@@ -23,7 +23,7 @@ const PDashboardCard = ({ title, value, icon, subtitle, route, onClick, menuId, 
     if (onClick && !fileName) {
       onClick();
     }
-    if (route) {
+    if (route && showNavIcon) {
       dispatch({
         type: userDetails,
         payload: {

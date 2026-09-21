@@ -194,7 +194,7 @@ const EnquiryDetails = () => {
                     briefReceivedDate: data.enqProjectinfo.briefdate,
                     projectDescription: data.enqProjectinfo.projectDesc,
                     projectQuoteType: getOptionValue(formDataList.quoteType, data.enqProjectinfo.projectQuotetype),
-                    year: getOptionValue(response.year, data.enqProjectinfo.year),
+                    //year: getOptionValue(response.year, data.enqProjectinfo.year),
                     managementFeeType: data.enqProjectinfo.managementfeetypeId,
                     hybrid: getOptionValue(formDataList.hybird, data.enqProjectinfo.hybridModel),
                     projectAttribute: getOptionValue(response.projectAttribute, data.enqProjectinfo.attribute),

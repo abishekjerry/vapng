@@ -35,18 +35,18 @@ function PageLayout() {
       route: labelRoutes.eqDashboard,
       menuId: 1,
     },
-    {
-      icon: <FaGavel size={20} />,
-      name: "E-Bidding",
-      route: labelRoutes.eqDashboard,
-      menuId: 2,
-    },
-    {
-      icon: <FaBook size={20} />,
-      name: "E-Catalogue",
-      route: labelRoutes.eqDashboard,
-      menuId: 3,
-    },
+    // {
+    //   icon: <FaGavel size={20} />,
+    //   name: "E-Bidding",
+    //   route: labelRoutes.eqDashboard,
+    //   menuId: 2,
+    // },
+    // {
+    //   icon: <FaBook size={20} />,
+    //   name: "E-Catalogue",
+    //   route: labelRoutes.eqDashboard,
+    //   menuId: 3,
+    // },
     ...(userType?.toLowerCase() === Labels.userType.agency
       ? [
         {

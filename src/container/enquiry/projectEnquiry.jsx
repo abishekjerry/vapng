@@ -94,7 +94,7 @@ const ProjectEnquiry = () => {
         raisedDate: "",
         invoicenumber: "",
         actualDeliveryDate: "",
-        portal : false
+        portal: false
 
     });
     const [formDataList, setFormDataList] = useState({
@@ -228,7 +228,7 @@ const ProjectEnquiry = () => {
             const master = await PostApi(Dashboard_API.Master, {
                 userCountryId: countryID,
                 role: role,
-                userId : userID
+                userId: userID
             });
 
             const response = await PostApi(Dashboard_API.GetDetails, {
@@ -320,10 +320,10 @@ const ProjectEnquiry = () => {
                 marginFlag: projectResponse.calculationDetails?.length > 0,
                 psFlag: !projectResponse.savingsResponseDto.details[0]?.previousPrice > 0,
                 statusId: response.statusId,
-                portal : response.portal,
+                portal: response.portal,
                 savingsReason: getOptionValue(master.savingsReason, response.enqClientinfo?.savingReason),
             }));
-            
+
             await clientInfoMaster(response.enqClientinfo.divisionid);
             await redirectToPAPM(response);
         } catch (error) {
@@ -341,6 +341,13 @@ const ProjectEnquiry = () => {
     // PAPM Redirect 
     const redirectToPAPM = async (response) => {
         if (response.statusId < 3 || response.portal !== "PAPM") {
+            dispatch({
+                type: userDetails,
+                payload: {
+                    portal: false,
+                    url: ""
+                }
+            });
             return;
         }
 
@@ -349,13 +356,12 @@ const ProjectEnquiry = () => {
             userName: userName,
             projectId: response.projectId,
         });
-
-        if (rslt.Status && rslt.message?.message === Labels.message.success) {
+        if (rslt.status == true && rslt.message === "success") {
             dispatch({
                 type: userDetails,
                 payload: {
                     portal: true,
-                    url: rslt.message.redirectUrl
+                    url: rslt.redirectUrl
                 },
             });
         }
@@ -1013,7 +1019,7 @@ const ProjectEnquiry = () => {
             statusId: flag === "order" ? 7 : formData.statusId,
             portal: formData.portal
         }
-        
+
         //management fee 
         const updateFeeSummary = {
             enqId: id,

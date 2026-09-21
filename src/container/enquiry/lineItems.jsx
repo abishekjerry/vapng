@@ -330,17 +330,39 @@ const LineItems = () => {
 
             if (item && id > 0) {
                 const values = Object.fromEntries(item.map(x => [x.formKey, x.value]));
+                console.log(values, "dsjfnbmn");
                 setFormData(prev => ({
                     ...prev,
+                    update: true,
+                    lineItemId: id,
                     category: getOptionValue(formDataList.category, values.category),
                     itemCategory: getOptionValue(response.itemCategory, values.itemCategory),
+                    urgentJob: getOptionValue(formDataList.urgentJob, values.urgentJob),
+                    dictatedJob: getOptionValue(formDataList.dictatedJob, values.dictatedJob),
+                    itemType: getOptionValue(formDataList.itemType, values.itemType),
+                    reEngineering: getOptionValue(formDataList.reEngineering, values.reEngineering),
+                    rateCard: getOptionValue(formDataList.rateCard, values.rateCard),
                     itemName: values.itemName,
                     itemNameDescription: values.itemNameDescription,
+
+                    fscOrPefcMaterial: getOptionValue(formDataList.yesNoNa, values.fscOrPefcMaterial),
+                    recyclable: getOptionValue(formDataList.yesNoNa, values.recyclable),
+                    sustainabilityOption: getOptionValue(formDataList.soYesNoNa, values.sustainabilityOption),
+                    containsPlastic: getOptionValue(formDataList.yesNoNa, values.containsPlastic),
+                    designedToBeReused: getOptionValue(formDataList.yesNoNa, values.designedToBeReused),
+                    recycledMaterial: getOptionValue(formDataList.yesNoNa, values.recycledMaterial),
+                    containsRecycledPlastic: getOptionValue(formDataList.yesNoNa, values.containsRecycledPlastic),
+                    plasticWeightKg: values.plasticWeightKg,
+                    recycledPlasticWeightKg: values.recycledPlasticWeightKg,
+                    recycledMaterialWeightKg: values.recycledMaterialWeightKg,
+
+                    printingMethod: getOptionValue(response.printingMethod, values.printingMethod),
+                    materialUsed: getOptionValue(response.materialused, values.materialUsed),
+                    noOfVersion: values.noOfVersion,
+                    notesComments: values.notesComments,
+                    specifications: values.specifications,
                     quantity: values.quantity,
                     quantityType: 1,
-                    specifications: values.specifications,
-                    lineItemId: id,
-                    update: true
                 }));
             }
         } catch (error) {
@@ -520,7 +542,10 @@ const LineItems = () => {
                 const response = await PostApi(LineItems_API.AddUpdateLineItems, payload);
                 if (isSuccess(response)) {
                     setAllowRedirect(true);
-                    const route = flag === true ? labelRoutes.suppliers : flag === false ? labelRoutes.LineItems : labelRoutes.eqDashboard;
+                    const items = rawLineItems || [];
+                    const currentIndex = items.findIndex(item => Number(item.enquiryId) === Number(formData.lineItemId));
+                    const hasNext = await loadNextIncompleteItem(currentIndex + 1);
+                    const route = flag === true ? labelRoutes.suppliers : flag === false ? labelRoutes.lineItems : labelRoutes.eqDashboard;
                     toast(Labels.status.success, response.data.message);
                     setTimeout(() => {
                         navigate(route, {
@@ -729,125 +754,118 @@ const LineItems = () => {
         }))
     }
 
+    //dynamically update functionlity
+    const lineItemId = state?.lineItemId > 0 ? state.lineItemId : 0;
+    const row = rawLineItems?.find(item => Number(item.enquiryId) === Number(lineItemId));
+    useEffect(() => {
+        if (!lineItemId || !row) return;
+        if (editLoadedIds.current.has(lineItemId)) {
+            return;
+        }
+        const category = row?.items?.find(x => x.formKey === Labels.lineItems.category)?.value;
+        if (!category) return;
+        editLoadedIds.current.add(lineItemId);
+        LineItemsMaster(category, row.items, row.enquiryId);
+    }, [lineItemId, row]);
+
+    const requiredFields = [
+        Labels.lineItems.category,
+        Labels.lineItems.rateCard,
+        Labels.lineItems.itemCategory,
+        Labels.lineItems.dictatedJob,
+        Labels.lineItems.itemType,
+        Labels.lineItems.itemName,
+        Labels.lineItems.itemNameDescription,
+        Labels.lineItems.urgentJob,
+        Labels.lineItems.reEngineering,
+
+        // Sustainability
+        Labels.lineItems.fscOrPefcMaterial,
+        Labels.lineItems.recyclable,
+        Labels.lineItems.sustainabilityOption,
+        Labels.lineItems.recycledMaterial,
+        Labels.lineItems.designedToBeReused,
+        Labels.lineItems.containsPlastic,
+        Labels.lineItems.containsRecycledPlastic,
+        Labels.lineItems.recycledMaterialWeightKg,
+
+        // Catalogue
+        Labels.lineItems.localCatalogueName,
+        Labels.lineItems.printingMethod,
+        Labels.lineItems.materialUsed,
+        Labels.lineItems.innovation,
+
+        // Specifications
+        Labels.lineItems.noOfVersion,
+        Labels.lineItems.specifications,
+
+        // Quantity
+        Labels.lineItems.quantityType,
+        Labels.lineItems.quantity,
+    ];
+
+    const isItemComplete = (item) => {
+        const fields = item?.items || [];
+        const getValue = (key) => fields.find(x => x.formKey === key)?.value;
+        const fieldsToCheck = [...requiredFields];
+        if (getValue(Labels.lineItems.containsPlastic) == 1) {
+            fieldsToCheck.push(Labels.lineItems.plasticWeightKg);
+        }
+
+        if (getValue(Labels.lineItems.containsRecycledPlastic) == 1) {
+            fieldsToCheck.push(Labels.lineItems.recycledPlasticWeightKg);
+        }
+
+        if (menuId == 3) {
+            fieldsToCheck.push(Labels.lineItems.customizedSpecifications);
+        }
+
+        return fieldsToCheck.every(key => {
+            const value = getValue(key);
+            return value !== undefined && value !== null && value !== "";
+        });
+    };
+
+    const loadNextIncompleteItem = async (startIndex = 0) => {
+        const items = rawLineItems || [];
+        for (let i = startIndex; i < items.length; i++) {
+            const item = items[i];
+
+            // Already all values filled → skip
+            if (isItemComplete(item)) {
+                continue;
+            }
+
+            // Missing values → load this item
+            const category = item?.items?.find(x => x.formKey === Labels.lineItems.category)?.value;
+            await LineItemsMaster(category, item.items, item.enquiryId);
+            setFormData(prev => ({
+                ...prev,
+                update: true,
+                lineItemId: item.enquiryId
+            }));
+            return true;
+        }
+        // No incomplete items
+        setFormData(prev => ({
+            ...prev,
+            update: false,
+            lineItemId: 0
+        }));
+        return false;
+    };
+
     //hybird functionality
     const hybird = formDataList?.enquiryDetails?.hybridModel === "No" && lineItems.length > 0 && Array.isArray(lineItems);
     const category = hybird && lineItems?.length > 0 ? formDataList.lineItems[0].printornonprint
         : getOptionLabel(formDataList.category, formData.category);
 
     useEffect(() => {
-        const loadMasters = async () => {
-            if (lineItems.length > 0) {
-                await LineItemsMaster(category);
-                //await SavingsReasonMaster(formDataList.lineItems[0].savingstype, true);
-            }
-        };
-        loadMasters();
-    }, [hybird, lineItems.length, category]);
-
-    //dynamically update functionlity
-    const lineItemId = state?.lineItemId > 0 ? state.lineItemId : 0;
-    const row = rawLineItems?.find(item => Number(item.enquiryId) === Number(lineItemId));
-    useEffect(() => {
-        if (lineItemId <= 0 || !row) return;
-        if (editLoadedIds.current.has(Number(lineItemId))) return;
-        editLoadedIds.current.add(Number(lineItemId));
-        const category = row?.items?.find(x => x.formKey === Labels.lineItems.category)?.value;
-        const loadEditRow = async () => {
-            await LineItemsMaster(category, row.items, row.enquiryId);
-        };
-        loadEditRow();
-    }, [row, lineItemId]);
-
-    useEffect(() => {
-        if (!formData.update || !rawLineItems?.length) return;
-        const requiredFields = [
-            Labels.lineItems.category,
-            Labels.lineItems.rateCard,
-            Labels.lineItems.itemCategory,
-            Labels.lineItems.dictatedJob,
-            Labels.lineItems.itemType,
-            Labels.lineItems.itemName,
-            Labels.lineItems.itemNameDescription,
-            Labels.lineItems.urgentJob,
-            Labels.lineItems.reEngineering,
-
-            //Labels.lineItems.typeOfJob,
-            // Labels.lineItems.competitiveBiddingMandatory,
-            // Labels.lineItems.competitiveBiddingCompliant,
-            // Labels.lineItems.competitiveBiddingExceptionFormSigned,
-            // Labels.lineItems.exceptionsReasonCode,
-            // Labels.lineItems.subCategory,
-            //Labels.lineItems.simplex,
-            // Labels.lineItems.tcoApprovalRequired,
-            // Labels.lineItems.tcoApproved,
-
-            // Sustainability Information
-            Labels.lineItems.fscOrPefcMaterial,
-            // Labels.lineItems.taxCertification,
-            Labels.lineItems.recyclable,
-            Labels.lineItems.sustainabilityOption,
-            Labels.lineItems.recycledMaterial,
-            Labels.lineItems.designedToBeReused,
-            Labels.lineItems.containsPlastic,
-            Labels.lineItems.containsRecycledPlastic,
-            Labels.lineItems.recycledMaterialWeightKg,
-            ...(formData.containsRecycledPlastic == 1 ? [Labels.lineItems.recycledPlasticWeightKg] : []),
-            ...(formData.containsPlastic == 1 ? [Labels.lineItems.plasticWeightKg] : []),
-
-            // Catalogue Section
-            Labels.lineItems.localCatalogueName,
-            Labels.lineItems.printingMethod,
-            Labels.lineItems.materialUsed,
-            Labels.lineItems.innovation,
-            // Labels.lineItems.ratecardCatalogueItemDeclined,
-            // Labels.lineItems.globalOrderWindowCatalogueName,
-            // Labels.lineItems.regionalOrderWindowCatalogue,
-            //Labels.lineItems.eAuction,
-            //Labels.lineItems.typeOfItem,
-            // Labels.lineItems.noOfMaterials,
-            // Labels.lineItems.harmonizedOrder,
-            // Labels.lineItems.digitalInnovation,
-            // Labels.lineItems.sourcingLocation,
-            // Labels.lineItems.savingsType,
-            // Labels.lineItems.savingsReason,
-            // Labels.lineItems.owWithLink,
-
-            // Specifications
-            Labels.lineItems.noOfVersion,
-            Labels.lineItems.specifications,
-            ...(menuId == 3 ? [Labels.lineItems.customizedSpecifications] : []),
-
-            // Quantity
-            Labels.lineItems.quantityType,
-            Labels.lineItems.quantity,
-        ];
-        const item = rawLineItems.find(item =>
-            item.items?.some(field => {
-                if (!requiredFields.includes(field.formKey)) {
-                    return false;
-                }
-                const value = field.value;
-                return value === undefined || value === null || value === "" || value === "-";
-            })
-        );
-        if (!item) {
-            setFormData(prev => ({
-                ...prev,
-                lineItemId: 0,
-                update: false,
-            }));
-            return;
-        }
-        if (item && item.enquiryId !== lastLineItemId.current) {
-            lastLineItemId.current = item.enquiryId;
-            const category = item?.items?.find(x => x.formKey === Labels.lineItems.category)?.value;
-            const updateItemMaster = async () => {
-                await LineItemsMaster(category, item.items, item.enquiryId);
-            };
-            updateItemMaster();
-        }
-    }, [rawLineItems, formData.containsPlastic, formData.containsRecycledPlastic, menuId, lineItemId, formData.update]);
-
+        if (lineItemId > 0) return;
+        if (!lineItems.length) return;
+        LineItemsMaster(category);
+    }, [hybird, lineItems.length, category, lineItemId]);
+   
     return (
         <>
             <Box sx={{ px: 3, py: 3 }}>
@@ -1050,6 +1068,7 @@ const LineItems = () => {
                                         name={Labels.lineItems.rateCard}
                                         options={formDataList.rateCard}
                                         disabled={true}
+                                        readOnly={formData.update}
                                     />
                                 </PGrid>
                                 <PGrid item xs={12} sm={6} md={4}>
@@ -1636,6 +1655,7 @@ const LineItems = () => {
                                             onChange={handleChange}
                                             helperText={errors?.quantity}
                                             name={Labels.lineItems.quantity}
+                                            disabled={formData.update}
                                         />
                                     </PGrid>
                                 )}

@@ -32,7 +32,7 @@ const Dashboard = () => {
       iconBg: "#60CEBF",
       route: labelRoutes.eqDashboard,
       menuId: 2,
-      showNavIcon: true
+      showNavIcon: false
     },
     {
       title: userType?.toLowerCase() === Labels.userType.supplier ? getLabel("lbl203") : getLabel("lbl05"),
@@ -40,7 +40,7 @@ const Dashboard = () => {
       iconBg: "#7CA6F6",
       route: labelRoutes.eqDashboard,
       menuId: 3,
-      showNavIcon: true
+      showNavIcon: false
     },
     ...(userType?.toLowerCase() === Labels.userType.agency
       ? [

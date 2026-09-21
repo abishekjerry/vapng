@@ -17,7 +17,7 @@ import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { Language } from "@mui/icons-material";
 import { Labels } from "../../utils/constants/labels";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Logo from "../../utils/assets/Navbar/Logo.svg";
 import { labelRoutes } from "../../navigations/labelRoutes";
 import PTypography from "../PTypography/PTypography";
@@ -30,9 +30,9 @@ import { TrackChanges } from "@mui/icons-material";
 
 const PNavbar = ({ name = "User", email = "", avatar = "", notificationCount = 0, title = "", toggleSidebar }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { getLabel, changeLanguage, language } = useLanguage();
   const { userType, url, portal } = useSelector((state) => state.userDetails.user);
-
   const [menuState, setMenuState] = useState({ anchorEl: null, type: null });
   const open = Boolean(menuState.anchorEl);
   const handleOpenMenu = (event, type) => {
@@ -103,7 +103,7 @@ const PNavbar = ({ name = "User", email = "", avatar = "", notificationCount = 0
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
 
           {/* PROJECT TRACKING */}
-          {(portal &&
+          {portal && location.pathname == labelRoutes.projectEnquiry && (
             <Tooltip title="Project Tracking" placement="top" arrow>
               <IconButton
                 onClick={() => { window.location.href = url }}

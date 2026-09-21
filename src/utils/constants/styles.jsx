@@ -75,10 +75,14 @@ export const FormControlBaseStyle = ({ width = "100%", mt = 0.4, helperText = fa
     padding: "0 14px",
   },
 
-  // Textarea
+   // Textarea - remove left/right padding
+  "& .MuiInputBase-inputMultiline": {
+    padding: "0 !important",
+  },
+
   "& textarea": {
     display: "block",
-    padding: "12px 14px",
+    padding: "0 !important",
     lineHeight: "1.6",
   },
 

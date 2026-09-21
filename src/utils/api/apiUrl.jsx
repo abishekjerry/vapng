@@ -69,7 +69,7 @@ export const ProjectEnquiry_API = {
   UpdateJobSummary : Base_Url + "/VA/UpdateJobSummary",
   UpdatePreviewQuotes : Base_Url + "/VA/UpdatePreviewQuotes",
   GetPreviewQuotes : Base_Url + "/VA/GetPreviewQuotes",
-  GetRedirectToPAPM : Base_Url + "VA/GetRedirectToPAPM",
+  GetRedirectToPAPM : Base_Url + "/VA/GetRedirectToPAPM",
 }
 
 export const Report_API = {
