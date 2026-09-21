@@ -103,20 +103,28 @@ const PNavbar = ({ name = "User", email = "", avatar = "", notificationCount = 0
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
 
           {/* PROJECT TRACKING */}
-          {portal && location.pathname == labelRoutes.projectEnquiry && (
+          {/* {portal && location.pathname == labelRoutes.projectEnquiry && (
             <Tooltip title="Project Tracking" placement="top" arrow>
               <IconButton
+                title="Project Tracking"
                 onClick={() => { window.location.href = url }}
                 sx={{
+                  width: 36,
+                  height: 36,
                   border: "1px solid #e2e8f0",
-                  color: "#64748b",
-                  "&:hover": { bgcolor: "#f8fafc" }
+                  borderRadius: "8px",
+                  color: "#475569",
+                  backgroundColor: "#ffffff",
+                  "&:hover": {
+                    backgroundColor: "#f1f5f9",
+                    borderColor: "#cbd5e1",
+                  },
                 }}
               >
                 <TrackChanges fontSize="small" />
               </IconButton>
             </Tooltip>
-          )}
+          )} */}
           {/* NOTIFICATION */}
           <IconButton
             sx={{

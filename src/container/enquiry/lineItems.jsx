@@ -79,6 +79,7 @@ const LineItems = () => {
     const [formData, setFormData] = useState({
         lineItemId: 0,
         update: false,
+        portal: "",
         category: "",
         typeOfJob: "",
         urgentJob: "",
@@ -245,6 +246,10 @@ const LineItems = () => {
                     enquiryDetails: data.enqProjectinfo,
                     lineItems: data.enqlineItems,
                 }))
+                setFormData(prev => ({
+                    ...prev,
+                    portal: data.portal
+                }))
             }
         } catch (error) {
             toast(Labels.status.failure, Labels.message.somethingWentWrong);
@@ -329,8 +334,7 @@ const LineItems = () => {
             }));
 
             if (item && id > 0) {
-                const values = Object.fromEntries(item.map(x => [x.formKey, x.value]));
-                console.log(values, "dsjfnbmn");
+                const values = Object.fromEntries(item.map(x => [x.formKey, x.value === "-" ? "" : x.value]));
                 setFormData(prev => ({
                     ...prev,
                     update: true,
@@ -340,29 +344,29 @@ const LineItems = () => {
                     urgentJob: getOptionValue(formDataList.urgentJob, values.urgentJob),
                     dictatedJob: getOptionValue(formDataList.dictatedJob, values.dictatedJob),
                     itemType: getOptionValue(formDataList.itemType, values.itemType),
-                    reEngineering: getOptionValue(formDataList.reEngineering, values.reEngineering),
+                    reEngineering: getOptionValue(formDataList.reEngineering, values.reEngineering) || 2,
                     rateCard: getOptionValue(formDataList.rateCard, values.rateCard),
                     itemName: values.itemName,
                     itemNameDescription: values.itemNameDescription,
 
-                    fscOrPefcMaterial: getOptionValue(formDataList.yesNoNa, values.fscOrPefcMaterial),
-                    recyclable: getOptionValue(formDataList.yesNoNa, values.recyclable),
-                    sustainabilityOption: getOptionValue(formDataList.soYesNoNa, values.sustainabilityOption),
-                    containsPlastic: getOptionValue(formDataList.yesNoNa, values.containsPlastic),
-                    designedToBeReused: getOptionValue(formDataList.yesNoNa, values.designedToBeReused),
-                    recycledMaterial: getOptionValue(formDataList.yesNoNa, values.recycledMaterial),
-                    containsRecycledPlastic: getOptionValue(formDataList.yesNoNa, values.containsRecycledPlastic),
+                    fscOrPefcMaterial: getOptionValue(formDataList.yesNoNa, values.fscOrPefcMaterial) || 3,
+                    recyclable: getOptionValue(formDataList.yesNoNa, values.recyclable) || 3,
+                    sustainabilityOption: getOptionValue(formDataList.soYesNoNa, values.sustainabilityOption) || 4,
+                    designedToBeReused: getOptionValue(formDataList.yesNoNa, values.designedToBeReused) || 3,
+                    recycledMaterial: getOptionValue(formDataList.yesNoNa, values.recycledMaterial) || 3,
+                    containsPlastic: getOptionValue(formDataList.yesNoNa, values.containsPlastic) || 2,
+                    containsRecycledPlastic: getOptionValue(formDataList.yesNoNa, values.containsRecycledPlastic) || 2,
                     plasticWeightKg: values.plasticWeightKg,
                     recycledPlasticWeightKg: values.recycledPlasticWeightKg,
                     recycledMaterialWeightKg: values.recycledMaterialWeightKg,
 
                     printingMethod: getOptionValue(response.printingMethod, values.printingMethod),
                     materialUsed: getOptionValue(response.materialused, values.materialUsed),
-                    noOfVersion: values.noOfVersion,
+                    noOfVersion: values.noOfVersion || 1,
                     notesComments: values.notesComments,
                     specifications: values.specifications,
                     quantity: values.quantity,
-                    quantityType: 1,
+                    quantityType: getOptionValue(response.quantityType, values.quantityType) || 1,
                 }));
             }
         } catch (error) {
@@ -768,6 +772,12 @@ const LineItems = () => {
         LineItemsMaster(category, row.items, row.enquiryId);
     }, [lineItemId, row]);
 
+    useEffect(() => {
+        if (formData?.portal === "PAPM" && lineItems?.length) {
+            loadNextIncompleteItem(0);
+        }
+    }, [formData?.portal, lineItems]);
+
     const requiredFields = [
         Labels.lineItems.category,
         Labels.lineItems.rateCard,
@@ -822,31 +832,43 @@ const LineItems = () => {
 
         return fieldsToCheck.every(key => {
             const value = getValue(key);
-            return value !== undefined && value !== null && value !== "";
+            return value !== undefined && value !== null && value !== "" && value === "-";;
         });
     };
 
+    const lineMasterCalled = useRef(false);
+    const lineMasterLoading = useRef(false);
     const loadNextIncompleteItem = async (startIndex = 0) => {
-        const items = rawLineItems || [];
+        const items = lineItems || [];
+        if (!items.length) return false;
         for (let i = startIndex; i < items.length; i++) {
             const item = items[i];
-
-            // Already all values filled → skip
             if (isItemComplete(item)) {
-                continue;
+                continue; // move to next line
             }
-
-            // Missing values → load this item
+            if (lineMasterCalled.current || lineMasterLoading.current) {
+                return false;
+            }
             const category = item?.items?.find(x => x.formKey === Labels.lineItems.category)?.value;
-            await LineItemsMaster(category, item.items, item.enquiryId);
-            setFormData(prev => ({
-                ...prev,
-                update: true,
-                lineItemId: item.enquiryId
-            }));
-            return true;
+            if (!category) return false;
+            lineMasterLoading.current = true;
+            lineMasterCalled.current = true;
+            try {
+                await LineItemsMaster(
+                    category,
+                    item.items,
+                    item.enquiryId
+                );
+                setFormData(prev => ({
+                    ...prev,
+                    update: true,
+                    lineItemId: item.enquiryId
+                }));
+                return true;
+            } finally {
+                lineMasterLoading.current = false;
+            }
         }
-        // No incomplete items
         setFormData(prev => ({
             ...prev,
             update: false,
@@ -865,7 +887,7 @@ const LineItems = () => {
         if (!lineItems.length) return;
         LineItemsMaster(category);
     }, [hybird, lineItems.length, category, lineItemId]);
-   
+
     return (
         <>
             <Box sx={{ px: 3, py: 3 }}>
@@ -1068,7 +1090,7 @@ const LineItems = () => {
                                         name={Labels.lineItems.rateCard}
                                         options={formDataList.rateCard}
                                         disabled={true}
-                                        readOnly={formData.update}
+                                    //readOnly={formData.rateCard}
                                     />
                                 </PGrid>
                                 <PGrid item xs={12} sm={6} md={4}>

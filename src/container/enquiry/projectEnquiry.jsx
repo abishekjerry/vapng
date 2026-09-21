@@ -37,6 +37,7 @@ import PDeliveryOrder from "../../component/PDeliveryOrder/PDeliveryOrder";
 import PostAddIcon from "@mui/icons-material/PostAdd";
 import { useSelector, useDispatch } from "react-redux";
 import { userDetails } from "../../redux/actionType/actionType";
+import { TrackChanges } from "@mui/icons-material";
 
 const ProjectEnquiry = () => {
     const { state } = useLocation();
@@ -44,7 +45,7 @@ const ProjectEnquiry = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [dynamicData, setDynamicData] = useState({});
-    const { country, userID, fkID, currency, enquiryId, userType, menuId, countryID, role, userName, symbol } = useSelector((state) => state.userDetails.user);
+    const { url, portal, country, userID, fkID, currency, enquiryId, userType, menuId, countryID, role, userName, symbol } = useSelector((state) => state.userDetails.user);
     const dispatch = useDispatch();
     const id = state?.id > 0 ? state.id : 0;
     const actionFlag = isNotEmpty(state?.id) && state?.id !== 0 ? Labels.flag.Update : Labels.flag.Insert;
@@ -1230,6 +1231,17 @@ const ProjectEnquiry = () => {
                                     height={45}
                                     disabled={!formData.status || !formData.actualDeliveryDate}
                                 />
+                                {portal && (
+                                    <PButton
+                                        label={"Project Tracking"}
+                                        variant="contained"
+                                        color={"#32d74b"}
+                                        onClick={() => { window.location.href = url }}
+                                        width={180}
+                                        height={45}
+                                        startIcon={<TrackChanges></TrackChanges>}
+                                    />
+                                )}
                             </Box>
                         </PGrid>
                     </PGrid>
