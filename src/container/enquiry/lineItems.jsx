@@ -37,8 +37,6 @@ const LineItems = () => {
     const [open, setOpen] = useState(false);
     const [previewOpen, setPreviewOpen] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
-    const lastLineItemId = useRef(null);
-    const editLoadedIds = useRef(new Set());
 
     const [formDataList, setFormDataList] = useState({
         //typeOfJob: [{ label: "Strategic", value: 1 }, { label: "Tactical", value: 2 }, { label: "Operational", value: 3 }, { label: "Non-Addressable", value: 4 }],
@@ -337,7 +335,7 @@ const LineItems = () => {
                 const values = Object.fromEntries(item.map(x => [x.formKey, x.value === "-" ? "" : x.value]));
                 setFormData(prev => ({
                     ...prev,
-                    update: true,
+                    //update: true,
                     lineItemId: id,
                     category: getOptionValue(formDataList.category, values.category),
                     itemCategory: getOptionValue(response.itemCategory, values.itemCategory),
@@ -546,9 +544,6 @@ const LineItems = () => {
                 const response = await PostApi(LineItems_API.AddUpdateLineItems, payload);
                 if (isSuccess(response)) {
                     setAllowRedirect(true);
-                    const items = rawLineItems || [];
-                    const currentIndex = items.findIndex(item => Number(item.enquiryId) === Number(formData.lineItemId));
-                    const hasNext = await loadNextIncompleteItem(currentIndex + 1);
                     const route = flag === true ? labelRoutes.suppliers : flag === false ? labelRoutes.lineItems : labelRoutes.eqDashboard;
                     toast(Labels.status.success, response.data.message);
                     setTimeout(() => {
@@ -754,27 +749,37 @@ const LineItems = () => {
             length: "",
             width: "",
             depth: "",
-            files: []
+            files: [],
+            update: false
         }))
     }
 
-    //dynamically update functionlity
+    const loadedItemIds = useRef(new Set());
+    const editLoadedIds = useRef(new Set());
+    const lineMasterLoading = useRef(false);
+
+    // Update functionlity
     const lineItemId = state?.lineItemId > 0 ? state.lineItemId : 0;
-    const row = rawLineItems?.find(item => Number(item.enquiryId) === Number(lineItemId));
     useEffect(() => {
-        if (!lineItemId || !row) return;
-        if (editLoadedIds.current.has(lineItemId)) {
-            return;
-        }
-        const category = row?.items?.find(x => x.formKey === Labels.lineItems.category)?.value;
+        if (!lineItemId || !lineItems?.length) return;
+        if (editLoadedIds.current.has(lineItemId)) return;
+        const item = lineItems.find(x => Number(x.enquiryId) === Number(lineItemId));
+        if (!item) return;
+        const category = item?.items?.find(x => x.formKey === Labels.lineItems.category)?.value;
         if (!category) return;
         editLoadedIds.current.add(lineItemId);
-        LineItemsMaster(category, row.items, row.enquiryId);
-    }, [lineItemId, row]);
+        setFormData(prev => ({
+            ...prev,
+            update: true,
+            lineItemId: lineItemId
+        }));
+        LineItemsMaster(category, item.items, item.enquiryId);
+    }, [lineItemId, lineItems]);
 
+    //dynamically update functionlity in PAPM
     useEffect(() => {
-        if (formData?.portal === "PAPM" && lineItems?.length) {
-            loadNextIncompleteItem(0);
+        if (formData?.portal === "PAPM" && lineItems?.length > 0) {
+            loadNextIncompleteItem();
         }
     }, [formData?.portal, lineItems]);
 
@@ -832,49 +837,42 @@ const LineItems = () => {
 
         return fieldsToCheck.every(key => {
             const value = getValue(key);
-            return value !== undefined && value !== null && value !== "" && value === "-";;
+            return value !== undefined && value !== null && value !== "" && value !== "-";
         });
     };
 
-    const lineMasterCalled = useRef(false);
-    const lineMasterLoading = useRef(false);
-    const loadNextIncompleteItem = async (startIndex = 0) => {
-        const items = lineItems || [];
-        if (!items.length) return false;
-        for (let i = startIndex; i < items.length; i++) {
-            const item = items[i];
-            if (isItemComplete(item)) {
-                continue; // move to next line
-            }
-            if (lineMasterCalled.current || lineMasterLoading.current) {
-                return false;
-            }
-            const category = item?.items?.find(x => x.formKey === Labels.lineItems.category)?.value;
-            if (!category) return false;
-            lineMasterLoading.current = true;
-            lineMasterCalled.current = true;
-            try {
-                await LineItemsMaster(
-                    category,
-                    item.items,
-                    item.enquiryId
-                );
-                setFormData(prev => ({
+    const loadNextIncompleteItem = async () => {
+        if (!lineItems?.length || lineMasterLoading.current) return;
+        const item = lineItems.find(item => isItemComplete(item) === false &&
+            !loadedItemIds.current.has(item.enquiryId)
+        );
+        if (!item && item !== undefined) {
+            setFormData(prev => {
+                if (prev.lineItemId === 0 && prev.update === false) {
+                    return prev;
+                }
+                return {
                     ...prev,
-                    update: true,
-                    lineItemId: item.enquiryId
-                }));
-                return true;
-            } finally {
-                lineMasterLoading.current = false;
-            }
+                    update: false,
+                    lineItemId: 0
+                };
+            });
+            return;
         }
+        const category = item?.items?.find(x => x.formKey === Labels.lineItems.category)?.value;
+        if (!category) return;
+        loadedItemIds.current.add(item.enquiryId);
+        lineMasterLoading.current = true;
         setFormData(prev => ({
             ...prev,
-            update: false,
-            lineItemId: 0
+            update: true,
+            lineItemId: item.enquiryId
         }));
-        return false;
+        try {
+            await LineItemsMaster(category, item.items, item.enquiryId);
+        } finally {
+            lineMasterLoading.current = false;
+        }
     };
 
     //hybird functionality

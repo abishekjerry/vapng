@@ -12,11 +12,13 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import PToast from './component/PToast/PToast'
 import { LanguageProvider } from "./utils/constants/language";
+const basename = window.location.hostname === "localhost" ? "/"
+  : window.location.pathname.startsWith("/web/") ? "/web/virtualagency/vapng4.0"
+    : "/iweb/virtualagency/vapng4.0";
 const container = document.getElementById("root");
 const root = createRoot(container);
 root.render(
-  // <BrowserRouter basename="/iweb/virtualagency/vapng4.0">
-   <BrowserRouter>   
+  <BrowserRouter basename={basename}>
     <Provider store={store}>
       <LanguageProvider>
         <PToast />
