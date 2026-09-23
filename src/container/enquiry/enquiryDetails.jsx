@@ -21,7 +21,7 @@ import { PDraftDialog } from "../../component/PDialog/PDraftDialog";
 import { PSummary } from "../../component/PSummary/PSummary";
 import { getClientInfo, getEnquiryDetails, getSummarySections } from "../../utils/constants/summary";
 import PSlaTemplate from "../../component/PSlaTemplate/PSlaTemplate";
-import { useSelector , useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { userDetails } from "../../redux/actionType/actionType";
 
 const EnquiryDetails = () => {
@@ -29,7 +29,7 @@ const EnquiryDetails = () => {
     const { getLabel } = useLanguage();
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { countryID, role, fkID, menuId , userID} = useSelector((state) => state.userDetails.user);
+    const { countryID, role, fkID, menuId, userID } = useSelector((state) => state.userDetails.user);
     const enquirySteps = getEnquirySteps(getLabel, menuId);
     const [allowRedirect, setAllowRedirect] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -137,9 +137,9 @@ const EnquiryDetails = () => {
         try {
             setLoading(true);
             const response = await PostApi(Dashboard_API.Master, {
-               userCountryId: countryID,
+                userCountryId: countryID,
                 role: role,
-                userId : userID
+                userId: userID
             });
             setFormDataList(prev => ({
                 ...prev,
@@ -203,9 +203,9 @@ const EnquiryDetails = () => {
                 dispatch({
                     type: userDetails,
                     payload: {
-                    enquiryId : data?.enqClientinfo?.enqUId,
+                        enquiryId: data?.enqClientinfo?.enqUId,
                     },
-                }); 
+                });
             }
         } catch (error) {
             toast(Labels.status.failure, Labels.message.somethingWentWrong);
@@ -287,7 +287,7 @@ const EnquiryDetails = () => {
 
             ...(menuId == 2 ? [Labels.enquiryDetails.startDate] : []),
             ...(menuId == 2 ? [Labels.enquiryDetails.startTime] : []),
-            ...(menuId == 2 ? [Labels.enquiryDetails.duration] : []),  
+            ...(menuId == 2 ? [Labels.enquiryDetails.duration] : []),
         ];
 
         let newErrors = {};

@@ -117,7 +117,6 @@ export const getLineneItems = (formData = {}, formDataList = {}, getLabel, getOp
       .map(field => ({
         label: field.label === "Attachment" ? field.label : getLabel(field.label),
         value: field.key ? item[field.key] ?? "-" : field.value,
-        formKey: field.formKey
       }))
   }));
   return lineItems;

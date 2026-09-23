@@ -15,17 +15,19 @@ import UpdateLineItems from "../../container/enquiry/updateLineItems";
 import { isSuccess, toast } from "../../utils/commonFunction/common";
 import { LineItems_API } from "../../utils/api/apiUrl";
 import { PostApi } from "../../utils/api/networking";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import { userDetails } from "../../redux/actionType/actionType";
 
 export const PSummary = ({ sections = [], currentStep = 1, refreshSummary, duplicate = false, showFlag = true, lineItems = [] }) => {
     const { state } = useLocation();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const [activeStep, setActiveStep] = useState(currentStep);
     const [activeItemIndex, setActiveItemIndex] = useState({ 3: 0 });
     const [open, setOpen] = useState(false);
     const [formData, setFormData] = useState({});
-    const { userType, enquiryId, fkID} = useSelector((state) => state.userDetails.user);
+    const { userType, enquiryId, fkID } = useSelector((state) => state.userDetails.user);
     const flag = userType?.toLowerCase() === Labels.userType.agency
     const handleOpen = (data = {}) => {
         setFormData(data);
@@ -46,8 +48,14 @@ export const PSummary = ({ sections = [], currentStep = 1, refreshSummary, dupli
             4: labelRoutes.suppliers
         };
         const route = routeMap[step] || labelRoutes.home;
+        dispatch({
+            type: userDetails,
+            payload: {
+                enqDetailsId : enquiryId,
+            },
+        });
         navigate(route, {
-            state: { id: state.id , lineItemId : enquiryId }
+            state: { id: state.id }
         });
     };
     const SummaryItem = ({ label, value }) => (
@@ -185,7 +193,7 @@ export const PSummary = ({ sections = [], currentStep = 1, refreshSummary, dupli
                                                                 ))}
                                                             </PGrid>
 
-                                                           {section.step && flag &&(
+                                                            {section.step && flag && (
                                                                 <PGrid container>
                                                                     <PGrid item xs={12} className="d-flex justify-content-end gap-2">
                                                                         <PButton
@@ -209,7 +217,7 @@ export const PSummary = ({ sections = [], currentStep = 1, refreshSummary, dupli
 
                                                                     </PGrid>
                                                                 </PGrid>
-                                                            )}  
+                                                            )}
                                                         </>
                                                     )}
                                                 </Fragment>

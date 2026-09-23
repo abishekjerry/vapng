@@ -2,30 +2,43 @@ import { FontFamily, FontSize } from "./fonts";
 import { CommonColors } from "./colors";
 
 export const FormControlBaseStyle = ({ width = "100%", mt = 0.4, helperText = false, sx = {}, backgroundColor = "#fcfbfd", }) => ({
-  width: width,
+  width,
   mt,
 
-  // Label
   "& .MuiInputLabel-root": {
     fontFamily: FontFamily.bold,
-    fontSize: FontSize.textField.label,
+    fontSize: FontSize.textField.input,
     color: "#9e9e9e",
     top: "0px",
-    "&.Mui-focused": { color: "#62BCD8" },
-    "&.Mui-error": { color: "#d32f2f" },
-    "&.Mui-disabled": { color: "#bdbdbd" },
+    zIndex: 3,
+
+    "&.Mui-focused": {
+      color: "#62BCD8",
+    },
+
+    "&.Mui-error": {
+      color: "#d32f2f",
+    },
+
+    "&.Mui-disabled": {
+      color: "#bdbdbd",
+    },
   },
 
-  // Floating label
+  // Floating / top label
   "& .MuiInputLabel-shrink": {
     color: "#62BCD8",
     fontWeight: 600,
     fontSize: "12px",
-    transform: "translate(14px, -4px) scale(1)",
+    transform: "translate(12px, -8px) scale(1)",
+    zIndex: 3,
+    padding: "0px 5px 0px 5px",
+    backgroundColor: "transparent",
+    boxShadow: "none !important",
   },
 
-  // Input / Select / DatePicker
   "& .MuiOutlinedInput-root": {
+    position: "relative",
     borderRadius: "12px",
     backgroundColor,
     boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
@@ -43,10 +56,14 @@ export const FormControlBaseStyle = ({ width = "100%", mt = 0.4, helperText = fa
       borderColor: "#42A8C8",
     },
 
+    // Focus shadow ONLY on textbox
+    "&.Mui-focused": {
+      boxShadow: "0 0 0 3px rgba(98,188,216,0.15)",
+    },
+
     "&.Mui-focused fieldset": {
       borderColor: "#62BCD8",
       borderWidth: "1.5px",
-      boxShadow: "0 0 0 3px rgba(98,188,216,0.15)",
     },
 
     "&.Mui-error fieldset": {
@@ -54,7 +71,7 @@ export const FormControlBaseStyle = ({ width = "100%", mt = 0.4, helperText = fa
     },
 
     "&.Mui-disabled": {
-      backgroundColor: "#f9f9f9",
+      backgroundColor,
 
       "& fieldset": {
         borderColor: "#e0e0e0",
@@ -68,14 +85,11 @@ export const FormControlBaseStyle = ({ width = "100%", mt = 0.4, helperText = fa
     },
   },
 
-  // Input text
   "& .MuiInputBase-input": {
     fontFamily: FontFamily.bold,
     fontSize: FontSize.textField.input,
-    padding: "0 14px",
   },
 
-   // Textarea - remove left/right padding
   "& .MuiInputBase-inputMultiline": {
     padding: "0 !important",
   },
@@ -86,18 +100,6 @@ export const FormControlBaseStyle = ({ width = "100%", mt = 0.4, helperText = fa
     lineHeight: "1.6",
   },
 
-  // Notched outline
-  "& .MuiOutlinedInput-notchedOutline": {
-    top: 0,
-
-    "& legend": {
-      maxWidth: "100%",
-      fontSize: "12px",
-      padding: "0 4px",
-    },
-  },
-
-  // Helper text
   "& .MuiFormHelperText-root": {
     fontFamily: FontFamily.bold,
     fontSize: FontSize.textField.error,
@@ -106,7 +108,6 @@ export const FormControlBaseStyle = ({ width = "100%", mt = 0.4, helperText = fa
     marginTop: "4px",
   },
 
-  // Chip
   "& .MuiChip-root": {
     height: "22px",
     fontSize: "11px",
@@ -125,7 +126,6 @@ export const FormControlBaseStyle = ({ width = "100%", mt = 0.4, helperText = fa
     },
   },
 
-  // Mobile
   "@media (max-width: 600px)": {
     width: "100% !important",
 
@@ -135,6 +135,12 @@ export const FormControlBaseStyle = ({ width = "100%", mt = 0.4, helperText = fa
     },
   },
 
-  // Component-specific override
+  "& input:-webkit-autofill, & input:-webkit-autofill:hover, & input:-webkit-autofill:focus, & input:-webkit-autofill:active": {
+    WebkitBoxShadow: `0 0 0 1000px ${backgroundColor} inset !important`,
+    WebkitTextFillColor: "#424242 !important",
+    caretColor: "#424242 !important",
+    transition: "background-color 5000s ease-in-out 0s !important",
+  },
+
   ...sx,
-});
+})

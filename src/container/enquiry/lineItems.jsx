@@ -23,14 +23,17 @@ import { PSummary } from "../../component/PSummary/PSummary";
 import PDialog from "../../component/PDialog/PDialog";
 import PFileUpload from "../../component/PFileUpload/PFileUpload";
 import PAttachment from "../../component/PAttachment/PAttachment";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import PSearch from "../../component/PSearch/PSearch";
+import { userDetails } from "../../redux/actionType/actionType";
+
 
 const LineItems = () => {
     const { state } = useLocation();
     const { getLabel } = useLanguage();
-    const { fkID, menuId, role, countryID, userID } = useSelector((state) => state.userDetails.user);
+    const { fkID, menuId, role, countryID, userID, enqDetailsId } = useSelector((state) => state.userDetails.user);
     const navigate = useNavigate();
+     const dispatch = useDispatch();
     const [allowRedirect, setAllowRedirect] = useState(false);
     const enquirySteps = getEnquirySteps(getLabel, menuId);
     const [loading, setLoading] = useState(true);
@@ -309,9 +312,9 @@ const LineItems = () => {
         }));
     }, [formDataList.yesOrNoNot]);
 
-    const LineItemsMaster = async (data, item = [], id = 0) => {
+    const LineItemsMaster = async (data, item = null) => {
         try {
-            setLoading(false);
+            setLoading(true);
             const response = await PostApi(LineItems_API.GetEnqLineItemsMaster, {
                 TypeOfJob: data
             });
@@ -330,42 +333,8 @@ const LineItems = () => {
                 // savingsType: response.savingsType,
 
             }));
-
-            if (item && id > 0) {
-                const values = Object.fromEntries(item.map(x => [x.formKey, x.value === "-" ? "" : x.value]));
-                setFormData(prev => ({
-                    ...prev,
-                    //update: true,
-                    lineItemId: id,
-                    category: getOptionValue(formDataList.category, values.category),
-                    itemCategory: getOptionValue(response.itemCategory, values.itemCategory),
-                    urgentJob: getOptionValue(formDataList.urgentJob, values.urgentJob),
-                    dictatedJob: getOptionValue(formDataList.dictatedJob, values.dictatedJob),
-                    itemType: getOptionValue(formDataList.itemType, values.itemType),
-                    reEngineering: getOptionValue(formDataList.reEngineering, values.reEngineering) || 2,
-                    rateCard: getOptionValue(formDataList.rateCard, values.rateCard),
-                    itemName: values.itemName,
-                    itemNameDescription: values.itemNameDescription,
-
-                    fscOrPefcMaterial: getOptionValue(formDataList.yesNoNa, values.fscOrPefcMaterial) || 3,
-                    recyclable: getOptionValue(formDataList.yesNoNa, values.recyclable) || 3,
-                    sustainabilityOption: getOptionValue(formDataList.soYesNoNa, values.sustainabilityOption) || 4,
-                    designedToBeReused: getOptionValue(formDataList.yesNoNa, values.designedToBeReused) || 3,
-                    recycledMaterial: getOptionValue(formDataList.yesNoNa, values.recycledMaterial) || 3,
-                    containsPlastic: getOptionValue(formDataList.yesNoNa, values.containsPlastic) || 2,
-                    containsRecycledPlastic: getOptionValue(formDataList.yesNoNa, values.containsRecycledPlastic) || 2,
-                    plasticWeightKg: values.plasticWeightKg,
-                    recycledPlasticWeightKg: values.recycledPlasticWeightKg,
-                    recycledMaterialWeightKg: values.recycledMaterialWeightKg,
-
-                    printingMethod: getOptionValue(response.printingMethod, values.printingMethod),
-                    materialUsed: getOptionValue(response.materialused, values.materialUsed),
-                    noOfVersion: values.noOfVersion || 1,
-                    notesComments: values.notesComments,
-                    specifications: values.specifications,
-                    quantity: values.quantity,
-                    quantityType: getOptionValue(response.quantityType, values.quantityType) || 1,
-                }));
+            if (item && Number(item.enqdetailsId) > 0) {
+                fillEditItem(item, response);
             }
         } catch (error) {
             toast(Labels.status.failure, Labels.message.somethingWentWrong);
@@ -553,6 +522,12 @@ const LineItems = () => {
                     }, 500);
                     if (!flag) {
                         await handleCancel();
+                        dispatch({
+                            type: userDetails,
+                            payload: {
+                                enqDetailsId: 0,
+                            },
+                        });
                         await fetchData();
                     };
                 } else {
@@ -750,141 +725,137 @@ const LineItems = () => {
             width: "",
             depth: "",
             files: [],
-            update: false
+            lineItemId: 0,
+            update: false,
         }))
+        setErrors({});
     }
 
-    const loadedItemIds = useRef(new Set());
-    const editLoadedIds = useRef(new Set());
     const lineMasterLoading = useRef(false);
-
-    // Update functionlity
-    const lineItemId = state?.lineItemId > 0 ? state.lineItemId : 0;
+    console.log(enqDetailsId);
     useEffect(() => {
-        if (!lineItemId || !lineItems?.length) return;
-        if (editLoadedIds.current.has(lineItemId)) return;
-        const item = lineItems.find(x => Number(x.enquiryId) === Number(lineItemId));
+        if (!enqDetailsId || enqDetailsId <= 0) return;
+        if (!formDataList.lineItems?.length) return;
+        const item = formDataList.lineItems.find(x => Number(x.enqdetailsId) === enqDetailsId);
         if (!item) return;
-        const category = item?.items?.find(x => x.formKey === Labels.lineItems.category)?.value;
-        if (!category) return;
-        editLoadedIds.current.add(lineItemId);
+        LineItemsMaster(item?.printornonprint, item);
+    }, [enqDetailsId, formDataList.lineItems]);
+
+    const fillEditItem = (item, response) => {
         setFormData(prev => ({
             ...prev,
+            lineItemId: item.enqdetailsId,
             update: true,
-            lineItemId: lineItemId
+            itemName: item.itemName || "",
+            itemNameDescription: item.itemDescription || "",
+            category: getOptionValue(formDataList.category, item.printornonprint),
+            itemCategory: getOptionValue(response.itemCategory, item.productcategory),
+            urgentJob: getOptionValue(formDataList.urgentJob, item.urgent),
+            reEngineering: getOptionValue(formDataList.reEngineering, item.reengineering),
+            dictatedJob: getOptionValue(formDataList.dictatedJob, item.dictated),
+            itemType: getOptionValue(formDataList.itemType, item.itemtype),
+            rateCard: getOptionValue(formDataList.rateCard, item.rateCard),
+            printingMethod: getOptionValue(response.printingMethod, item.printingMethod),
+            materialUsed: getOptionValue(response.materialused, item.materialUsed),
+            localCatalogueName: getOptionValue(response.localCatalog,item.catalogueUsage),
+            specifications: item.specNote || "",
+            notesComments: item.sNote || "",
+            quantity: item.quoteQtyOrSize || "",
+            quantityType: getOptionValue(formDataList.quoteType, item.quoteType) || 1,
+            noOfVersion: item.version || 1,
+            fscOrPefcMaterial: getOptionValue(formDataList.yesNoNa, item.fscpefcmaterial),
+            recyclable: getOptionValue(formDataList.yesNoNa, item.designforrecycle),
+            sustainabilityOption: getOptionValue(formDataList.soYesNoNa, item.proposedsustain),
+            recycledMaterial: getOptionValue(formDataList.yesNoNa, item.recycledmaterial),
+            designedToBeReused: getOptionValue(formDataList.yesNoNa, item.designreused),
+            containsPlastic: getOptionValue(formDataList.yesNoNa, item.containplasticNew),
+            containsRecycledPlastic: getOptionValue(formDataList.yesNoNa, item.recycledplasticNew),
+            plasticWeightKg: item.plasticweightage || "",
+            recycledPlasticWeightKg: item.recycledplasticweightage || "",
+            recycledMaterialWeightKg: item.recycledmaterialweightage || "",
         }));
-        LineItemsMaster(category, item.items, item.enquiryId);
-    }, [lineItemId, lineItems]);
+    };
 
     //dynamically update functionlity in PAPM
     useEffect(() => {
-        if (formData?.portal === "PAPM" && lineItems?.length > 0) {
-            loadNextIncompleteItem();
-        }
-    }, [formData?.portal, lineItems]);
+        if (formData?.portal !== "PAPM") return;
+        if (!formDataList.lineItems?.length) return;
+        if (formData?.update === true) return;
+        if (enqDetailsId > 0) return;
+        loadNextIncompleteItem();
+    }, [formData?.portal, formData?.update, enqDetailsId, formDataList.lineItems]);
 
     const requiredFields = [
-        Labels.lineItems.category,
-        Labels.lineItems.rateCard,
-        Labels.lineItems.itemCategory,
-        Labels.lineItems.dictatedJob,
-        Labels.lineItems.itemType,
-        Labels.lineItems.itemName,
-        Labels.lineItems.itemNameDescription,
-        Labels.lineItems.urgentJob,
-        Labels.lineItems.reEngineering,
+        "productcategory",
+        "rateCard",
+        "itemtype",
+        "itemName",
+        "itemDescription",
+        "urgent",
+        "reengineering",
+        "dictated",
 
         // Sustainability
-        Labels.lineItems.fscOrPefcMaterial,
-        Labels.lineItems.recyclable,
-        Labels.lineItems.sustainabilityOption,
-        Labels.lineItems.recycledMaterial,
-        Labels.lineItems.designedToBeReused,
-        Labels.lineItems.containsPlastic,
-        Labels.lineItems.containsRecycledPlastic,
-        Labels.lineItems.recycledMaterialWeightKg,
+        "fscpefcmaterial",
+        "designforrecycle",
+        "proposedsustain",
+        "recycledmaterial",
+        "designreused",
+        "containplasticNew",
+        "recycledplasticNew",
+        "recycledmaterialweightage",
 
         // Catalogue
-        Labels.lineItems.localCatalogueName,
-        Labels.lineItems.printingMethod,
-        Labels.lineItems.materialUsed,
-        Labels.lineItems.innovation,
+        "catalogueUsage",
+        "printingMethod",
+        "materialUsed",
+        "innovation",
 
         // Specifications
-        Labels.lineItems.noOfVersion,
-        Labels.lineItems.specifications,
+        "version",
+        "specNote",
 
         // Quantity
-        Labels.lineItems.quantityType,
-        Labels.lineItems.quantity,
+        "quoteType",
+        "quoteQtyOrSize"
     ];
 
-    const isItemComplete = (item) => {
-        const fields = item?.items || [];
-        const getValue = (key) => fields.find(x => x.formKey === key)?.value;
-        const fieldsToCheck = [...requiredFields];
-        if (getValue(Labels.lineItems.containsPlastic) == 1) {
-            fieldsToCheck.push(Labels.lineItems.plasticWeightKg);
-        }
-
-        if (getValue(Labels.lineItems.containsRecycledPlastic) == 1) {
-            fieldsToCheck.push(Labels.lineItems.recycledPlasticWeightKg);
-        }
-
-        if (menuId == 3) {
-            fieldsToCheck.push(Labels.lineItems.customizedSpecifications);
-        }
-
-        return fieldsToCheck.every(key => {
-            const value = getValue(key);
-            return value !== undefined && value !== null && value !== "" && value !== "-";
+    const getIncompleteKeys = (item) => {
+        const fields = [
+            ...requiredFields,
+            ...(item?.containplasticNew === "Yes" ? ["plasticweightage"] : []),
+            ...(item?.recycledplasticNew === "Yes" ? ["recycledplasticweightage"] : []),
+            ...(menuId == 3 ? ["customizedSpecifications"] : [])
+        ];
+        return fields.filter(key => {
+            const value = item?.[key];
+            return value == null || value === "" || value === "-";
         });
     };
 
-    const loadNextIncompleteItem = async () => {
-        if (!lineItems?.length || lineMasterLoading.current) return;
-        const item = lineItems.find(item => isItemComplete(item) === false &&
-            !loadedItemIds.current.has(item.enquiryId)
-        );
-        if (!item && item !== undefined) {
-            setFormData(prev => {
-                if (prev.lineItemId === 0 && prev.update === false) {
-                    return prev;
-                }
-                return {
-                    ...prev,
-                    update: false,
-                    lineItemId: 0
-                };
-            });
+    const loadNextIncompleteItem = () => {
+        if (!formDataList.lineItems?.length || lineMasterLoading.current) return;
+        const item = formDataList.lineItems.find(item => getIncompleteKeys(item).length > 0);
+        if (!item) {
+            setFormData(prev => ({
+                ...prev,
+                update: false,
+                lineItemId: 0
+            }));
             return;
         }
-        const category = item?.items?.find(x => x.formKey === Labels.lineItems.category)?.value;
-        if (!category) return;
-        loadedItemIds.current.add(item.enquiryId);
-        lineMasterLoading.current = true;
-        setFormData(prev => ({
-            ...prev,
-            update: true,
-            lineItemId: item.enquiryId
-        }));
-        try {
-            await LineItemsMaster(category, item.items, item.enquiryId);
-        } finally {
-            lineMasterLoading.current = false;
-        }
+        LineItemsMaster(item?.printornonprint, item);
     };
-
     //hybird functionality
     const hybird = formDataList?.enquiryDetails?.hybridModel === "No" && lineItems.length > 0 && Array.isArray(lineItems);
     const category = hybird && lineItems?.length > 0 ? formDataList.lineItems[0].printornonprint
         : getOptionLabel(formDataList.category, formData.category);
 
     useEffect(() => {
-        if (lineItemId > 0) return;
+        if (enqDetailsId > 0) return;
         if (!lineItems.length) return;
         LineItemsMaster(category);
-    }, [hybird, lineItems.length, category, lineItemId]);
+    }, [hybird, lineItems.length, category, enqDetailsId]);
 
     return (
         <>
