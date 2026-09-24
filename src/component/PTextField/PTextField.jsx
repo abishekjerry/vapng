@@ -36,7 +36,7 @@ export default function PTextField({
         setShowPassword(prev => !prev);
     };
     
-    const baseSx = FormControlBaseStyle({ width, mt: 0.4, helperText, sx, });
+    const baseSx = FormControlBaseStyle({ width, mt: 0.4, helperText, sx});
     return (
         <TextField
             placeholder={placeHolder}

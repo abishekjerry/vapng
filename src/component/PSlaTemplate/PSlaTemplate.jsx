@@ -146,7 +146,7 @@ function PSlaTemplate({ sla, enquiryId, quoteStartDate, disabled = false, onChan
             </PGrid>
 
             {phaseDates.map((phase, index) => (
-                <PGrid container className="mb-1 align-items-center" key={index}>
+                <PGrid container className="mb-4 align-items-center" key={index}>
                     <PGrid item md={2} className="mb-3">
                         {phase.name}
                     </PGrid>
@@ -160,7 +160,6 @@ function PSlaTemplate({ sla, enquiryId, quoteStartDate, disabled = false, onChan
                             value={phase.mdays}
                             disabled={disabled}
                             onChange={(e) => handleModifiedDays(index, e.target.value)}
-                            sx={{ mb: 2 }}
                         />
                     </PGrid>
 
@@ -188,7 +187,6 @@ function PSlaTemplate({ sla, enquiryId, quoteStartDate, disabled = false, onChan
                         <PTextField
                             value={phase.endDate}
                             disabled
-                            sx={{ mb: 2 }}
                         />
                     </PGrid>
                 </PGrid>

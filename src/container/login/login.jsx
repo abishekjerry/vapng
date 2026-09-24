@@ -9,7 +9,7 @@ import LoginImg from "../../utils/assets/images/Login.png";
 import "./login.css";
 import { CommonColors } from "../../utils/constants/colors";
 import PDialog from "../../component/PDialog/PDialog";
-import { validatePassword, validateName, isSuccess } from "../../utils/commonFunction/common";
+import { validatePassword, validateName, isSuccess, toast } from "../../utils/commonFunction/common";
 import { userDetails, clearUserDetails } from "../../redux/actionType/actionType";
 import { connect } from "react-redux";
 import { AppNavigation } from "../../navigations/appNavigation";
@@ -90,7 +90,7 @@ function Login(props) {
         userType: user?.usertype,
         menuId: 1,
         symbol: currency[user?.currency],
-        portal : false,
+        portal: false,
       });
 
       if (enquiryID) {
@@ -161,14 +161,9 @@ function Login(props) {
           };
         }
       }
-
       if (name === Labels.login.confirmPassword) {
-        errorMsg =
-          value !== formData.newPassword
-            ? Labels.loginPage.passwordDoNotMatch
-            : "";
+        errorMsg = value !== formData.newPassword ? Labels.loginPage.passwordDoNotMatch : "";
       }
-
       return {
         ...prev,
         [name]: errorMsg,
@@ -176,10 +171,11 @@ function Login(props) {
     });
   };
 
-  const handleLogin = async (e, isLogin) => {
+  //vapng normal login
+  const handleLogin = async (e) => {
     e.preventDefault();
     const isValid = loginValidation();
-    if (formData.password === "password" || formData.password === "Password") {
+    if (formData.password.toLowerCase() === "password") {
       setFormData((prev) => ({
         ...prev,
         default: true,
@@ -191,40 +187,31 @@ function Login(props) {
         userName: formData.userName,
         password: formData.password,
       });
-      if (isLogin) {
-        if (isSuccess(res)) {
-          const user = res?.data;
-          props.saveUserDetails({
-            userName: user?.username,
-            email: user?.email,
-            fkID: user?.fkID,
-            userID: user?.userID,
-            role: user?.role,
-            currency: user?.currency,
-            country: user?.country,
-            countryID: user?.countryId,
-            userType: user?.usertype,
-            menuId: 0,
-            symbol: currency[user?.currency],
-            portal : false
-          });
-          navigate(labelRoutes.dashboard);
-        } else {
-          setErrors((prev) => ({
-            ...prev,
-            password: res?.data || "Login failed",
-          }));
-        }
+
+      if (isSuccess(res)) {
+        const user = res?.data;
+        props.saveUserDetails({
+          userName: user?.username,
+          email: user?.email,
+          fkID: user?.fkID,
+          userID: user?.userID,
+          role: user?.role,
+          currency: user?.currency,
+          country: user?.country,
+          countryID: user?.countryId,
+          userType: user?.usertype,
+          menuId: 0,
+          symbol: currency[user?.currency],
+          portal: false
+        });
+        navigate(labelRoutes.dashboard);
       } else {
-        if (isSuccess(res)) {
-          setIsLogin(true);
-        } else {
-          setErrors((prev) => ({
-            ...prev,
-            password: res?.data || "Login failed",
-          }));
-        }
+        setErrors((prev) => ({
+          ...prev,
+          password: res?.data || "Login failed",
+        }));
       }
+
     }
   };
 
@@ -264,9 +251,59 @@ function Login(props) {
     return Object.keys(newErrors).length === 0;
   };
 
+  //vapng change password
+  const passwordValidation = () => {
+    const requiredFields = [
+      Labels.login.newPassword,
+      Labels.login.confirmPassword
+    ];
+
+    let newErrors = {};
+
+    requiredFields.forEach((field) => {
+      const value = formData[field];
+      if (!value || value.trim() === "") {
+        newErrors[field] = Labels.commonLabel.required;
+      }
+    });
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    const isValid = passwordValidation();
+    if (isValid) {
+      const res = await PostApi(Account_API.ChangePassword, {
+        username: formData.userName,
+        password: formData.password,
+        newPassword: formData.newPassword,
+      });
+
+      if (isSuccess(res)) {
+        toast(Labels.status.success, res.data);
+        setFormData((prev) => ({
+          ...prev,
+          default: false,
+          userName: "",
+          password: "",
+          confirmPassword: "",
+          newPassword: ""
+        }));
+      } else {
+        toast(Labels.status.failure, res.data);
+        setFormData((prev) => ({
+          ...prev,
+          default: true,
+        }));
+      }
+    }
+  };
+
   return (
     <>
-      <form onSubmit={(e) => handleLogin(e, true)} noValidate>
+      <form onSubmit={formData.default ? handleChangePassword : handleLogin} noValidate>
         <div className="login-container">
           <div className="login-right">
             <img src={LoginImg} alt="Login" className="login-image" />
@@ -280,8 +317,8 @@ function Login(props) {
                 </div>
 
                 <PTextField
+                  label={`${Labels.loginPage.newPassword} ${Labels.symbols.required}`}
                   name={Labels.login.newPassword}
-                  label={Labels.loginPage.newPassword}
                   value={formData.newPassword}
                   helperText={errors?.newPassword}
                   startIcon={<LockIcon sx={{ color: "#9CA3AF" }} />}
@@ -291,8 +328,8 @@ function Login(props) {
                 />
 
                 <PTextField
+                  label={`${Labels.loginPage.confirmPassword} ${Labels.symbols.required}`}
                   name={Labels.login.confirmPassword}
-                  label={Labels.loginPage.confirmPassword}
                   value={formData.confirmPassword}
                   helperText={errors?.confirmPassword}
                   startIcon={<LockIcon sx={{ color: "#9CA3AF" }} />}
@@ -305,7 +342,6 @@ function Login(props) {
                   type="submit"
                   label={Labels.buttonLabel.changePassword}
                   fullWidth
-                //onClick={(e) => handleLogin(e, true)}
                 />
               </div>
             </div>
@@ -318,8 +354,8 @@ function Login(props) {
                 </div>
 
                 <PTextField
+                  label={`${Labels.loginPage.userName} ${Labels.symbols.required}`}
                   name={Labels.login.userName}
-                  label={Labels.loginPage.userName}
                   value={formData.userName}
                   helperText={errors?.userName}
                   startIcon={<PersonIcon sx={{ color: "#9CA3AF" }} />}
@@ -335,8 +371,8 @@ function Login(props) {
                 />
 
                 <PTextField
+                  label={`${Labels.loginPage.password} ${Labels.symbols.required}`}
                   name={Labels.login.password}
-                  label={Labels.loginPage.password}
                   value={formData.password}
                   helperText={errors?.password}
                   startIcon={<LockIcon sx={{ color: "#9CA3AF" }} />}
@@ -359,7 +395,6 @@ function Login(props) {
                   type="submit"
                   label={Labels.buttonLabel.login}
                   fullWidth
-                // onClick={(e) => handleLogin(e, true)}
                 />
               </div>
             </div>
@@ -394,8 +429,8 @@ function Login(props) {
         <PGrid container>
           <PGrid item xs={12} sm={12} md={12}>
             <PTextField
+              label={`${Labels.loginPage.userName} ${Labels.symbols.required}`}
               name={Labels.login.resetUsername}
-              label={Labels.loginPage.userName}
               value={formData.resetUsername}
               onChange={handleChange}
               helperText={errors?.resetUsername}

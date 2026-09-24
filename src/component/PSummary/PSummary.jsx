@@ -52,6 +52,7 @@ export const PSummary = ({ sections = [], currentStep = 1, refreshSummary, dupli
             type: userDetails,
             payload: {
                 enqDetailsId : enquiryId,
+                enqDetailsClick: Date.now(), 
             },
         });
         navigate(route, {

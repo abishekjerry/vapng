@@ -158,23 +158,6 @@ const EnquiryDetails = () => {
         }
     };
 
-    // useEffect(() => {
-    //     if (formDataList?.slaTemplate?.length && !formData.slaTemplate) {
-    //         //const hybrid = formDataList?.enquiryDetails?.hybridModel ? getOptionValue(formDataList.hybird, data.enqProjectinfo.hybridModel) : 2;
-    //         //const managementfeetypeId = formDataList?.enquiryDetails?.managementfeetypeId ? data.enqProjectinfo.managementfeetypeId : 8;
-    //         const slaId = formDataList?.enquiryDetails?.slaId ?? 1;
-    //         const year = 1;
-    //         setFormData(prev => ({
-    //             ...prev,
-    //             slaTemplate: slaId,
-    //             year: year
-    //             // hybrid: hybrid,
-    //             // managementFeeType: managementfeetypeId
-    //         }));
-    //         //slaRef.current?.slaTemplate(slaId);
-    //     }
-    // }, [formDataList.slaTemplate, formDataList.enquiryDetails]);
-
     const GetData = async (response) => {
         try {
             if (id !== 0) {
@@ -194,11 +177,11 @@ const EnquiryDetails = () => {
                     briefReceivedDate: data.enqProjectinfo.briefdate,
                     projectDescription: data.enqProjectinfo.projectDesc,
                     projectQuoteType: getOptionValue(formDataList.quoteType, data.enqProjectinfo.projectQuotetype),
-                    //year: getOptionValue(response.year, data.enqProjectinfo.year),
+                    year: data.enqProjectinfo.year != null && data.enqProjectinfo.year !== "" ? getOptionValue(response.year, data.enqProjectinfo.year) : prev.year,
                     managementFeeType: data.enqProjectinfo.managementfeetypeId,
                     hybrid: getOptionValue(formDataList.hybird, data.enqProjectinfo.hybridModel),
                     projectAttribute: getOptionValue(response.projectAttribute, data.enqProjectinfo.attribute),
-                    //slaTemplate: data?.enqProjectinfo?.slaId,
+                    slaTemplate: data.enqProjectinfo.slaId !== null ? data.enqProjectinfo.slaId : prev.slaTemplate,
                 }));
                 dispatch({
                     type: userDetails,
@@ -360,7 +343,7 @@ const EnquiryDetails = () => {
                                         value={formData.projectNo}
                                         onChange={handleChange}
                                         helperText={errors?.projectNo}
-                                        sx={{ mb: 3 }}
+                                        sx={{ mb: 1 }}
                                     />
                                     <PDatepicker
                                         name={Labels.enquiryDetails.estdeliveryDate}
@@ -371,7 +354,6 @@ const EnquiryDetails = () => {
                                         width={100}
                                         allowFuture={true}
                                         minDate={today}
-                                        sx={{ mb: 3 }}
                                     />
                                 </PGrid>
                                 <PGrid item xs={12} sm={6} md={8}>
@@ -397,7 +379,6 @@ const EnquiryDetails = () => {
                                         width={100}
                                         allowFuture={true}
                                         maxDate={formData.estdeliveryDate}
-                                        sx={{ mb: 3 }}
                                     />
                                 </PGrid>
                                 <PGrid item xs={12} sm={6} md={4}>

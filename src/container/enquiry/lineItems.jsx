@@ -31,9 +31,9 @@ import { userDetails } from "../../redux/actionType/actionType";
 const LineItems = () => {
     const { state } = useLocation();
     const { getLabel } = useLanguage();
-    const { fkID, menuId, role, countryID, userID, enqDetailsId } = useSelector((state) => state.userDetails.user);
+    const { fkID, menuId, role, countryID, userID, enqDetailsId, enqDetailsClick } = useSelector((state) => state.userDetails.user);
     const navigate = useNavigate();
-     const dispatch = useDispatch();
+    const dispatch = useDispatch();
     const [allowRedirect, setAllowRedirect] = useState(false);
     const enquirySteps = getEnquirySteps(getLabel, menuId);
     const [loading, setLoading] = useState(true);
@@ -528,6 +528,7 @@ const LineItems = () => {
                                 enqDetailsId: 0,
                             },
                         });
+                        nextIncompleteLoaded.current = false;
                         await fetchData();
                     };
                 } else {
@@ -731,49 +732,50 @@ const LineItems = () => {
         setErrors({});
     }
 
-    const lineMasterLoading = useRef(false);
-    console.log(enqDetailsId);
+    const nextIncompleteLoaded = useRef(false);
     useEffect(() => {
         if (!enqDetailsId || enqDetailsId <= 0) return;
         if (!formDataList.lineItems?.length) return;
         const item = formDataList.lineItems.find(x => Number(x.enqdetailsId) === enqDetailsId);
         if (!item) return;
+        setErrors({});
         LineItemsMaster(item?.printornonprint, item);
-    }, [enqDetailsId, formDataList.lineItems]);
+    }, [enqDetailsId, formDataList.lineItems, enqDetailsClick]);
 
     const fillEditItem = (item, response) => {
         setFormData(prev => ({
             ...prev,
             lineItemId: item.enqdetailsId,
             update: true,
-            itemName: item.itemName || "",
-            itemNameDescription: item.itemDescription || "",
-            category: getOptionValue(formDataList.category, item.printornonprint),
-            itemCategory: getOptionValue(response.itemCategory, item.productcategory),
-            urgentJob: getOptionValue(formDataList.urgentJob, item.urgent),
-            reEngineering: getOptionValue(formDataList.reEngineering, item.reengineering),
-            dictatedJob: getOptionValue(formDataList.dictatedJob, item.dictated),
-            itemType: getOptionValue(formDataList.itemType, item.itemtype),
-            rateCard: getOptionValue(formDataList.rateCard, item.rateCard),
-            printingMethod: getOptionValue(response.printingMethod, item.printingMethod),
-            materialUsed: getOptionValue(response.materialused, item.materialUsed),
-            localCatalogueName: getOptionValue(response.localCatalog,item.catalogueUsage),
-            specifications: item.specNote || "",
-            notesComments: item.sNote || "",
-            quantity: item.quoteQtyOrSize || "",
-            quantityType: getOptionValue(formDataList.quoteType, item.quoteType) || 1,
-            noOfVersion: item.version || 1,
-            fscOrPefcMaterial: getOptionValue(formDataList.yesNoNa, item.fscpefcmaterial),
-            recyclable: getOptionValue(formDataList.yesNoNa, item.designforrecycle),
-            sustainabilityOption: getOptionValue(formDataList.soYesNoNa, item.proposedsustain),
-            recycledMaterial: getOptionValue(formDataList.yesNoNa, item.recycledmaterial),
-            designedToBeReused: getOptionValue(formDataList.yesNoNa, item.designreused),
-            containsPlastic: getOptionValue(formDataList.yesNoNa, item.containplasticNew),
-            containsRecycledPlastic: getOptionValue(formDataList.yesNoNa, item.recycledplasticNew),
-            plasticWeightKg: item.plasticweightage || "",
-            recycledPlasticWeightKg: item.recycledplasticweightage || "",
-            recycledMaterialWeightKg: item.recycledmaterialweightage || "",
-        }));
+            itemName: item.itemName != null ? item.itemName : prev.itemName,
+            itemNameDescription: item.itemDescription != null ? item.itemDescription : prev.itemNameDescription,
+            category: item.printornonprint != null ? getOptionValue(formDataList.category, item.printornonprint) : prev.category,
+            itemCategory: item.productcategory != null ? getOptionValue(response.itemCategory, item.productcategory) : prev.itemCategory,
+            urgentJob: item.urgent != null ? getOptionValue(formDataList.urgentJob, item.urgent) : prev.urgentJob,
+            reEngineering: item.reengineering != null ? getOptionValue(formDataList.reEngineering, item.reengineering) : 2,
+            dictatedJob: item.dictated != null ? getOptionValue(formDataList.dictatedJob, item.dictated) : prev.dictatedJob,
+            itemType: item.itemtype != null ? getOptionValue(formDataList.itemType, item.itemtype) : prev.itemType,
+            rateCard: item.rateCard != null ? getOptionValue(formDataList.rateCard, item.rateCard) : prev.rateCard,
+            printingMethod: item.printingMethod != null ? getOptionValue(response.printingMethod, item.printingMethod) : prev.printingMethod,
+            materialUsed: item.materialUsed != null ? getOptionValue(response.materialused, item.materialUsed) : prev.materialUsed,
+            localCatalogueName: item.catalogueUsage != null ? getOptionValue(response.localCatalog, item.catalogueUsage) : 9,
+            innovation: item.innovation != null ? getOptionValue(formDataList.yesOrNo, item.innovation) : 2,
+            specifications: item.specNote != null ? item.specNote : prev.specifications,
+            notesComments: item.sNote != null ? item.sNote : prev.notesComments,
+            quantity: item.quoteQtyOrSize != null ? item.quoteQtyOrSize : prev.quantity,
+            quantityType: item.quoteType != null ? getOptionValue(formDataList.quoteType, item.quoteType) : 1,
+            noOfVersion: item.version != null ? item.version : prev.noOfVersion,
+            fscOrPefcMaterial: item.fscpefcmaterial != null ? getOptionValue(formDataList.yesNoNa, item.fscpefcmaterial) : prev.fscOrPefcMaterial,
+            recyclable: item.designforrecycle != null ? getOptionValue(formDataList.yesNoNa, item.designforrecycle) : prev.recyclable,
+            sustainabilityOption: item.proposedsustain != null ? getOptionValue(formDataList.soYesNoNa, item.proposedsustain) : prev.sustainabilityOption,
+            recycledMaterial: item.recycledmaterial != null ? getOptionValue(formDataList.yesNoNa, item.recycledmaterial) : prev.recycledMaterial,
+            designedToBeReused: item.designreused != null ? getOptionValue(formDataList.yesNoNa, item.designreused) : prev.designedToBeReused,
+            containsPlastic: item.containplasticNew != null ? getOptionValue(formDataList.yesNoNa, item.containplasticNew) : prev.containsPlastic,
+            containsRecycledPlastic: item.recycledplasticNew != null ? getOptionValue(formDataList.yesNoNa, item.recycledplasticNew) : prev.containsRecycledPlastic,
+            plasticWeightKg: item.plasticweightage != null ? item.plasticweightage : prev.plasticWeightKg,
+            recycledPlasticWeightKg: item.recycledplasticweightage != null ? item.recycledplasticweightage : prev.recycledPlasticWeightKg,
+            recycledMaterialWeightKg: item.recycledmaterialweightage != null ? item.recycledmaterialweightage : prev.recycledMaterialWeightKg,
+        }))
     };
 
     //dynamically update functionlity in PAPM
@@ -782,8 +784,11 @@ const LineItems = () => {
         if (!formDataList.lineItems?.length) return;
         if (formData?.update === true) return;
         if (enqDetailsId > 0) return;
+        if (nextIncompleteLoaded.current) return;
+        nextIncompleteLoaded.current = true;
+        setErrors({});
         loadNextIncompleteItem();
-    }, [formData?.portal, formData?.update, enqDetailsId, formDataList.lineItems]);
+    }, [formData?.portal, formData?.update, enqDetailsId, formDataList?.lineItems?.length]);
 
     const requiredFields = [
         "productcategory",
@@ -834,8 +839,9 @@ const LineItems = () => {
     };
 
     const loadNextIncompleteItem = () => {
-        if (!formDataList.lineItems?.length || lineMasterLoading.current) return;
-        const item = formDataList.lineItems.find(item => getIncompleteKeys(item).length > 0);
+        const lineItems = formDataList?.lineItems;
+        if (!lineItems?.length) return;
+        const item = lineItems.find(item => getIncompleteKeys(item).length > 0);
         if (!item) {
             setFormData(prev => ({
                 ...prev,
@@ -847,15 +853,14 @@ const LineItems = () => {
         LineItemsMaster(item?.printornonprint, item);
     };
     //hybird functionality
-    const hybird = formDataList?.enquiryDetails?.hybridModel === "No" && lineItems.length > 0 && Array.isArray(lineItems);
-    const category = hybird && lineItems?.length > 0 ? formDataList.lineItems[0].printornonprint
-        : getOptionLabel(formDataList.category, formData.category);
+    const hybird = formDataList?.enquiryDetails?.hybridModel === "No" && Array.isArray(lineItems) && lineItems.length > 0;
+    const category = hybird ? formDataList?.lineItems?.[0]?.printornonprint : getOptionLabel(formDataList?.category, formData?.category);
 
-    useEffect(() => {
-        if (enqDetailsId > 0) return;
-        if (!lineItems.length) return;
-        LineItemsMaster(category);
-    }, [hybird, lineItems.length, category, enqDetailsId]);
+    //useEffect(() => {
+    //    if (enqDetailsId > 0) return;
+    //    if (!category) return;
+    //    LineItemsMaster(category);
+    // }, [category, enqDetailsId]);
 
     return (
         <>

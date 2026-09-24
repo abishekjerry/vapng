@@ -85,7 +85,6 @@ export default function PDatepicker({
       const enteredDate = new Date(`${year}/${month}/${day}`);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      // Block future if flag is false
       if (!allowFuture && enteredDate > today) {
         e.target.value = "";
       }
@@ -101,36 +100,17 @@ export default function PDatepicker({
     }
   };
 
-  const baseSx = FormControlBaseStyle({ width: width ? `${width}%` : "100%", mt, helperText,
-    sx: {
-      "& .MuiInputAdornment-root": {
-        height: "100%",
-        margin: 0,
-      },
-
-      "& .MuiIconButton-root": {
-        width: "52px",
-        height: "45px",
-        borderRadius: "0 12px 12px 0",
-        backgroundColor: "#1976F3",
-        color: "#fff",
-
-        "&:hover": {
-          backgroundColor: "#1976F3",
-        },
-      },
-    },
-  });
+  const baseSx = FormControlBaseStyle({ width: width ? `${width}%` : "100%", mt, helperText });
 
   return (
     <TextField
       name={name}
       label={label}
       inputRef={textFieldRef}
-      value={value || ""}
+      value={value}
       disabled={disabled}
       placeholder={placeholder}
-      helperText={helperText || " "}
+      helperText={helperText}
       error={!!helperText}
       variant="outlined"
       sx={baseSx}
@@ -144,23 +124,19 @@ export default function PDatepicker({
         },
       }}
       InputLabelProps={{
-        shrink: !!value, // ✅ ensures label floats properly
+        shrink: !!value, 
       }}
       InputProps={{
         endAdornment: (
-          <InputAdornment position="end" sx={{ marginRight: 0 }}>
-            <IconButton
-              onClick={handleIconClick}
-              disabled={disabled}
+          <InputAdornment position="end">
+            <IconButton onClick={handleIconClick} disabled={disabled}
               sx={{
                 backgroundColor: "#0d6efd",
                 color: "#fff",
-                borderRadius: "0 12px 12px 0",
-                height: "49px",
-                width: "40px",
-                padding: 0,
-                marginRight: "-14px",
-                marginTop: "4px",
+                borderRadius: "12px 12px 12px 12px",
+                height: "50px",
+                width: "50px",
+                marginRight: "-12.5px",
                 "&:hover": { backgroundColor: "#0b5ed7" },
               }}
             >

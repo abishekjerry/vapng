@@ -32,7 +32,7 @@ export const FormControlBaseStyle = ({ width = "100%", mt = 0.4, helperText = fa
     fontSize: "12px",
     transform: "translate(12px, -8px) scale(1)",
     zIndex: 3,
-    padding: "0px 5px 0px 5px",
+    padding: "0 3px !important",
     backgroundColor: "transparent",
     boxShadow: "none !important",
   },
@@ -54,11 +54,6 @@ export const FormControlBaseStyle = ({ width = "100%", mt = 0.4, helperText = fa
 
     "&:hover fieldset": {
       borderColor: "#42A8C8",
-    },
-
-    // Focus shadow ONLY on textbox
-    "&.Mui-focused": {
-      boxShadow: "0 0 0 3px rgba(98,188,216,0.15)",
     },
 
     "&.Mui-focused fieldset": {

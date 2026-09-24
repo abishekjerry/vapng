@@ -673,6 +673,7 @@ const ProjectEnquiry = () => {
                     sx={{
                         "& .MuiInputBase-root": {
                             height: 40,
+                            minHeight: 40
                         }
                     }}
                 />
@@ -817,10 +818,11 @@ const ProjectEnquiry = () => {
                 name={field}
                 value={row[field] == null || row[field] === 0 ? "" : row[field]}
                 onChange={(e) => handleInputChange(e.target.value.replace(/[^0-9.]/g, ""), row.supplierQuotesId, row.enquiryId, field)}
-                width={90}
+                width={100}
                 sx={{
                     "& .MuiInputBase-root": {
-                        height: 50,
+                        height: 40,
+                        minHeight: 40
                     }
                 }}
             />
