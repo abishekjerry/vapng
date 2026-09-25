@@ -520,15 +520,17 @@ const LineItems = () => {
                             state: { id: response.data.enqId }
                         });
                     }, 500);
-                    if (!flag) {
+                    if (flag === false) {
+                        const updatedItemId = formData.lineItemId;
                         await handleCancel();
+                        lastUpdatedItemId.current = updatedItemId;
+                        nextIncompleteLoaded.current = false;
                         dispatch({
                             type: userDetails,
                             payload: {
                                 enqDetailsId: 0,
                             },
                         });
-                        nextIncompleteLoaded.current = false;
                         await fetchData();
                     };
                 } else {
@@ -733,12 +735,13 @@ const LineItems = () => {
     }
 
     const nextIncompleteLoaded = useRef(false);
+    const lastUpdatedItemId = useRef(0);
     useEffect(() => {
         if (!enqDetailsId || enqDetailsId <= 0) return;
         if (!formDataList.lineItems?.length) return;
         const item = formDataList.lineItems.find(x => Number(x.enqdetailsId) === enqDetailsId);
         if (!item) return;
-        setErrors({});
+        handleCancel();
         LineItemsMaster(item?.printornonprint, item);
     }, [enqDetailsId, formDataList.lineItems, enqDetailsClick]);
 
@@ -765,13 +768,13 @@ const LineItems = () => {
             quantity: item.quoteQtyOrSize != null ? item.quoteQtyOrSize : prev.quantity,
             quantityType: item.quoteType != null ? getOptionValue(formDataList.quoteType, item.quoteType) : 1,
             noOfVersion: item.version != null ? item.version : prev.noOfVersion,
-            fscOrPefcMaterial: item.fscpefcmaterial != null ? getOptionValue(formDataList.yesNoNa, item.fscpefcmaterial) : prev.fscOrPefcMaterial,
-            recyclable: item.designforrecycle != null ? getOptionValue(formDataList.yesNoNa, item.designforrecycle) : prev.recyclable,
-            sustainabilityOption: item.proposedsustain != null ? getOptionValue(formDataList.soYesNoNa, item.proposedsustain) : prev.sustainabilityOption,
-            recycledMaterial: item.recycledmaterial != null ? getOptionValue(formDataList.yesNoNa, item.recycledmaterial) : prev.recycledMaterial,
-            designedToBeReused: item.designreused != null ? getOptionValue(formDataList.yesNoNa, item.designreused) : prev.designedToBeReused,
-            containsPlastic: item.containplasticNew != null ? getOptionValue(formDataList.yesNoNa, item.containplasticNew) : prev.containsPlastic,
-            containsRecycledPlastic: item.recycledplasticNew != null ? getOptionValue(formDataList.yesNoNa, item.recycledplasticNew) : prev.containsRecycledPlastic,
+            fscOrPefcMaterial: item.fscpefcmaterial != null ? getOptionValue(formDataList.yesNoNa, item.fscpefcmaterial) : 3,
+            recyclable: item.designforrecycle != null ? getOptionValue(formDataList.yesNoNa, item.designforrecycle) : 3,
+            sustainabilityOption: item.proposedsustain != null ? getOptionValue(formDataList.soYesNoNa, item.proposedsustain) : 4,
+            recycledMaterial: item.recycledmaterial != null ? getOptionValue(formDataList.yesNoNa, item.recycledmaterial) : 3,
+            designedToBeReused: item.designreused != null ? getOptionValue(formDataList.yesNoNa, item.designreused) : 3,
+            containsPlastic: item.containplasticNew != null ? getOptionValue(formDataList.yesNoNa, item.containplasticNew) : 2,
+            containsRecycledPlastic: item.recycledplasticNew != null ? getOptionValue(formDataList.yesNoNa, item.recycledplasticNew) : 2,
             plasticWeightKg: item.plasticweightage != null ? item.plasticweightage : prev.plasticWeightKg,
             recycledPlasticWeightKg: item.recycledplasticweightage != null ? item.recycledplasticweightage : prev.recycledPlasticWeightKg,
             recycledMaterialWeightKg: item.recycledmaterialweightage != null ? item.recycledmaterialweightage : prev.recycledMaterialWeightKg,
@@ -783,12 +786,13 @@ const LineItems = () => {
         if (formData?.portal !== "PAPM") return;
         if (!formDataList.lineItems?.length) return;
         if (formData?.update === true) return;
-        if (enqDetailsId > 0) return;
+        //if (enqDetailsId > 0) return;
         if (nextIncompleteLoaded.current) return;
         nextIncompleteLoaded.current = true;
-        setErrors({});
-        loadNextIncompleteItem();
-    }, [formData?.portal, formData?.update, enqDetailsId, formDataList?.lineItems?.length]);
+        handleCancel();
+        const lineItems = formDataList?.lineItems;
+        loadNextIncompleteItem(lineItems);
+    }, [formData?.portal, formData?.update, formDataList?.lineItems]);
 
     const requiredFields = [
         "productcategory",
@@ -838,11 +842,18 @@ const LineItems = () => {
         });
     };
 
-    const loadNextIncompleteItem = () => {
-        const lineItems = formDataList?.lineItems;
+    const loadNextIncompleteItem = (lineItems) => {
         if (!lineItems?.length) return;
-        const item = lineItems.find(item => getIncompleteKeys(item).length > 0);
-        if (!item) {
+        const item = lineItems.find(item => {
+            // Skip the item that was just updated
+            if (item.enqdetailsId === lastUpdatedItemId.current) {
+                return false;
+            }
+            // Find the next incomplete item
+            return (getIncompleteKeys(item) || []).length > 0;
+        });
+        const completeFlag = !!item;
+        if (!completeFlag) {
             setFormData(prev => ({
                 ...prev,
                 update: false,
@@ -851,6 +862,7 @@ const LineItems = () => {
             return;
         }
         LineItemsMaster(item?.printornonprint, item);
+        lastUpdatedItemId.current = 0;
     };
     //hybird functionality
     const hybird = formDataList?.enquiryDetails?.hybridModel === "No" && Array.isArray(lineItems) && lineItems.length > 0;
@@ -1718,7 +1730,7 @@ const LineItems = () => {
                                 </PGrid>
                             )}
                             {/* Attachment Section */}
-                            {[1, 2, 3].includes(type) && (
+                            {[1, 2, 3].includes(type) &&  (
                                 <>
                                     {/* Row with file input + button */}
                                     <PGrid container className={Labels.margin.mb4}>

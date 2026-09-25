@@ -177,11 +177,12 @@ const EnquiryDetails = () => {
                     briefReceivedDate: data.enqProjectinfo.briefdate,
                     projectDescription: data.enqProjectinfo.projectDesc,
                     projectQuoteType: getOptionValue(formDataList.quoteType, data.enqProjectinfo.projectQuotetype),
-                    year: data.enqProjectinfo.year != null && data.enqProjectinfo.year !== "" ? getOptionValue(response.year, data.enqProjectinfo.year) : prev.year,
+                    //year: data.enqProjectinfo.year != null && data.enqProjectinfo.year !== "" ? getOptionValue(response.year, data.enqProjectinfo.year) : prev.year,
                     managementFeeType: data.enqProjectinfo.managementfeetypeId,
                     hybrid: getOptionValue(formDataList.hybird, data.enqProjectinfo.hybridModel),
                     projectAttribute: getOptionValue(response.projectAttribute, data.enqProjectinfo.attribute),
-                    slaTemplate: data.enqProjectinfo.slaId !== null ? data.enqProjectinfo.slaId : prev.slaTemplate,
+                    slaTemplate: data.enqProjectinfo.slaId != null && data.enqProjectinfo.slaId !== ""
+                        ? data.enqProjectinfo.slaId : prev.slaTemplate
                 }));
                 dispatch({
                     type: userDetails,
@@ -343,7 +344,7 @@ const EnquiryDetails = () => {
                                         value={formData.projectNo}
                                         onChange={handleChange}
                                         helperText={errors?.projectNo}
-                                        sx={{ mb: 1 }}
+                                        sx={{ mb: 3 }}
                                     />
                                     <PDatepicker
                                         name={Labels.enquiryDetails.estdeliveryDate}
