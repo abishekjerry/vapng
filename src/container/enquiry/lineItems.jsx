@@ -760,7 +760,7 @@ const LineItems = () => {
             itemType: item.itemtype != null ? getOptionValue(formDataList.itemType, item.itemtype) : prev.itemType,
             rateCard: item.rateCard != null ? getOptionValue(formDataList.rateCard, item.rateCard) : prev.rateCard,
             printingMethod: item.printingMethod != null ? getOptionValue(response.printingMethod, item.printingMethod) : prev.printingMethod,
-            materialUsed: item.materialUsed != null ? getOptionValue(response.materialused, item.materialUsed) : prev.materialUsed,
+            materialUsed: item.materialUsed != null ? getOptionValue(response.materialused, item.materialUsed) : 29,
             localCatalogueName: item.catalogueUsage != null ? getOptionValue(response.localCatalog, item.catalogueUsage) : 9,
             innovation: item.innovation != null ? getOptionValue(formDataList.yesOrNo, item.innovation) : 2,
             specifications: item.specNote != null ? item.specNote : prev.specifications,
@@ -889,7 +889,7 @@ const LineItems = () => {
                                     labelText={getLabel("lbl22")}
                                     flag={Labels.fontFlags.subHeader}
                                     color={CommonColors.blue.main}
-                                    weight={FontWeight.bold}
+                                    //weight={FontWeight.bold}
                                 />
                                 <PTypography
                                     labelText={getLabel("lbl59")}

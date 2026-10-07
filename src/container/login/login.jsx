@@ -103,7 +103,7 @@ function Login(props) {
     } else {
       setErrors((prev) => ({
         ...prev,
-        password: res?.data || "Login failed",
+        password: res?.data,
       }));
     }
   };
@@ -208,7 +208,7 @@ function Login(props) {
       } else {
         setErrors((prev) => ({
           ...prev,
-          password: res?.data || "Login failed",
+          password: res?.data,
         }));
       }
 

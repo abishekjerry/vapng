@@ -109,8 +109,11 @@ const ProjectEnquiry = () => {
         data: [],
         columns: [{ field: "suppliername", header: "Supplier's Name" }, { field: "country", header: "Country" }, { field: "suppliercode", header: "Supplier Code" },],
         supplierMaster: [],
-        selectedRows: [],
         statusInfo: [],
+
+        //Add supplier states
+        selectedRows: [],
+        newSelectedRows: [],
         selectedSupplierRows: [],
         selectedHistroyRows: [],
         //project status
@@ -296,7 +299,7 @@ const ProjectEnquiry = () => {
                 supplierMaster: supplierResponse,
                 savingsType: enqResponse.savingsType,
                 savingsReason: master.savingsReason,
-                statusInfo: [{ label: "Enquiry ID", value: response.enqClientinfo?.enqUId || "-" }, { label: "Project Number", value: response.enqProjectinfo?.projectNo || "-" }],
+                statusInfo: [{ label: "Enquiry ID", value: response.enqClientinfo?.enqUId || "-" }, { label: "Project Number", value: response.enqProjectinfo?.projectNo || "-" }, { label: "Project Status", value: response?.jobstatus || "-" }],
                 savingsReasons: projectResponse.savingReasons,
                 historyLogs: projectResponse.historyLogs,
                 lineItemLogs: projectResponse.lineItemLogs,
@@ -568,10 +571,12 @@ const ProjectEnquiry = () => {
 
     const handleValidationChange = (rows) => {
         const isValid = rows.length > 0;
-        setFormDataList(prev => ({
-            ...prev,
-            selectedRows: rows,
-        }));
+        if (isValid) {
+            setFormDataList(prev => ({
+                ...prev,
+                newSelectedRows: rows,
+            }));
+        }
     };
 
     const handleRFQ = (rows) => {
@@ -588,6 +593,9 @@ const ProjectEnquiry = () => {
     };
 
     let filteredData = formDataList.supplierMaster;
+    // Remove already selected/old suppliers
+    const oldSupplierIds = new Set((formDataList.selectedRows || []).map(row => row.supplierId));
+    filteredData = filteredData.filter(item => !oldSupplierIds.has(item.supplierId));
     if (formData.search.trim() !== "") {
         filteredData = filteredData.filter((item) =>
             item.suppliername.toLowerCase().includes(formData.search.toLowerCase())
@@ -611,24 +619,27 @@ const ProjectEnquiry = () => {
     }
 
     const handleSendChoose = async () => {
-        const rows = formDataList.selectedRows || [];
-        const supplierIds = rows.map(r => r.supplierId).join(",");
+        const oldSupplierIds = (formDataList.selectedRows || []).map(r => r.supplierId).join(",");
+        const newSupplierIds = (formDataList.newSelectedRows || []).map(r => r.supplierId).join(",");
+        const enqDetailsIds = (formDataList.lineItems || []).map(row => row.enqdetailsId);
         try {
             setLoading(true);
             const payload = {
                 EnqId: id,
-                SelectedSuppliers: supplierIds,
-                ModifiedBy: fkID,
+                EnqDetailsId: enqDetailsIds,
+                SelectedSuppliers: oldSupplierIds,
+                NewSelectedSuppliers: newSupplierIds
             };
-            const response = await PostApi(Suppliers_API.AddUpdateSuppliers, payload);
+            const response = await PostApi(Suppliers_API.AddSuppliers, payload);
             if (isSuccess(response)) {
-                toast(Labels.status.success, response.data.message);
+                toast(Labels.status.success, response.data);
                 setFormData(prev => ({
                     ...prev,
                     suppliers: false,
                 }));
+                await fetchData();
             } else {
-                toast(Labels.status.failure, response.data.message);
+                toast(Labels.status.failure, response.data);
             }
         } catch (error) {
             toast(Labels.status.failure, Labels.message.somethingWentWrong);
@@ -718,7 +729,9 @@ const ProjectEnquiry = () => {
         //     ...(formData.inputPS && renderProjectEditableField("baselineQuantity"))
         // },
         {
-            field: "previousPrice", header: `Previous/Reference Price (${symbol})`, type: "rupee",
+            field: "previousPrice", header: `Previous/Reference Price (${symbol})`,
+            type: "rupee",
+            ishide: true,
             ...(formData.inputPS && renderProjectEditableField("previousPrice"))
 
         },
@@ -783,7 +796,8 @@ const ProjectEnquiry = () => {
                 const response = await PostApi(ProjectEnquiry_API.UpdateJobStatus, {
                     enqId: id,
                     modifiedBy: fkID,
-                    status: flag
+                    status: flag,
+                    portal: formData.portal
                 });
                 if (isSuccess(response)) {
                     await fetchData();
@@ -859,27 +873,31 @@ const ProjectEnquiry = () => {
             field: "initialQuote",
             header: `Ini.Quote (${symbol})`,
             type: "rupee",
+            ishide: true,
             ...(isQuote && renderEditableField("initialQuote")),
         },
         {
             field: "negQuote",
             header: `Neg.Quote (${symbol})`,
             type: "rupee",
+            ishide: true,
             ...(isQuote && renderEditableField("negQuote")),
         },
         {
             field: "iniUnitPrice",
             header: `Ini.unit Price (${symbol})`,
             type: "rupee",
+            ishide: true,
             ...(isUnit && renderEditableField("iniUnitPrice")),
         },
         {
             field: "negUnitPrice",
             header: `Neg.unit Price (${symbol})`,
             type: "rupee",
+            ishide: true,
             ...(isUnit && renderEditableField("negUnitPrice")),
         },
-        { field: "negUnitPriceFee", header: `Neg.unit Price with MFee + GS (${symbol})`, type: "rupee" },
+        { field: "negUnitPriceFee", header: `Neg.unit Price with MFee + GS (${symbol})`, type: "rupee", ishide: true },
         { field: "pmgSellPrice", header: `PMG Sell Price (with MF & GS) (${symbol})`, rowSpan: true, type: "rupee", align: "center" }
     ];
 
@@ -1867,7 +1885,7 @@ const ProjectEnquiry = () => {
                                                 />
                                             </PGrid>
                                         </PGrid>
-                                        <PGrid container className={Labels.margin.mb3}>
+                                        {/* <PGrid container className={Labels.margin.mb3}>
                                             <PGrid item xs={12} sm={6} md={6}>
                                                 <PTypography
                                                     labelText={getLabel("lbl240")}
@@ -1876,7 +1894,7 @@ const ProjectEnquiry = () => {
                                                     weight={FontWeight.bold}
                                                 />
                                             </PGrid>
-                                        </PGrid>
+                                        </PGrid> */}
 
                                         <Divider sx={{ mb: 2 }} />
                                         <PGrid container className={Labels.margin.mb3}>
@@ -1920,7 +1938,7 @@ const ProjectEnquiry = () => {
                                     </PCard>
                                 )}
 
-                                {[3, 4, 5].includes(formData.statusId) && (
+                                {[3, 4, 5].includes(formData.statusId) && formData.portal !== "PAPM" && (
                                     <PCard className={Labels.margin.mb3} loading={tableLoading.approveQuotation}>
                                         <PGrid container className="d-flex align-items-center justify-content-between mb-3">
                                             <PGrid item xs={12} sm={6} md={6}>
@@ -2292,7 +2310,7 @@ const ProjectEnquiry = () => {
                     </PGrid>
                 </PGrid>
                 <PGrid item xs={12} sm={6} md={12}>
-                    <PTable columns={formDataList.columns} rows={data} showCheckbox={true} selectedRows={formDataList.selectedRows} onValidationChange={handleValidationChange} />
+                    <PTable columns={formDataList.columns} rows={data} showCheckbox={true} selectedRows={formDataList.newSelectedRows || []} onValidationChange={handleValidationChange} />
                 </PGrid>
             </PDialog>
 

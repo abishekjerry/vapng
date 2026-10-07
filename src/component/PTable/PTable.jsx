@@ -74,8 +74,8 @@ const PTable = ({ columns, rows, onClick, isChecked = false, showCheckbox = fals
   // Show only selected rows when global checkbox checked
   const filteredRows = isChecked ? rows.filter(row => selectedRows.some(sel => sel.supplierId === row.supplierId)) : (Array.isArray(rows) ? rows : []);
 
-  const renderText = (value, type) => {
-    let text = value == null || value === 0 ? "" : String(value);
+  const renderText = (value, type, ishide = false) => {
+    let text = ishide && Number(value) === 0 ? "" : value == null ? "" : String(value);
 
     if (type === "rupee" && value != null && value !== 0) {
       text = Number(value).toLocaleString("en-IN", {
@@ -168,7 +168,7 @@ const PTable = ({ columns, rows, onClick, isChecked = false, showCheckbox = fals
     const content = loading ? (
       <Skeleton variant="text" width="80%" height={24} />
     ) : (
-      col.render ? col.render(data, rowIndex) : renderText(data[col.field], col.type)
+      col.render ? col.render(data, rowIndex) : renderText(data[col.field], col.type, col.ishide)
     );
     if (showCheckbox && meta.isFirstCol) {
       return (

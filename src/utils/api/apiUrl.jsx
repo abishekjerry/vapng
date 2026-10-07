@@ -56,6 +56,7 @@ export const LineItems_API = {
 export const Suppliers_API = {
   GetEnqSupplierMaster: Base_Url + "/VA/GetSupplier",
   AddUpdateSuppliers: Base_Url + "/VA/EnqSupplierInfo",
+  AddSuppliers : Base_Url + "/VA/AddSuppliers",
 } 
 
 export const ProjectEnquiry_API = {

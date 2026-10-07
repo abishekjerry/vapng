@@ -708,8 +708,7 @@ const ClientInfo = () => {
                                                 </IconButton>
                                             </Tooltip>
                                         </div>
-                                    )
-                                    }
+                                    )}
                                 </PGrid>
 
                                 <PGrid item xs={12} sm={6} md={6}>
